@@ -4,8 +4,10 @@ import { useState, useEffect } from "react"
 import { ChoiceRow } from "./ChoiceRow"
 import { QuestionBody } from "./QuestionBody"
 import { PlayTopBar } from "./TopBar"
+import { ExplanationCard } from "./ExplanationCard"
 import type { Question, ChoiceLabel, ExamSummary } from "@/lib/types"
-import { setAnswer } from "@/lib/local-store"
+import { setAnswer, getDeviceId } from "@/lib/local-store"
+import { recordAnswer } from "@/lib/client-api"
 
 type Mode = "sequential" | "random"
 
@@ -31,8 +33,6 @@ export function PlayController({
   exam: ExamSummary
   mode: Mode
 }) {
-  // Initial render uses deterministic sort to avoid hydration mismatch.
-  // If mode === "random", the shuffle runs in an effect after mount.
   const [questions, setQuestions] = useState<Question[]>(() => sortBySequence(initialQuestions))
 
   useEffect(() => {
@@ -53,13 +53,27 @@ export function PlayController({
 
   function handleSelect(label: ChoiceLabel) {
     if (revealed) return
+    if (!current) return
     setSelectedByQid((prev) => ({ ...prev, [current._id]: label }))
+
+    const answeredAt = new Date().toISOString()
     setAnswer({
       question_id: current._id,
       exam_id: current.exam_id,
       selected_label: label,
       correct_label: current.correct_label,
-      answered_at: new Date().toISOString(),
+      answered_at: answeredAt,
+    })
+
+    void recordAnswer({
+      device_id: getDeviceId(),
+      question_id: current._id,
+      exam_id: current.exam_id,
+      selected_label: label,
+      correct_label: current.correct_label ?? null,
+      is_correct: current.correct_label === label,
+      skipped: false,
+      client_ts: answeredAt,
     })
   }
 
@@ -94,6 +108,13 @@ export function PlayController({
           />
         )
       })}
+      {revealed && current.explanation && (
+        <ExplanationCard
+          explanation={current.explanation}
+          correctLabel={current.correct_label}
+          tags={current.tags ?? []}
+        />
+      )}
       <div className="flex gap-2.5 mt-4">
         <button
           type="button"
