@@ -17,7 +17,11 @@ export default async function PlayPage({ params, searchParams }: PageProps) {
   if (!exam) notFound()
 
   const questions = await listQuestions(examId)
-  const playMode: "sequential" | "random" = mode === "random" ? "random" : "sequential"
+  const playMode: "sequential" | "random" | "wrongOnly" | "exam" =
+    mode === "random" ? "random" :
+    mode === "wrongOnly" ? "wrongOnly" :
+    mode === "exam" ? "exam" :
+    "sequential"
 
   return (
     <MobileFrame>

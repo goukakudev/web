@@ -6,10 +6,10 @@ import { QuestionBody } from "./QuestionBody"
 import { PlayTopBar } from "./TopBar"
 import { ExplanationCard } from "./ExplanationCard"
 import type { Question, ChoiceLabel, ExamSummary } from "@/lib/types"
-import { setAnswer, getDeviceId } from "@/lib/local-store"
+import { setAnswer, getDeviceId, getAllAnswers } from "@/lib/local-store"
 import { recordAnswer } from "@/lib/client-api"
 
-type Mode = "sequential" | "random"
+type Mode = "sequential" | "random" | "wrongOnly" | "exam"
 
 function sortBySequence(qs: Question[]): Question[] {
   return [...qs].sort((a, b) => a.q_number - b.q_number)
@@ -36,8 +36,22 @@ export function PlayController({
   const [questions, setQuestions] = useState<Question[]>(() => sortBySequence(initialQuestions))
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- shuffle must run after hydration to keep SSR deterministic
-    setQuestions(mode === "random" ? shuffle(initialQuestions) : sortBySequence(initialQuestions))
+    let next: Question[]
+    if (mode === "random") {
+      next = shuffle(initialQuestions)
+    } else if (mode === "wrongOnly") {
+      const all = getAllAnswers()
+      const wrongIds = new Set(
+        Object.values(all)
+          .filter((rec) => rec.correct_label !== undefined && rec.selected_label !== rec.correct_label)
+          .map((rec) => rec.question_id),
+      )
+      next = sortBySequence(initialQuestions.filter((q) => wrongIds.has(q._id)))
+    } else {
+      next = sortBySequence(initialQuestions)
+    }
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- mode-dependent filter runs after hydration
+    setQuestions(next)
   }, [initialQuestions, mode])
 
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -45,7 +59,11 @@ export function PlayController({
 
   const current = questions[currentIndex]
   if (!current) {
-    return <p className="text-center mt-10">問題がありません</p>
+    return (
+      <p className="text-center mt-10 text-goukaku-ink/55 text-[13px]">
+        {mode === "wrongOnly" ? "間違えた問題はまだありません" : "問題がありません"}
+      </p>
+    )
   }
 
   const selected = selectedByQid[current._id]
@@ -53,7 +71,6 @@ export function PlayController({
 
   function handleSelect(label: ChoiceLabel) {
     if (revealed) return
-    if (!current) return
     setSelectedByQid((prev) => ({ ...prev, [current._id]: label }))
 
     const answeredAt = new Date().toISOString()
