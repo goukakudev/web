@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import "./globals.css"
+import { PendingFlusher } from "@/components/common/PendingFlusher"
 
 export const metadata: Metadata = {
   title: "goukaku.dev — IT 試験対策クイズ",
@@ -9,7 +10,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ja">
-      <body>{children}</body>
+      <body>
+        <PendingFlusher />
+        {children}
+      </body>
     </html>
   )
 }
