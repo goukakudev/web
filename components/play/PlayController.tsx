@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useEffect } from "react"
 import { ChoiceRow } from "./ChoiceRow"
 import { QuestionBody } from "./QuestionBody"
 import { PlayTopBar } from "./TopBar"
@@ -8,6 +8,19 @@ import type { Question, ChoiceLabel, ExamSummary } from "@/lib/types"
 import { setAnswer } from "@/lib/local-store"
 
 type Mode = "sequential" | "random"
+
+function sortBySequence(qs: Question[]): Question[] {
+  return [...qs].sort((a, b) => a.q_number - b.q_number)
+}
+
+function shuffle(qs: Question[]): Question[] {
+  const out = [...qs]
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[out[i], out[j]] = [out[j], out[i]]
+  }
+  return out
+}
 
 export function PlayController({
   questions: initialQuestions,
@@ -18,11 +31,13 @@ export function PlayController({
   exam: ExamSummary
   mode: Mode
 }) {
-  const questions = useMemo(() => {
-    if (mode === "random") {
-      return [...initialQuestions].sort(() => Math.random() - 0.5)
-    }
-    return [...initialQuestions].sort((a, b) => a.q_number - b.q_number)
+  // Initial render uses deterministic sort to avoid hydration mismatch.
+  // If mode === "random", the shuffle runs in an effect after mount.
+  const [questions, setQuestions] = useState<Question[]>(() => sortBySequence(initialQuestions))
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- shuffle must run after hydration to keep SSR deterministic
+    setQuestions(mode === "random" ? shuffle(initialQuestions) : sortBySequence(initialQuestions))
   }, [initialQuestions, mode])
 
   const [currentIndex, setCurrentIndex] = useState(0)

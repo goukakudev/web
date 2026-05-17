@@ -1,10 +1,8 @@
-import Link from "next/link"
-
 export function HeroQuestCard() {
   return (
-    <Link
-      href="/play/random?count=20"
-      className="block bg-goukaku-lime rounded-[28px] p-5 relative mb-6"
+    <div
+      aria-disabled="true"
+      className="block bg-goukaku-lime rounded-[28px] p-5 relative mb-6 opacity-70 cursor-not-allowed"
     >
       <div
         className="text-[22px] text-goukaku-ink"
@@ -18,10 +16,10 @@ export function HeroQuestCard() {
       <div className="h-[6px] bg-black/20 rounded-full my-3.5">
         <div className="h-full w-[38%] bg-goukaku-ink rounded-full" />
       </div>
-      <div className="inline-flex gap-2 items-center px-4 py-2.5 bg-goukaku-ink text-goukaku-lime rounded-full font-extrabold text-[14px]">
-        挑戦する →
+      <div className="inline-flex gap-2 items-center px-4 py-2.5 bg-goukaku-ink/60 text-goukaku-lime rounded-full font-extrabold text-[14px]">
+        Coming soon
       </div>
       <span className="absolute top-3.5 right-4 text-goukaku-pink-script text-[20px]">✦</span>
-    </Link>
+    </div>
   )
 }
