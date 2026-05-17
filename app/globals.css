@@ -1,26 +1,25 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-goukaku-lime: #d6f23f;
+  --color-goukaku-pink: #ff7ab8;
+  --color-goukaku-purple: #b89dff;
+  --color-goukaku-pink-script: #ff4db6;
+  --color-goukaku-accent-purple: #a854f7;
+  --color-goukaku-cool: #7dd3fc;
+  --color-goukaku-ink: #1a1a1f;
+  --color-goukaku-bg: #fafaf8;
+  --color-goukaku-warm: #f5f0e6;
+  --color-goukaku-surface: #ffffff;
+  --color-goukaku-divider: rgba(0, 0, 0, 0.08);
+
+  --font-script: "Snell Roundhand", "Brush Script MT", cursive;
+  --font-jp: -apple-system, BlinkMacSystemFont, "Hiragino Sans", system-ui, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+html, body {
+  background: var(--color-goukaku-bg);
+  color: var(--color-goukaku-ink);
+  font-family: var(--font-jp);
+  -webkit-font-smoothing: antialiased;
 }
