@@ -2,12 +2,18 @@
 @import "tailwindcss";
 
 @theme {
+  /* ブランドカラー (両モード共通) */
   --color-goukaku-lime: #d6f23f;
   --color-goukaku-pink: #ff7ab8;
   --color-goukaku-purple: #b89dff;
   --color-goukaku-pink-script: #ff4db6;
   --color-goukaku-accent-purple: #a854f7;
   --color-goukaku-cool: #7dd3fc;
+
+  /* 常に濃い色 (CTA pill / 暗色バナー用 — モード非依存) */
+  --color-goukaku-ink-fixed: #1a1a1f;
+
+  /* 中性色 — ライトデフォルト (data-theme="dark" で上書き) */
   --color-goukaku-ink: #1a1a1f;
   --color-goukaku-bg: #fafaf8;
   --color-goukaku-warm: #f5f0e6;
@@ -16,6 +22,14 @@
 
   --font-script: "Snell Roundhand", "Brush Script MT", cursive;
   --font-jp: -apple-system, BlinkMacSystemFont, "Hiragino Sans", system-ui, sans-serif;
+}
+
+[data-theme="dark"] {
+  --color-goukaku-ink: #f5f5ef;
+  --color-goukaku-bg: #111113;
+  --color-goukaku-warm: #2a2520;
+  --color-goukaku-surface: #1d1d20;
+  --color-goukaku-divider: rgba(255, 255, 255, 0.12);
 }
 
 html, body {

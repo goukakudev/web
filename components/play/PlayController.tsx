@@ -275,7 +275,7 @@ export function PlayController({
           onClick={next}
           className={
             isExamMode && currentIndex >= questions.length - 1
-              ? "flex-1 py-3 rounded-full font-extrabold text-[13px] bg-goukaku-ink text-goukaku-lime"
+              ? "flex-1 py-3 rounded-full font-extrabold text-[13px] bg-goukaku-ink-fixed text-goukaku-lime"
               : "flex-1 py-3 rounded-full font-extrabold text-[13px] bg-goukaku-surface border border-goukaku-divider"
           }
         >

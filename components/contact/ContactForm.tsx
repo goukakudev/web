@@ -60,7 +60,7 @@ export function ContactForm() {
       <button
         type="submit"
         disabled={status === "submitting" || message.trim().length === 0}
-        className="self-start px-5 py-2.5 rounded-full bg-goukaku-ink text-goukaku-lime font-extrabold text-[13px] disabled:opacity-40"
+        className="self-start px-5 py-2.5 rounded-full bg-goukaku-ink-fixed text-goukaku-lime font-extrabold text-[13px] disabled:opacity-40"
       >
         {status === "submitting" ? "送信中…" : "送信"}
       </button>

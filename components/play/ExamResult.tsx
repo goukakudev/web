@@ -31,7 +31,7 @@ export function ExamResult({
       <button
         type="button"
         onClick={onRetry}
-        className="mt-5 inline-flex items-center gap-2 px-5 py-2.5 bg-goukaku-ink text-goukaku-lime rounded-full font-extrabold text-[13px]"
+        className="mt-5 inline-flex items-center gap-2 px-5 py-2.5 bg-goukaku-ink-fixed text-goukaku-lime rounded-full font-extrabold text-[13px]"
       >
         もう一度
       </button>
