@@ -28,10 +28,32 @@ describe("ChoiceRow", () => {
     expect(screen.getByText("✓")).toBeInTheDocument()
   })
 
-  it("shows cross mark when isCorrect=false", () => {
+  it("shows cross mark on the user's wrong pick (isSelected=true, isCorrect=false)", () => {
     render(
       <ChoiceRow letter="ウ" text="15" isSelected={true} isCorrect={false} onClick={() => {}} />,
     )
     expect(screen.getByText("✕")).toBeInTheDocument()
+  })
+
+  it("does NOT show cross mark on other wrong choices (isSelected=false, isCorrect=false)", () => {
+    render(
+      <ChoiceRow letter="ウ" text="15" isSelected={false} isCorrect={false} onClick={() => {}} />,
+    )
+    expect(screen.queryByText("✕")).not.toBeInTheDocument()
+  })
+
+  it("shows check mark on the correct answer even when user picked something else", () => {
+    render(
+      <ChoiceRow letter="イ" text="13" isSelected={false} isCorrect={true} onClick={() => {}} />,
+    )
+    expect(screen.getByText("✓")).toBeInTheDocument()
+  })
+
+  it("user's wrong pick gets pink-script border accent", () => {
+    const { container } = render(
+      <ChoiceRow letter="ウ" text="15" isSelected={true} isCorrect={false} onClick={() => {}} />,
+    )
+    const btn = container.querySelector("button")
+    expect(btn?.className).toContain("border-goukaku-pink-script")
   })
 })

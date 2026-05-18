@@ -10,16 +10,27 @@ export interface ChoiceRowProps {
   onClick: () => void
 }
 
+function styleFor(
+  revealed: boolean,
+  isCorrect: boolean | undefined,
+  isSelected: boolean,
+): string {
+  if (!revealed) {
+    return isSelected
+      ? "bg-goukaku-ink/5 border-goukaku-ink"
+      : "bg-goukaku-surface border-goukaku-divider"
+  }
+  if (isCorrect) return "bg-goukaku-lime/25 border-goukaku-lime"
+  if (isSelected) return "bg-goukaku-pink/15 border-goukaku-pink-script border-2"
+  return "bg-goukaku-surface border-goukaku-divider opacity-55"
+}
+
 export function ChoiceRow({ letter, text, isSelected, isCorrect, onClick }: ChoiceRowProps) {
   const revealed = isCorrect !== undefined
 
-  const bg = revealed
-    ? isCorrect
-      ? "bg-goukaku-lime/25 border-goukaku-lime"
-      : "bg-goukaku-surface border-goukaku-ink/35"
-    : isSelected
-      ? "bg-goukaku-ink/5 border-goukaku-ink"
-      : "bg-goukaku-surface border-goukaku-divider"
+  const bg = styleFor(revealed, isCorrect, isSelected)
+  const showCheck = revealed && isCorrect === true
+  const showCross = revealed && isCorrect === false && isSelected
 
   return (
     <button
@@ -31,7 +42,11 @@ export function ChoiceRow({ letter, text, isSelected, isCorrect, onClick }: Choi
       <span
         className={[
           "w-[26px] text-center font-extrabold text-[14px]",
-          revealed && isCorrect ? "text-[#5D8C00]" : "text-goukaku-ink/45",
+          revealed && isCorrect
+            ? "text-[#5D8C00]"
+            : showCross
+              ? "text-goukaku-pink-script"
+              : "text-goukaku-ink/45",
         ].join(" ")}
       >
         {letter}
@@ -43,7 +58,7 @@ export function ChoiceRow({ letter, text, isSelected, isCorrect, onClick }: Choi
         data-testid="status-slot"
         className="w-[22px] h-[22px] flex items-center justify-center text-[16px]"
       >
-        {revealed ? (isCorrect ? "✓" : "✕") : ""}
+        {showCheck ? "✓" : showCross ? "✕" : ""}
       </span>
     </button>
   )
