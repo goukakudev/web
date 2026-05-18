@@ -1,9 +1,11 @@
 import type { Metadata } from "next"
+import { redirect } from "next/navigation"
 import { listExams, listQuestions } from "@/lib/api-client"
 import { MobileFrame } from "@/components/layout/MobileFrame"
 import { TagQuestionRow } from "@/components/tag/TagQuestionRow"
 import Link from "next/link"
 import type { Question, ExamSummary } from "@/lib/types"
+import { tagToSlug, slugToTag } from "@/lib/tag-url"
 
 interface PageProps {
   params: Promise<{ tag: string }>
@@ -11,10 +13,12 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { tag: tagParam } = await params
-  const tag = decodeURIComponent(tagParam)
-  const title = `#${tag} の過去問`
-  const description = `基本情報技術者試験の過去問のうち「${tag}」タグが付いた問題の一覧。解説付き。`
-  const canonical = `/tag/${encodeURIComponent(tag)}`
+  const tag = slugToTag(tagParam)
+  const slug = tagToSlug(tag)
+  const display = tag.replace(/^#/, "")
+  const title = `#${display} の過去問`
+  const description = `基本情報技術者試験の過去問のうち「${display}」タグが付いた問題の一覧。解説付き。`
+  const canonical = `/tag/${slug}`
   return {
     title,
     description,
@@ -26,7 +30,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function TagPage({ params }: PageProps) {
   const { tag: tagParam } = await params
-  const tag = decodeURIComponent(tagParam)
+
+  // Legacy URLs (/tag/%23X) → redirect to clean form (/tag/X)
+  if (decodeURIComponent(tagParam).startsWith("#")) {
+    redirect(`/tag/${tagToSlug(slugToTag(tagParam))}`)
+  }
+
+  const tag = slugToTag(tagParam)
+  const display = tag.replace(/^#/, "")
 
   const exams = await listExams()
   const examsById = new Map<string, ExamSummary>(exams.map((e) => [e.exam_id, e]))
@@ -52,7 +63,7 @@ export default async function TagPage({ params }: PageProps) {
       <Link href="/" className="inline-block text-[14px] mb-4">← ホーム</Link>
       <div className="flex items-center gap-2 mb-3">
         <span className="inline-flex items-center bg-goukaku-cool/35 text-[#1a8acb] text-[13px] font-extrabold px-2.5 py-1.5 rounded-xl">
-          #{tag}
+          #{display}
         </span>
         <span className="text-[12px] font-extrabold text-goukaku-ink/55">
           {collected.length} 問

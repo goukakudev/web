@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { listExams, listQuestions } from "@/lib/api-client";
+import { tagToSlug } from "@/lib/tag-url";
 
 const BASE = "https://goukaku.dev";
 
@@ -46,7 +47,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   for (const tag of [...tagSet].sort()) {
     out.push({
-      url: `${BASE}/tag/${encodeURIComponent(tag)}`,
+      url: `${BASE}/tag/${tagToSlug(tag)}`,
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.5,
