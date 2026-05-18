@@ -38,6 +38,41 @@ describe("listExams", () => {
     globalThis.fetch = vi.fn(async () => new Response("nope", { status: 500 })) as typeof fetch
     await expect(listExams()).rejects.toThrow(/500/)
   })
+
+  it("sorts exams by year desc, autumn before spring within same year", async () => {
+    const ids = [
+      "fe-2013h25h-a",
+      "fe-2025r07-a",
+      "fe-2019h31h-a",
+      "fe-2019r01a-a",
+      "fe-2018h30a-a",
+      "fe-2024r06-a",
+      "fe-2014h26h-a",
+      "fe-2014h26a-a",
+    ]
+    globalThis.fetch = vi.fn(async () =>
+      new Response(
+        JSON.stringify({
+          exams: ids.map((id) => ({
+            exam_id: id, exam: "fe", year: id.slice(3, 7), section: "a", title: id, question_count: 80,
+          })),
+        }),
+        { status: 200, headers: { "content-type": "application/json" } },
+      ),
+    ) as typeof fetch
+
+    const exams = await listExams()
+    expect(exams.map((e) => e.exam_id)).toEqual([
+      "fe-2025r07-a",
+      "fe-2024r06-a",
+      "fe-2019r01a-a",
+      "fe-2019h31h-a",
+      "fe-2018h30a-a",
+      "fe-2014h26a-a",
+      "fe-2014h26h-a",
+      "fe-2013h25h-a",
+    ])
+  })
 })
 
 describe("listQuestions", () => {
