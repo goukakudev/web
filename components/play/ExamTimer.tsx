@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-const DURATION = 150 * 60;
+const DURATION = 90 * 60;
 
 function format(s: number): string {
   const h = Math.floor(s / 3600);

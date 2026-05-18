@@ -15,7 +15,7 @@ export function MockTestBanner({ exam }: { exam?: ExamSummary }) {
         Mock test
       </div>
       <div className="mt-1 text-[16px] font-extrabold text-white">本番形式の模試</div>
-      <div className="mt-1 text-[11px] text-white/60">150 分 · 採点あり</div>
+      <div className="mt-1 text-[11px] text-white/60">90 分 · 採点あり</div>
       <span className="absolute top-5 right-5 inline-flex items-center gap-1.5 bg-goukaku-lime text-goukaku-ink px-3.5 py-2 rounded-full font-extrabold text-[13px]">
         挑戦 →
       </span>

@@ -65,7 +65,7 @@ export default async function AboutPage() {
             <strong>ランダムに解く</strong>: 1 回毎に出題順がシャッフル。本番直前の総ざらいに。
           </li>
           <li>
-            <strong>模試 (150 分)</strong>: 本試験と同じ制限時間で、最後に正答率と所要時間がレポートされます。
+            <strong>模試 (90 分)</strong>: 本試験と同じ制限時間で、最後に正答率と所要時間がレポートされます。
           </li>
         </ul>
       </Section>

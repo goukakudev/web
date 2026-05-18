@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const examLabel = exam.title ?? `${exam.year} ${exam.section}`
   const title = `${examLabel} ${exam.exam} 過去問 ${exam.question_count} 問`
-  const description = `基本情報技術者試験 ${examLabel} 午前の過去問 ${exam.question_count} 問。順番・ランダム・模試 (150 分) の 3 モードで解け、全問に解説と選択肢ごとの正誤解説が付きます。`
+  const description = `基本情報技術者試験 ${examLabel} 午前の過去問 ${exam.question_count} 問。順番・ランダム・模試 (90 分) の 3 モードで解け、全問に解説と選択肢ごとの正誤解説が付きます。`
   const canonical = `/exam/${exam.exam_id}`
 
   return {
@@ -82,7 +82,7 @@ export default async function ExamDetailPage({ params }: PageProps) {
       <div className="flex flex-col gap-3">
         <ModeButton href={`${base}/q/1`} icon="📋" label="順番に解く" subtitle={`${exam.question_count} 問`} />
         <ModeButton href={`${base}?mode=random`} icon="🔀" label="ランダムに解く" />
-        <ModeButton href={`${base}?mode=exam`} icon="⏱" label="模試 (150 分)" emphasized />
+        <ModeButton href={`${base}?mode=exam`} icon="⏱" label="模試 (90 分)" emphasized />
       </div>
     </MobileFrame>
   )
