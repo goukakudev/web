@@ -273,7 +273,11 @@ export function PlayController({
         <button
           type="button"
           onClick={next}
-          className="flex-1 py-3 rounded-full font-extrabold text-[13px] bg-goukaku-ink text-goukaku-lime"
+          className={
+            isExamMode && currentIndex >= questions.length - 1
+              ? "flex-1 py-3 rounded-full font-extrabold text-[13px] bg-goukaku-ink text-goukaku-lime"
+              : "flex-1 py-3 rounded-full font-extrabold text-[13px] bg-goukaku-surface border border-goukaku-divider"
+          }
         >
           {isExamMode && currentIndex >= questions.length - 1
             ? "採点する"
