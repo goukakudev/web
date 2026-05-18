@@ -28,7 +28,7 @@ export default async function ExamDetailPage({ params }: PageProps) {
       </div>
       <h1 className="text-[20px] font-extrabold mb-6">{exam.title ?? exam.exam_id}</h1>
       <div className="flex flex-col gap-3">
-        <ModeButton href={`${base}?mode=sequential`} icon="📋" label="順番に解く" subtitle={`${exam.question_count} 問`} />
+        <ModeButton href={`${base}/q/1`} icon="📋" label="順番に解く" subtitle={`${exam.question_count} 問`} />
         <ModeButton href={`${base}?mode=random`} icon="🔀" label="ランダムに解く" />
         <ModeButton href={`${base}?mode=exam`} icon="⏱" label="模試 (150 分)" emphasized />
       </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { ChoiceRow } from "./ChoiceRow";
 import { QuestionBody } from "./QuestionBody";
 import { PlayTopBar } from "./TopBar";
@@ -31,11 +32,14 @@ export function PlayController({
   questions: initialQuestions,
   exam,
   mode,
+  initialQNumber,
 }: {
   questions: Question[];
   exam: ExamSummary;
   mode: Mode;
+  initialQNumber?: number;
 }) {
+  const router = useRouter();
   const [questions, setQuestions] = useState<Question[]>(() =>
     sortBySequence(initialQuestions),
   );
@@ -63,7 +67,12 @@ export function PlayController({
     setQuestions(next);
   }, [initialQuestions, mode]);
 
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(() => {
+    if (initialQNumber === undefined) return 0;
+    const sorted = sortBySequence(initialQuestions);
+    const idx = sorted.findIndex((q) => q.q_number === initialQNumber);
+    return idx >= 0 ? idx : 0;
+  });
   const [selectedByQid, setSelectedByQid] = useState<
     Record<string, ChoiceLabel>
   >({});
@@ -191,15 +200,28 @@ export function PlayController({
     }
   }
 
+  function syncUrl(newIndex: number): void {
+    if (mode !== "sequential") return;
+    const q = questions[newIndex];
+    if (!q) return;
+    router.replace(`/play/${exam.exam_id}/q/${q.q_number}`, { scroll: false });
+  }
+
   function next() {
     if (currentIndex < questions.length - 1) {
-      setCurrentIndex(currentIndex + 1);
+      const newIndex = currentIndex + 1;
+      setCurrentIndex(newIndex);
+      syncUrl(newIndex);
     } else if (isExamMode) {
       finishExam();
     }
   }
   function prev() {
-    if (currentIndex > 0) setCurrentIndex(currentIndex - 1);
+    if (currentIndex > 0) {
+      const newIndex = currentIndex - 1;
+      setCurrentIndex(newIndex);
+      syncUrl(newIndex);
+    }
   }
 
   return (

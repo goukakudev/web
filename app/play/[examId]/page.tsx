@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import { listExams, listQuestions } from "@/lib/api-client"
 import { MobileFrame } from "@/components/layout/MobileFrame"
 import { PlayController } from "@/components/play/PlayController"
@@ -16,12 +16,18 @@ export default async function PlayPage({ params, searchParams }: PageProps) {
   const exam = exams.find((e) => e.exam_id === examId)
   if (!exam) notFound()
 
+  // sequential (and bare /play/[examId]) → canonical per-question URL
+  if (mode === undefined || mode === "sequential") {
+    const questions = await listQuestions(examId)
+    const first = [...questions].sort((a, b) => a.q_number - b.q_number)[0]
+    if (first) redirect(`/play/${examId}/q/${first.q_number}`)
+  }
+
   const questions = await listQuestions(examId)
-  const playMode: "sequential" | "random" | "wrongOnly" | "exam" =
+  const playMode: "random" | "wrongOnly" | "exam" =
     mode === "random" ? "random" :
     mode === "wrongOnly" ? "wrongOnly" :
-    mode === "exam" ? "exam" :
-    "sequential"
+    "exam"
 
   return (
     <MobileFrame>
