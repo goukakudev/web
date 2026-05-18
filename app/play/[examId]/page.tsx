@@ -1,7 +1,12 @@
+import type { Metadata } from "next"
 import { notFound, redirect } from "next/navigation"
 import { listExams, listQuestions } from "@/lib/api-client"
 import { MobileFrame } from "@/components/layout/MobileFrame"
 import { PlayController } from "@/components/play/PlayController"
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: true },
+}
 
 interface PageProps {
   params: Promise<{ examId: string }>

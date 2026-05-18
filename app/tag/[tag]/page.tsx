@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { listExams, listQuestions } from "@/lib/api-client"
 import { MobileFrame } from "@/components/layout/MobileFrame"
 import { TagQuestionRow } from "@/components/tag/TagQuestionRow"
@@ -6,6 +7,21 @@ import type { Question, ExamSummary } from "@/lib/types"
 
 interface PageProps {
   params: Promise<{ tag: string }>
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { tag: tagParam } = await params
+  const tag = decodeURIComponent(tagParam)
+  const title = `#${tag} の過去問`
+  const description = `基本情報技術者試験の過去問のうち「${tag}」タグが付いた問題の一覧。解説付き。`
+  const canonical = `/tag/${encodeURIComponent(tag)}`
+  return {
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: { type: "website", title, description, url: canonical },
+    twitter: { card: "summary", title, description },
+  }
 }
 
 export default async function TagPage({ params }: PageProps) {

@@ -2,15 +2,72 @@ import type { Metadata } from "next"
 import "./globals.css"
 import { PendingFlusher } from "@/components/common/PendingFlusher"
 
+const SITE_NAME = "goukaku.dev"
+const SITE_URL = "https://goukaku.dev"
+const DEFAULT_TITLE = "goukaku.dev — 基本情報技術者試験 過去問 + 解説"
+const DEFAULT_DESCRIPTION =
+  "基本情報技術者試験の過去問を無料で。13 年分・各 80 問前後を、順番に / ランダムに / 模試形式で解けます。全問解説・選択肢ごとの解説付き。"
+
 export const metadata: Metadata = {
-  title: "goukaku.dev — IT 試験対策クイズ",
-  description: "基本情報技術者試験の過去問・解説を無料で学べる Web 学習サイト",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: DEFAULT_TITLE,
+    template: "%s | goukaku.dev",
+  },
+  description: DEFAULT_DESCRIPTION,
+  applicationName: SITE_NAME,
+  authors: [{ name: SITE_NAME }],
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+    url: SITE_URL,
+    locale: "ja_JP",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+}
+
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: SITE_NAME,
+  alternateName: "ゴウカクドットデブ",
+  url: SITE_URL,
+  inLanguage: "ja",
+  description: DEFAULT_DESCRIPTION,
+}
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: SITE_NAME,
+  url: SITE_URL,
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ja">
       <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
         <PendingFlusher />
         {children}
       </body>

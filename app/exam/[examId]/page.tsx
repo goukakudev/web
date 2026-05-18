@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { listExams } from "@/lib/api-client"
 import { MobileFrame } from "@/components/layout/MobileFrame"
@@ -13,6 +14,35 @@ interface PageProps {
   params: Promise<{ examId: string }>
 }
 
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { examId } = await params
+  const exams = await listExams()
+  const exam = exams.find((e) => e.exam_id === examId)
+  if (!exam) return {}
+
+  const examLabel = exam.title ?? `${exam.year} ${exam.section}`
+  const title = `${examLabel} ${exam.exam} 過去問 ${exam.question_count} 問`
+  const description = `基本情報技術者試験 ${examLabel} 午前の過去問 ${exam.question_count} 問。順番・ランダム・模試 (150 分) の 3 モードで解け、全問に解説と選択肢ごとの正誤解説が付きます。`
+  const canonical = `/exam/${exam.exam_id}`
+
+  return {
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      type: "website",
+      title,
+      description,
+      url: canonical,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+  }
+}
+
 export default async function ExamDetailPage({ params }: PageProps) {
   const { examId } = await params
   const exams = await listExams()
@@ -20,8 +50,30 @@ export default async function ExamDetailPage({ params }: PageProps) {
   if (!exam) notFound()
 
   const base = `/play/${exam.exam_id}`
+  const examLabel = exam.title ?? `${exam.year} ${exam.section}`
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "LearningResource",
+    name: `${examLabel} ${exam.exam} 過去問`,
+    description: `基本情報技術者試験 ${examLabel} 午前の過去問 ${exam.question_count} 問・解説付き`,
+    inLanguage: "ja",
+    educationalLevel: "professional",
+    learningResourceType: "Quiz",
+    url: `https://goukaku.dev/exam/${exam.exam_id}`,
+    numberOfItems: exam.question_count,
+    about: {
+      "@type": "Thing",
+      name: "基本情報技術者試験",
+    },
+  }
+
   return (
     <MobileFrame>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Link href="/" className="inline-block text-[14px] mb-4">← ホーム</Link>
       <div className="text-[10px] tracking-[1.2px] font-bold text-goukaku-ink/50 uppercase">
         {exam.exam_id}
