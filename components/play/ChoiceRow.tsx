@@ -1,5 +1,7 @@
 "use client"
 
+import { MathText } from "./MathText"
+
 export interface ChoiceRowProps {
   letter: string
   text: string
@@ -34,7 +36,9 @@ export function ChoiceRow({ letter, text, isSelected, isCorrect, onClick }: Choi
       >
         {letter}
       </span>
-      <span className="flex-1 text-[13px] font-semibold leading-relaxed">{text}</span>
+      <span className="flex-1 text-[13px] font-semibold leading-relaxed">
+        <MathText text={text} mathSize="sm" />
+      </span>
       <span
         data-testid="status-slot"
         className="w-[22px] h-[22px] flex items-center justify-center text-[16px]"
