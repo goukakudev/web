@@ -1,27 +1,30 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { ChoiceRow } from "./ChoiceRow"
-import { QuestionBody } from "./QuestionBody"
-import { PlayTopBar } from "./TopBar"
-import { ExplanationCard } from "./ExplanationCard"
-import type { Question, ChoiceLabel, ExamSummary } from "@/lib/types"
-import { setAnswer, getDeviceId, getAllAnswers } from "@/lib/local-store"
-import { recordAnswer } from "@/lib/client-api"
+import { useState, useEffect, useMemo } from "react";
+import { ChoiceRow } from "./ChoiceRow";
+import { QuestionBody } from "./QuestionBody";
+import { PlayTopBar } from "./TopBar";
+import { ExplanationCard } from "./ExplanationCard";
+import { ExamTimer } from "./ExamTimer";
+import { ExamResult } from "./ExamResult";
+import type { Question, ChoiceLabel, ExamSummary } from "@/lib/types";
+import { setAnswer, getDeviceId, getAllAnswers } from "@/lib/local-store";
+import { addExamSession } from "@/lib/exam-session";
+import { recordAnswer } from "@/lib/client-api";
 
-type Mode = "sequential" | "random" | "wrongOnly" | "exam"
+type Mode = "sequential" | "random" | "wrongOnly" | "exam";
 
 function sortBySequence(qs: Question[]): Question[] {
-  return [...qs].sort((a, b) => a.q_number - b.q_number)
+  return [...qs].sort((a, b) => a.q_number - b.q_number);
 }
 
 function shuffle(qs: Question[]): Question[] {
-  const out = [...qs]
+  const out = [...qs];
   for (let i = out.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[out[i], out[j]] = [out[j], out[i]]
+    const j = Math.floor(Math.random() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
   }
-  return out
+  return out;
 }
 
 export function PlayController({
@@ -29,58 +32,135 @@ export function PlayController({
   exam,
   mode,
 }: {
-  questions: Question[]
-  exam: ExamSummary
-  mode: Mode
+  questions: Question[];
+  exam: ExamSummary;
+  mode: Mode;
 }) {
-  const [questions, setQuestions] = useState<Question[]>(() => sortBySequence(initialQuestions))
+  const [questions, setQuestions] = useState<Question[]>(() =>
+    sortBySequence(initialQuestions),
+  );
 
   useEffect(() => {
-    let next: Question[]
+    let next: Question[];
     if (mode === "random") {
-      next = shuffle(initialQuestions)
+      next = shuffle(initialQuestions);
     } else if (mode === "wrongOnly") {
-      const all = getAllAnswers()
+      const all = getAllAnswers();
       const wrongIds = new Set(
         Object.values(all)
-          .filter((rec) => rec.correct_label !== undefined && rec.selected_label !== rec.correct_label)
+          .filter(
+            (rec) =>
+              rec.correct_label !== undefined &&
+              rec.selected_label !== rec.correct_label,
+          )
           .map((rec) => rec.question_id),
-      )
-      next = sortBySequence(initialQuestions.filter((q) => wrongIds.has(q._id)))
+      );
+      next = sortBySequence(initialQuestions.filter((q) => wrongIds.has(q._id)));
     } else {
-      next = sortBySequence(initialQuestions)
+      next = sortBySequence(initialQuestions);
     }
     // eslint-disable-next-line react-hooks/set-state-in-effect -- mode-dependent filter runs after hydration
-    setQuestions(next)
-  }, [initialQuestions, mode])
+    setQuestions(next);
+  }, [initialQuestions, mode]);
 
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [selectedByQid, setSelectedByQid] = useState<Record<string, ChoiceLabel>>({})
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [selectedByQid, setSelectedByQid] = useState<
+    Record<string, ChoiceLabel>
+  >({});
+  const [examStartedAt, setExamStartedAt] = useState<number | null>(null);
+  const [examFinished, setExamFinished] = useState(false);
 
-  const current = questions[currentIndex]
-  if (!current) {
-    return (
-      <p className="text-center mt-10 text-goukaku-ink/55 text-[13px]">
-        {mode === "wrongOnly" ? "間違えた問題はまだありません" : "問題がありません"}
-      </p>
-    )
+  useEffect(() => {
+    if (mode === "exam" && examStartedAt === null) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- start exam timer after hydration
+      setExamStartedAt(Date.now());
+    }
+  }, [mode, examStartedAt]);
+
+  const isExamMode = mode === "exam";
+  const current = questions[currentIndex];
+
+  const examCorrect = useMemo(() => {
+    if (!isExamMode) return 0;
+    let n = 0;
+    for (const q of questions) {
+      const sel = selectedByQid[q._id];
+      if (sel !== undefined && q.correct_label === sel) n++;
+    }
+    return n;
+  }, [isExamMode, questions, selectedByQid]);
+
+  const examAnswered = useMemo(() => {
+    if (!isExamMode) return 0;
+    return questions.filter((q) => selectedByQid[q._id] !== undefined).length;
+  }, [isExamMode, questions, selectedByQid]);
+
+  function finishExam(): void {
+    if (!isExamMode || examStartedAt === null) return;
+    const elapsed = Math.floor((Date.now() - examStartedAt) / 1000);
+    addExamSession({
+      id: crypto.randomUUID(),
+      exam_id: exam.exam_id,
+      finished_at: new Date().toISOString(),
+      elapsed_seconds: elapsed,
+      correct: examCorrect,
+      answered: examAnswered,
+    });
+    setExamFinished(true);
   }
 
-  const selected = selectedByQid[current._id]
-  const revealed = selected !== undefined
+  if (!current && !examFinished) {
+    return (
+      <p className="text-center mt-10 text-goukaku-ink/55 text-[13px]">
+        {mode === "wrongOnly"
+          ? "間違えた問題はまだありません"
+          : "問題がありません"}
+      </p>
+    );
+  }
+
+  if (isExamMode && examFinished && examStartedAt !== null) {
+    const elapsed = Math.floor((Date.now() - examStartedAt) / 1000);
+    return (
+      <>
+        <PlayTopBar
+          examTitle={exam.title ?? exam.exam_id}
+          qNumber={0}
+          currentIndex={0}
+          total={questions.length}
+        />
+        <ExamResult
+          correct={examCorrect}
+          total={questions.length}
+          elapsedSeconds={elapsed}
+          onRetry={() => {
+            setSelectedByQid({});
+            setCurrentIndex(0);
+            setExamFinished(false);
+            setExamStartedAt(Date.now());
+          }}
+        />
+      </>
+    );
+  }
+
+  if (!current) return null;
+
+  const selected = selectedByQid[current._id];
+  const revealed = selected !== undefined && !isExamMode;
 
   function handleSelect(label: ChoiceLabel) {
-    if (revealed) return
-    setSelectedByQid((prev) => ({ ...prev, [current._id]: label }))
+    if (selected !== undefined && !isExamMode) return;
+    setSelectedByQid((prev) => ({ ...prev, [current._id]: label }));
 
-    const answeredAt = new Date().toISOString()
+    const answeredAt = new Date().toISOString();
     setAnswer({
       question_id: current._id,
       exam_id: current.exam_id,
       selected_label: label,
       correct_label: current.correct_label,
       answered_at: answeredAt,
-    })
+    });
 
     void recordAnswer({
       device_id: getDeviceId(),
@@ -91,14 +171,26 @@ export function PlayController({
       is_correct: current.correct_label === label,
       skipped: false,
       client_ts: answeredAt,
-    })
+    });
+
+    if (isExamMode && currentIndex < questions.length - 1) {
+      setTimeout(
+        () =>
+          setCurrentIndex((i) => Math.min(i + 1, questions.length - 1)),
+        200,
+      );
+    }
   }
 
   function next() {
-    if (currentIndex < questions.length - 1) setCurrentIndex(currentIndex + 1)
+    if (currentIndex < questions.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    } else if (isExamMode) {
+      finishExam();
+    }
   }
   function prev() {
-    if (currentIndex > 0) setCurrentIndex(currentIndex - 1)
+    if (currentIndex > 0) setCurrentIndex(currentIndex - 1);
   }
 
   return (
@@ -109,11 +201,17 @@ export function PlayController({
         currentIndex={currentIndex}
         total={questions.length}
       />
+      {isExamMode && examStartedAt !== null && (
+        <div className="flex items-center justify-end mb-3">
+          <ExamTimer startedAt={examStartedAt} onTimeout={finishExam} />
+        </div>
+      )}
       <QuestionBody body={current.body} />
       {current.choices.map((c) => {
-        const isSelected = selected === c.label
-        const isCorrect =
-          revealed ? c.label === current.correct_label : undefined
+        const isSelected = selected === c.label;
+        const isCorrect = revealed
+          ? c.label === current.correct_label
+          : undefined;
         return (
           <ChoiceRow
             key={c.label}
@@ -123,7 +221,7 @@ export function PlayController({
             isCorrect={isCorrect}
             onClick={() => handleSelect(c.label)}
           />
-        )
+        );
       })}
       {revealed && current.explanation && (
         <ExplanationCard
@@ -144,12 +242,13 @@ export function PlayController({
         <button
           type="button"
           onClick={next}
-          disabled={currentIndex >= questions.length - 1}
-          className="flex-1 py-3 rounded-full font-extrabold text-[13px] bg-goukaku-ink text-goukaku-lime disabled:opacity-40"
+          className="flex-1 py-3 rounded-full font-extrabold text-[13px] bg-goukaku-ink text-goukaku-lime"
         >
-          次へ →
+          {isExamMode && currentIndex >= questions.length - 1
+            ? "採点する"
+            : "次へ →"}
         </button>
       </div>
     </>
-  )
+  );
 }
