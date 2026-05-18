@@ -69,6 +69,7 @@ export function PlayController({
   >({});
   const [examStartedAt, setExamStartedAt] = useState<number | null>(null);
   const [examFinished, setExamFinished] = useState(false);
+  const [examFinishedAt, setExamFinishedAt] = useState<number | null>(null);
 
   useEffect(() => {
     if (mode === "exam" && examStartedAt === null) {
@@ -97,15 +98,17 @@ export function PlayController({
 
   function finishExam(): void {
     if (!isExamMode || examStartedAt === null) return;
-    const elapsed = Math.floor((Date.now() - examStartedAt) / 1000);
+    const finishedAt = Date.now();
+    const elapsed = Math.floor((finishedAt - examStartedAt) / 1000);
     addExamSession({
       id: crypto.randomUUID(),
       exam_id: exam.exam_id,
-      finished_at: new Date().toISOString(),
+      finished_at: new Date(finishedAt).toISOString(),
       elapsed_seconds: elapsed,
       correct: examCorrect,
       answered: examAnswered,
     });
+    setExamFinishedAt(finishedAt);
     setExamFinished(true);
   }
 
@@ -119,8 +122,13 @@ export function PlayController({
     );
   }
 
-  if (isExamMode && examFinished && examStartedAt !== null) {
-    const elapsed = Math.floor((Date.now() - examStartedAt) / 1000);
+  if (
+    isExamMode &&
+    examFinished &&
+    examStartedAt !== null &&
+    examFinishedAt !== null
+  ) {
+    const elapsed = Math.floor((examFinishedAt - examStartedAt) / 1000);
     return (
       <>
         <PlayTopBar
@@ -137,6 +145,7 @@ export function PlayController({
             setSelectedByQid({});
             setCurrentIndex(0);
             setExamFinished(false);
+            setExamFinishedAt(null);
             setExamStartedAt(Date.now());
           }}
         />
@@ -206,7 +215,7 @@ export function PlayController({
           <ExamTimer startedAt={examStartedAt} onTimeout={finishExam} />
         </div>
       )}
-      <QuestionBody body={current.body} />
+      <QuestionBody body={current.body} figures={current.figures} />
       {current.choices.map((c) => {
         const isSelected = selected === c.label;
         const isCorrect = revealed

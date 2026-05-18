@@ -14,6 +14,7 @@ export default function DiagnosisPage() {
   const [answers, setAnswers] = useState<Record<string, AnswerRecord>>({});
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- localStorage hydration runs after first paint
     setAnswers(getAllAnswers());
     fetch("/api/exams")
       .then((res) =>
