@@ -16,7 +16,7 @@ export function TagQuestionRow({
   const examLabel = exam?.title ?? question.exam_id
   return (
     <Link
-      href={`/exam/${question.exam_id}/q/${question.q_number}`}
+      href={`/play/${question.exam_id}/q/${question.q_number}`}
       className="block bg-goukaku-surface rounded-2xl p-3.5 border border-goukaku-divider"
     >
       <div className="flex items-center gap-2">
