@@ -5,6 +5,7 @@ import { HeroQuestCard } from "@/components/home/HeroQuestCard"
 import { StatCard } from "@/components/home/StatCard"
 import { SubjectTile } from "@/components/home/SubjectTile"
 import { PopularTags } from "@/components/home/PopularTags"
+import { ContinueSection } from "@/components/home/ContinueSection"
 import { MockTestBanner } from "@/components/home/MockTestBanner"
 import { SiteIntro } from "@/components/home/SiteIntro"
 
@@ -17,6 +18,7 @@ export default async function HomePage() {
     <MobileFrame>
       <TopBar />
       <HeroQuestCard />
+      <ContinueSection exams={exams} />
       <div className="grid grid-cols-2 gap-3 mb-7">
         <StatCard label="答えた" value={0} unit="問" icon="🔥" />
         <StatCard label="正答率" value={0} unit="%" icon="🎯" />
