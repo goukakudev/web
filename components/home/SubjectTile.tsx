@@ -1,5 +1,6 @@
 import Link from "next/link"
 import type { ExamSummary } from "@/lib/types"
+import { TileProgress } from "./TileProgress"
 
 const TILE_COLORS = [
   "bg-goukaku-lime",
@@ -33,7 +34,11 @@ export function SubjectTile({ exam, index }: { exam: ExamSummary; index: number 
       <div className="mt-1 text-[11px] tracking-[1.2px] font-bold text-goukaku-ink/45 uppercase">
         {exam.year || exam.exam_id}
       </div>
-      <div className="mt-2 text-[11px] text-goukaku-ink/60">{exam.question_count} 問</div>
+      <TileProgress
+        examId={exam.exam_id}
+        total={exam.question_count}
+        colorClass={color}
+      />
     </Link>
   )
 }

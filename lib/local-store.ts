@@ -63,3 +63,23 @@ export function resetExamProgress(examId: string): void {
   }
   writeMap(map)
 }
+
+export interface ExamStats {
+  answered: number
+  correct: number
+  total: number
+}
+
+export function getExamStats(examId: string, total: number): ExamStats {
+  const map = readMap()
+  let answered = 0
+  let correct = 0
+  for (const rec of Object.values(map)) {
+    if (rec.exam_id !== examId) continue
+    answered += 1
+    if (rec.correct_label && rec.correct_label === rec.selected_label) {
+      correct += 1
+    }
+  }
+  return { answered, correct, total }
+}
