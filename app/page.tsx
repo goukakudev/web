@@ -1,14 +1,18 @@
-import { listExams } from "@/lib/api-client"
+import { listExams, listPopularTags } from "@/lib/api-client"
 import { MobileFrame } from "@/components/layout/MobileFrame"
 import { TopBar } from "@/components/home/TopBar"
 import { HeroQuestCard } from "@/components/home/HeroQuestCard"
 import { StatCard } from "@/components/home/StatCard"
 import { SubjectTile } from "@/components/home/SubjectTile"
+import { PopularTags } from "@/components/home/PopularTags"
 import { MockTestBanner } from "@/components/home/MockTestBanner"
 import { SiteIntro } from "@/components/home/SiteIntro"
 
 export default async function HomePage() {
-  const exams = await listExams()
+  const [exams, popularTags] = await Promise.all([
+    listExams(),
+    listPopularTags(20),
+  ])
   return (
     <MobileFrame>
       <TopBar />
@@ -29,6 +33,7 @@ export default async function HomePage() {
           <SubjectTile key={exam.exam_id} exam={exam} index={i} />
         ))}
       </div>
+      <PopularTags tags={popularTags} />
       <MockTestBanner exam={exams[0]} />
       <SiteIntro />
     </MobileFrame>

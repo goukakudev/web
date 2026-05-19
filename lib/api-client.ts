@@ -1,4 +1,11 @@
-import type { ExamSummary, Question, ExamListResponse, QuestionListResponse } from "./types"
+import type {
+  ExamSummary,
+  Question,
+  ExamListResponse,
+  QuestionListResponse,
+  PopularTag,
+  PopularTagListResponse,
+} from "./types"
 
 const EXAMS_REVALIDATE = 60 * 60 // 1h
 const QUESTIONS_REVALIDATE = 60 * 60 * 24 // 24h
@@ -37,4 +44,12 @@ export async function listQuestions(examId: string): Promise<Question[]> {
     QUESTIONS_REVALIDATE,
   )
   return data.questions
+}
+
+export async function listPopularTags(limit = 20): Promise<PopularTag[]> {
+  const data = await get<PopularTagListResponse>(
+    `/v1/tags/popular?limit=${limit}`,
+    EXAMS_REVALIDATE,
+  )
+  return data.tags
 }

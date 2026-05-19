@@ -57,3 +57,12 @@ export interface QuestionListResponse {
   count: number
   questions: Question[]
 }
+
+export interface PopularTag {
+  tag: string
+  count: number
+}
+
+export interface PopularTagListResponse {
+  tags: PopularTag[]
+}
