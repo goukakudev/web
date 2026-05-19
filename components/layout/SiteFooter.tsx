@@ -7,13 +7,17 @@ export function SiteFooter() {
       <div className="flex justify-center mb-4">
         <ThemeToggle />
       </div>
-      <nav className="flex justify-center gap-3 mb-2">
+      <nav className="flex flex-wrap justify-center gap-x-3 gap-y-1 mb-2">
         <Link href="/about" className="underline">
           About
         </Link>
         <span>·</span>
         <Link href="/privacy" className="underline">
           プライバシーポリシー
+        </Link>
+        <span>·</span>
+        <Link href="/support" className="underline">
+          サポート
         </Link>
         <span>·</span>
         <Link href="/contact" className="underline">
