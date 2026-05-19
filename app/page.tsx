@@ -6,6 +6,7 @@ import { StatCard } from "@/components/home/StatCard"
 import { SubjectTile } from "@/components/home/SubjectTile"
 import { PopularTags } from "@/components/home/PopularTags"
 import { ContinueSection } from "@/components/home/ContinueSection"
+import { NewExamsSection } from "@/components/home/NewExamsSection"
 import { MockTestBanner } from "@/components/home/MockTestBanner"
 import { SiteIntro } from "@/components/home/SiteIntro"
 
@@ -23,8 +24,9 @@ export default async function HomePage() {
         <StatCard label="答えた" value={0} unit="問" icon="🔥" />
         <StatCard label="正答率" value={0} unit="%" icon="🎯" />
       </div>
+      <NewExamsSection exams={exams} />
       <div
-        className="text-[22px] text-goukaku-pink-script"
+        className="mt-7 text-[22px] text-goukaku-pink-script"
         style={{ fontFamily: "var(--font-script)" }}
       >
         Subjects
