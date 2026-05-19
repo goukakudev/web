@@ -3,18 +3,8 @@
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import type { ExamSummary } from "@/lib/types"
+import { shortTitle } from "@/lib/exam-utils"
 import { loadExamSessions, type ExamSession } from "@/lib/exam-session"
-
-function shortTitle(exam: ExamSummary): string {
-  if (!exam.title) return exam.exam_id
-  let s = exam.title
-  const prefix = "基本情報技術者試験 "
-  if (s.startsWith(prefix)) s = s.slice(prefix.length)
-  for (const suffix of [" 公開問題", " サンプル問題"]) {
-    if (s.endsWith(suffix)) s = s.slice(0, -suffix.length)
-  }
-  return s
-}
 
 function relativeTime(iso: string): string {
   const then = new Date(iso).getTime()

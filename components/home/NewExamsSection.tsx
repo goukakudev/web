@@ -1,22 +1,12 @@
 import Link from "next/link"
 import type { ExamSummary } from "@/lib/types"
+import { shortTitle } from "@/lib/exam-utils"
 
 const NEW_EXAM_IDS = new Set([
   "fe-2020r02t-a",
   "fe-2021r03t-a",
   "fe-2022r04t-a",
 ])
-
-function shortTitle(exam: ExamSummary): string {
-  if (!exam.title) return exam.exam_id
-  let s = exam.title
-  const prefix = "基本情報技術者試験 "
-  if (s.startsWith(prefix)) s = s.slice(prefix.length)
-  for (const suffix of [" 公開問題", " サンプル問題"]) {
-    if (s.endsWith(suffix)) s = s.slice(0, -suffix.length)
-  }
-  return s
-}
 
 export function NewExamsSection({ exams }: { exams: ExamSummary[] }) {
   const newExams = exams.filter((e) => NEW_EXAM_IDS.has(e.exam_id))

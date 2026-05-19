@@ -1,5 +1,6 @@
 import Link from "next/link"
 import type { ExamSummary } from "@/lib/types"
+import { shortTitle } from "@/lib/exam-utils"
 import { TileProgress } from "./TileProgress"
 
 const TILE_COLORS = [
@@ -8,17 +9,6 @@ const TILE_COLORS = [
   "bg-goukaku-cool",
   "bg-goukaku-purple",
 ] as const
-
-function shortTitle(exam: ExamSummary): string {
-  if (!exam.title) return exam.exam_id
-  let s = exam.title
-  const prefix = "基本情報技術者試験 "
-  if (s.startsWith(prefix)) s = s.slice(prefix.length)
-  for (const suffix of [" 公開問題", " サンプル問題"]) {
-    if (s.endsWith(suffix)) s = s.slice(0, -suffix.length)
-  }
-  return s
-}
 
 export function SubjectTile({ exam, index }: { exam: ExamSummary; index: number }) {
   const color = TILE_COLORS[index % TILE_COLORS.length]

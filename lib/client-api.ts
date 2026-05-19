@@ -1,4 +1,7 @@
 import { enqueueRequest, loadPendingRequests, removePendingRequest } from "./pending-queue"
+import type { WeakTag } from "./types"
+
+export type { WeakTag }
 
 export interface AnswerLogPayload {
   device_id: string
@@ -44,13 +47,6 @@ export async function recordAnswer(payload: AnswerLogPayload): Promise<void> {
 
 export async function submitFeedback(payload: FeedbackPayload): Promise<void> {
   await postOrQueue("/api/feedback", payload)
-}
-
-export interface WeakTag {
-  tag: string
-  answered: number
-  correct: number
-  accuracy_percent: number
 }
 
 export async function fetchWeakTags(
