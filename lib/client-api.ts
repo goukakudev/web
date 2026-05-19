@@ -46,6 +46,30 @@ export async function submitFeedback(payload: FeedbackPayload): Promise<void> {
   await postOrQueue("/api/feedback", payload)
 }
 
+export interface WeakTag {
+  tag: string
+  answered: number
+  correct: number
+  accuracy_percent: number
+}
+
+export async function fetchWeakTags(
+  deviceId: string,
+  limit = 10,
+): Promise<WeakTag[]> {
+  try {
+    const res = await fetch(
+      `/api/users/${encodeURIComponent(deviceId)}/weak-tags?limit=${limit}`,
+      { method: "GET" },
+    )
+    if (!res.ok) return []
+    const data = (await res.json()) as { tags?: WeakTag[] }
+    return data.tags ?? []
+  } catch {
+    return []
+  }
+}
+
 export async function flushPendingRequests(): Promise<void> {
   const items = loadPendingRequests()
   for (const item of items) {

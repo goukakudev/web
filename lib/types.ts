@@ -66,3 +66,14 @@ export interface PopularTag {
 export interface PopularTagListResponse {
   tags: PopularTag[]
 }
+
+export interface WeakTag {
+  tag: string
+  answered: number
+  correct: number
+  accuracy_percent: number
+}
+
+export interface WeakTagListResponse {
+  tags: WeakTag[]
+}

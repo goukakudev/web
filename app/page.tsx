@@ -5,6 +5,7 @@ import { HeroQuestCard } from "@/components/home/HeroQuestCard"
 import { StatCard } from "@/components/home/StatCard"
 import { SubjectTile } from "@/components/home/SubjectTile"
 import { PopularTags } from "@/components/home/PopularTags"
+import { WeakTagsSection } from "@/components/home/WeakTagsSection"
 import { ContinueSection } from "@/components/home/ContinueSection"
 import { NewExamsSection } from "@/components/home/NewExamsSection"
 import { MockTestBanner } from "@/components/home/MockTestBanner"
@@ -37,6 +38,7 @@ export default async function HomePage() {
           <SubjectTile key={exam.exam_id} exam={exam} index={i} />
         ))}
       </div>
+      <WeakTagsSection />
       <PopularTags tags={popularTags} />
       <MockTestBanner exam={exams[0]} />
       <SiteIntro />
