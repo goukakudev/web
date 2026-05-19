@@ -1,6 +1,11 @@
 import type { Metadata } from "next"
+import Script from "next/script"
 import "./globals.css"
 import { PendingFlusher } from "@/components/common/PendingFlusher"
+import { CookieConsent } from "@/components/common/CookieConsent"
+
+const ADSENSE_CLIENT =
+  process.env.NEXT_PUBLIC_ADSENSE_CLIENT ?? "ca-pub-0806107180807915"
 
 const SITE_NAME = "goukaku.dev"
 const SITE_URL = "https://goukaku.dev"
@@ -63,6 +68,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ja">
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        {ADSENSE_CLIENT && (
+          <Script
+            id="adsense-init"
+            async
+            strategy="afterInteractive"
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
+            crossOrigin="anonymous"
+          />
+        )}
       </head>
       <body>
         <script
@@ -75,6 +89,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         <PendingFlusher />
         {children}
+        <CookieConsent />
       </body>
     </html>
   )

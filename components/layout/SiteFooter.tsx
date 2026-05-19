@@ -16,6 +16,10 @@ export function SiteFooter() {
           プライバシーポリシー
         </Link>
         <span>·</span>
+        <Link href="/terms" className="underline">
+          利用規約
+        </Link>
+        <span>·</span>
         <Link href="/support" className="underline">
           サポート
         </Link>

@@ -5,6 +5,7 @@ import { HeroQuestCard } from "@/components/home/HeroQuestCard"
 import { StatCard } from "@/components/home/StatCard"
 import { SubjectTile } from "@/components/home/SubjectTile"
 import { MockTestBanner } from "@/components/home/MockTestBanner"
+import { SiteIntro } from "@/components/home/SiteIntro"
 
 export default async function HomePage() {
   const exams = await listExams()
@@ -29,6 +30,7 @@ export default async function HomePage() {
         ))}
       </div>
       <MockTestBanner exam={exams[0]} />
+      <SiteIntro />
     </MobileFrame>
   )
 }
