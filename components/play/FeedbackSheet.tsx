@@ -140,10 +140,10 @@ export function FeedbackSheet({
           onClick={handleSubmit}
           disabled={!canSubmit || isSubmitting}
           className={
-            "mt-5 w-full py-3.5 rounded-full font-extrabold text-[14px] tracking-widest text-goukaku-ink " +
+            "mt-5 w-full py-3.5 rounded-full font-extrabold text-[14px] tracking-widest " +
             (canSubmit && !isSubmitting
-              ? "bg-goukaku-lime"
-              : "bg-goukaku-divider opacity-60")
+              ? "bg-goukaku-lime text-goukaku-ink-fixed"
+              : "bg-goukaku-divider text-goukaku-ink/55 opacity-60")
           }
         >
           {isSubmitting ? "送信中..." : "送信"}
@@ -172,7 +172,7 @@ function RatingButton({
       className={
         "flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl font-extrabold text-[13px] tracking-wider " +
         (active
-          ? "bg-goukaku-lime text-goukaku-ink border border-goukaku-ink"
+          ? "bg-goukaku-lime text-goukaku-ink-fixed border border-goukaku-ink-fixed"
           : "bg-goukaku-surface text-goukaku-ink/55 border border-goukaku-divider")
       }
       aria-pressed={active}
