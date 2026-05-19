@@ -36,6 +36,7 @@ export interface Question {
   explanation?: Explanation
   tags?: string[]
   related_qids?: string[]
+  hint?: string
 }
 
 export interface ExamSummary {

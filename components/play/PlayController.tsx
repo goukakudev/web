@@ -79,6 +79,7 @@ export function PlayController({
   const [examStartedAt, setExamStartedAt] = useState<number | null>(null);
   const [examFinished, setExamFinished] = useState(false);
   const [examFinishedAt, setExamFinishedAt] = useState<number | null>(null);
+  const [isHintRevealed, setIsHintRevealed] = useState(false);
 
   useEffect(() => {
     if (mode === "exam" && examStartedAt === null) {
@@ -86,6 +87,10 @@ export function PlayController({
       setExamStartedAt(Date.now());
     }
   }, [mode, examStartedAt]);
+
+  useEffect(() => {
+    setIsHintRevealed(false);
+  }, [currentIndex]);
 
   const isExamMode = mode === "exam";
   const current = questions[currentIndex];
@@ -260,6 +265,63 @@ export function PlayController({
           correctLabel={current.correct_label}
           tags={current.tags ?? []}
         />
+      )}
+      {current.hint && current.hint.length > 0 && (
+        <div className="flex flex-col gap-2 mt-4">
+          <button
+            type="button"
+            onClick={() => setIsHintRevealed((v) => !v)}
+            aria-label={isHintRevealed ? "ヒントを閉じる" : "ヒントを表示"}
+            className={
+              isHintRevealed
+                ? "self-start inline-flex items-center gap-1.5 px-3 py-2 rounded-full font-extrabold text-[10px] tracking-wider bg-goukaku-lime/50 text-goukaku-ink-fixed"
+                : "self-start inline-flex items-center gap-1.5 px-3 py-2 rounded-full font-extrabold text-[10px] tracking-wider border border-goukaku-divider text-goukaku-ink/55"
+            }
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill={isHintRevealed ? "currentColor" : "none"}
+              stroke="currentColor"
+              strokeWidth={2}
+              className="w-3 h-3"
+              aria-hidden
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18"
+              />
+            </svg>
+            <span>{isHintRevealed ? "ヒントを閉じる" : "ヒント"}</span>
+          </button>
+          {isHintRevealed && (
+            <div
+              className="flex gap-2.5 items-start px-3.5 py-3 rounded-2xl bg-goukaku-warm border border-goukaku-divider"
+              role="note"
+              aria-label={`ヒント、${current.hint}`}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                className="w-3.5 h-3.5 mt-0.5 shrink-0 text-goukaku-ink/75"
+                aria-hidden
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18"
+                />
+              </svg>
+              <p className="font-semibold text-[13px] text-goukaku-ink leading-snug">
+                {current.hint}
+              </p>
+            </div>
+          )}
+        </div>
       )}
       <div className="flex gap-2.5 mt-4">
         <button
