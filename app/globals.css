@@ -44,7 +44,7 @@
   --color-tk-crimson-soft: #fae8e6;
   --color-tk-crimson-line: #d9a698;
 
-  --font-mincho: var(--font-shippori), "Shippori Mincho B1", "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --font-mincho: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", "Shippori Mincho B1", serif;
   --font-tk-sans: var(--font-noto-sans), "Noto Sans JP", -apple-system, "Hiragino Sans", system-ui, sans-serif;
 }
 

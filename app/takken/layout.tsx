@@ -1,17 +1,10 @@
 import type { Metadata } from "next";
-import { Noto_Sans_JP, Shippori_Mincho_B1 } from "next/font/google";
+import { Noto_Sans_JP } from "next/font/google";
 
 const notoSans = Noto_Sans_JP({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
   variable: "--font-noto-sans",
-  display: "swap",
-});
-
-const shippori = Shippori_Mincho_B1({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-shippori",
   display: "swap",
 });
 
@@ -25,9 +18,5 @@ export const metadata: Metadata = {
 };
 
 export default function TakkenLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <div className={`tk-root ${notoSans.variable} ${shippori.variable}`}>
-      {children}
-    </div>
-  );
+  return <div className={`tk-root ${notoSans.variable}`}>{children}</div>;
 }
