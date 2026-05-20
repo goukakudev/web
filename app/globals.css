@@ -22,6 +22,30 @@
 
   --font-script: "Snell Roundhand", "Brush Script MT", cursive;
   --font-jp: -apple-system, BlinkMacSystemFont, "Hiragino Sans", system-ui, sans-serif;
+
+  /* ============================================================
+     宅建 (Takken) 専用デザイントークン — 和風モダン
+     ============================================================ */
+  --color-tk-bg: #ffffff;
+  --color-tk-canvas: #efeae2;
+  --color-tk-card: #faf7f2;
+  --color-tk-ink: #1a1a1a;
+  --color-tk-ink-2: #4a4644;
+  --color-tk-ink-3: #8c8682;
+  --color-tk-ink-4: #c8c2bd;
+  --color-tk-line: #ece7e0;
+  --color-tk-charcoal: #2b2825;
+  --color-tk-gold: #b89770;
+  --color-tk-gold-soft: #f3e7d4;
+  --color-tk-gold-line: #d9c4a4;
+  --color-tk-option-bg: #f4f1ec;
+  --color-tk-tag-bg: #f1ede8;
+  --color-tk-crimson: #bf5950;
+  --color-tk-crimson-soft: #fae8e6;
+  --color-tk-crimson-line: #d9a698;
+
+  --font-mincho: var(--font-shippori), "Shippori Mincho B1", "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --font-tk-sans: var(--font-noto-sans), "Noto Sans JP", -apple-system, "Hiragino Sans", system-ui, sans-serif;
 }
 
 [data-theme="dark"] {
@@ -30,6 +54,25 @@
   --color-goukaku-warm: #2a2520;
   --color-goukaku-surface: #1d1d20;
   --color-goukaku-divider: rgba(255, 255, 255, 0.12);
+
+  /* Takken ダーク */
+  --color-tk-bg: #181715;
+  --color-tk-canvas: #232220;
+  --color-tk-card: #282623;
+  --color-tk-ink: #f1efec;
+  --color-tk-ink-2: #ccc9c4;
+  --color-tk-ink-3: #9a948d;
+  --color-tk-ink-4: #645f5a;
+  --color-tk-line: #383531;
+  --color-tk-charcoal: #3c3833;
+  --color-tk-gold: #d8b487;
+  --color-tk-gold-soft: #393229;
+  --color-tk-gold-line: #65563f;
+  --color-tk-option-bg: #2e2b28;
+  --color-tk-tag-bg: #33302c;
+  --color-tk-crimson: #d97266;
+  --color-tk-crimson-soft: #4d2823;
+  --color-tk-crimson-line: #8c4a40;
 }
 
 html, body {
@@ -37,4 +80,80 @@ html, body {
   color: var(--color-goukaku-ink);
   font-family: var(--font-jp);
   -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================
+   Takken-scoped overrides — /takken/* ページ専用 (.tk-root)
+   ============================================================ */
+.tk-root {
+  background: var(--color-tk-bg);
+  color: var(--color-tk-ink);
+  font-family: var(--font-tk-sans);
+}
+
+.tk-root .font-mincho {
+  font-family: var(--font-mincho);
+}
+
+.tk-root .btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  height: 3.5rem;
+  padding: 0 1.5rem;
+  background: var(--color-tk-gold);
+  color: #fff;
+  font-weight: 500;
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  border-radius: 0.75rem;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.tk-root .btn-primary:hover { opacity: 0.92; }
+.tk-root .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.tk-root .btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 3.75rem;
+  padding: 0 1rem;
+  background: var(--color-tk-bg);
+  color: var(--color-tk-ink);
+  font-weight: 500;
+  font-size: 0.8125rem;
+  border: 1px solid var(--color-tk-line);
+  border-radius: 0.875rem;
+  cursor: pointer;
+}
+.tk-root .btn-secondary:hover { background: var(--color-tk-canvas); }
+
+.tk-root .btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 3.125rem;
+  padding: 0 1rem;
+  background: var(--color-tk-bg);
+  color: var(--color-tk-ink);
+  font-weight: 500;
+  font-size: 0.875rem;
+  letter-spacing: 0.05em;
+  border: 1px solid var(--color-tk-line);
+  border-radius: 0.625rem;
+  cursor: pointer;
+}
+
+.tk-root .tag {
+  display: inline-block;
+  background: var(--color-tk-tag-bg);
+  color: var(--color-tk-ink-2);
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  padding: 0.375rem 0.875rem;
+  border-radius: 9999px;
 }
