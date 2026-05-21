@@ -22,7 +22,7 @@ function apiKey(): string {
 async function get<T>(path: string, revalidate: number): Promise<T> {
   const res = await fetch(`${baseUrl()}${path}`, {
     headers: { "X-API-Key": apiKey(), Accept: "application/json" },
-    next: { revalidate },
+    next: { revalidate, tags: ["takken"] },
   });
   if (!res.ok) {
     throw new Error(`API ${res.status} on GET ${path}`);
