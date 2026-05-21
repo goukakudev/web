@@ -2,6 +2,8 @@ import type { ChoiceLabel } from "./types"
 
 const KEY_DEVICE_ID = "examquiz.device_id.v1"
 const KEY_ANSWERS = "examquiz.answers.v1"
+const KEY_BOOKMARKS = "examquiz.bookmarks.v1"
+const KEY_ONBOARDING_DONE = "examquiz.onboarding.completed.v1"
 
 export interface AnswerRecord {
   question_id: string
@@ -82,4 +84,67 @@ export function getExamStats(examId: string, total: number): ExamStats {
     }
   }
   return { answered, correct, total }
+}
+
+// ----- Bookmarks -----
+
+function readBookmarks(): Set<string> {
+  if (!isBrowser()) return new Set()
+  const raw = localStorage.getItem(KEY_BOOKMARKS)
+  if (!raw) return new Set()
+  try {
+    const arr = JSON.parse(raw) as string[]
+    return new Set(arr)
+  } catch {
+    return new Set()
+  }
+}
+
+function writeBookmarks(set: Set<string>): void {
+  if (!isBrowser()) return
+  localStorage.setItem(KEY_BOOKMARKS, JSON.stringify([...set]))
+}
+
+export function getBookmarks(): Set<string> {
+  return readBookmarks()
+}
+
+export function isBookmarked(questionId: string): boolean {
+  return readBookmarks().has(questionId)
+}
+
+export function toggleBookmark(questionId: string): boolean {
+  const set = readBookmarks()
+  let nowOn: boolean
+  if (set.has(questionId)) {
+    set.delete(questionId)
+    nowOn = false
+  } else {
+    set.add(questionId)
+    nowOn = true
+  }
+  writeBookmarks(set)
+  return nowOn
+}
+
+export function countBookmarksForExam(examId: string): number {
+  // Bookmarks are keyed by `${examId}-Q...`. Count the prefix matches.
+  const set = readBookmarks()
+  let n = 0
+  for (const id of set) {
+    if (id.startsWith(`${examId}-`)) n += 1
+  }
+  return n
+}
+
+// ----- Onboarding -----
+
+export function isOnboardingCompleted(): boolean {
+  if (!isBrowser()) return true // SSR: never block render with onboarding
+  return localStorage.getItem(KEY_ONBOARDING_DONE) === "1"
+}
+
+export function markOnboardingCompleted(): void {
+  if (!isBrowser()) return
+  localStorage.setItem(KEY_ONBOARDING_DONE, "1")
 }

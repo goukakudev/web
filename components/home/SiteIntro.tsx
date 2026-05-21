@@ -4,10 +4,10 @@ export function SiteIntro() {
   return (
     <section className="mt-10 text-[13px] leading-[1.85] text-goukaku-ink/85">
       <h2 className="text-[18px] font-extrabold mb-3">
-        goukaku.dev について
+        合格.dev について
       </h2>
       <p className="mb-3">
-        goukaku.dev は、独立行政法人情報処理推進機構 (IPA) が公表する{" "}
+        合格.dev は、独立行政法人情報処理推進機構 (IPA) が公表する{" "}
         <strong>基本情報技術者試験</strong> (FE) の過去問を無料で演習できる学習サイトです。13 年分・各回 80 問前後、合計 800 問以上を、すべて選択肢ごとの解説付きで掲載しています。
       </p>
       <p className="mb-3">

@@ -7,7 +7,7 @@ const CONTACT_EMAIL = "contact@goukaku.dev";
 export const metadata: Metadata = {
   title: "サポート",
   description:
-    "goukaku.dev (Web / iOS アプリ「合格.dev」) のサポートページ。よくある質問と問い合わせ先をまとめています。",
+    "合格.dev (Web / iOS アプリ) のサポートページ。よくある質問と問い合わせ先をまとめています。",
   alternates: { canonical: "/support" },
 };
 
@@ -22,8 +22,8 @@ export default function SupportPage() {
       </Link>
       <h1 className="text-[24px] font-extrabold mb-2">サポート</h1>
       <p className="text-[13px] text-goukaku-ink/70 mb-6 leading-[1.7]">
-        基本情報技術者試験 (FE) の過去問演習サービス <strong>goukaku.dev</strong>{" "}
-        および iOS アプリ「合格.dev」のサポートページです。よくある質問と問い合わせ先をまとめています。
+        基本情報技術者試験 (FE) の過去問演習サービス <strong>合格.dev</strong>{" "}
+        (Web / iOS アプリ) のサポートページです。よくある質問と問い合わせ先をまとめています。
       </p>
 
       <Section title="お問い合わせ先">
@@ -33,7 +33,7 @@ export default function SupportPage() {
         </p>
         <p className="mt-3">
           <a
-            href={mailto("サポート - goukaku.dev")}
+            href={mailto("サポート - 合格.dev")}
             className="underline font-extrabold"
           >
             {CONTACT_EMAIL}
@@ -72,7 +72,7 @@ export default function SupportPage() {
         <Faq q="問題の誤りを見つけました">
           各問題画面下部の<strong>「問題を報告」</strong>{" "}
           ボタンからご報告ください。または{" "}
-          <a href={mailto("問題報告 - goukaku.dev")} className="underline">
+          <a href={mailto("問題報告 - 合格.dev")} className="underline">
             {CONTACT_EMAIL}
           </a>{" "}
           まで直接ご連絡いただいても構いません。問題 ID(画面上部のヘッダー)を添えていただけると確認がスムーズです。
@@ -115,7 +115,7 @@ export default function SupportPage() {
         <ul className="list-disc pl-5 space-y-1">
           <li>
             <Link href="/about" className="underline">
-              goukaku.dev について
+              合格.dev について
             </Link>
           </li>
           <li>

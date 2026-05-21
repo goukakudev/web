@@ -28,7 +28,7 @@ export function SiteFooter() {
           お問い合わせ
         </Link>
       </nav>
-      <p>© goukaku.dev</p>
+      <p>© 合格.dev</p>
     </footer>
   );
 }

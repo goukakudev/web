@@ -74,7 +74,7 @@ export default async function ExamDetailPage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <Link href="/" className="inline-block text-[14px] mb-4">← ホーム</Link>
+      <Link href="/fe" className="inline-block text-[14px] mb-4">← ホーム</Link>
       <div className="text-[10px] tracking-[1.2px] font-bold text-goukaku-ink/50 uppercase">
         {exam.exam_id}
       </div>

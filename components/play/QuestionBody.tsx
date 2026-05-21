@@ -4,13 +4,15 @@ import type { FigureRef } from "@/lib/types";
 export function QuestionBody({
   body,
   figures,
+  onGlossaryClick,
 }: {
   body: string;
   figures?: FigureRef[];
+  onGlossaryClick?: (term: string) => void;
 }) {
   return (
     <div className="bg-goukaku-surface rounded-[22px] p-[18px] border border-goukaku-divider mb-4 text-[14px] leading-[1.7] font-semibold">
-      <MathText text={body} />
+      <MathText text={body} onGlossaryClick={onGlossaryClick} />
       {figures && figures.length > 0 && (
         <div className="mt-3 flex flex-col gap-3">
           {figures.map((f) => (

@@ -7,17 +7,17 @@ import { CookieConsent } from "@/components/common/CookieConsent"
 const ADSENSE_CLIENT =
   process.env.NEXT_PUBLIC_ADSENSE_CLIENT ?? "ca-pub-0806107180807915"
 
-const SITE_NAME = "goukaku.dev"
+const SITE_NAME = "合格.dev"
 const SITE_URL = "https://goukaku.dev"
-const DEFAULT_TITLE = "goukaku.dev — 基本情報技術者試験 過去問 + 解説"
+const DEFAULT_TITLE = "合格.dev — 資格試験の過去問学習サイト"
 const DEFAULT_DESCRIPTION =
-  "基本情報技術者試験の過去問を無料で。13 年分・各 80 問前後を、順番に / ランダムに / 模試形式で解けます。全問解説・選択肢ごとの解説付き。"
+  "基本情報技術者試験・宅地建物取引士など、各種資格の過去問を無料で。解説・選択肢別解説・模試モード付き。"
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: DEFAULT_TITLE,
-    template: "%s | goukaku.dev",
+    template: "%s | 合格.dev",
   },
   description: DEFAULT_DESCRIPTION,
   applicationName: SITE_NAME,

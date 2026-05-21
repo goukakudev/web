@@ -37,7 +37,7 @@ export default function DiagnosisPage() {
 
   return (
     <MobileFrame>
-      <Link href="/" className="inline-block text-[14px] mb-4">
+      <Link href="/fe" className="inline-block text-[14px] mb-4">
         ← ホーム
       </Link>
       <h1 className="text-[20px] font-extrabold mb-4">学習診断</h1>

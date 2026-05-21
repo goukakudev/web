@@ -8,7 +8,7 @@ const CONTACT_EMAIL = "contact@goukaku.dev";
 export const metadata: Metadata = {
   title: "お問い合わせ",
   description:
-    "goukaku.dev へのお問い合わせはこちらから。メールまたはフォーム経由でご連絡いただけます。",
+    "合格.dev へのお問い合わせはこちらから。メールまたはフォーム経由でご連絡いただけます。",
   alternates: { canonical: "/contact" },
 };
 
@@ -31,7 +31,7 @@ export default function ContactPage() {
         <p>
           <a
             href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(
-              "お問い合わせ - goukaku.dev",
+              "お問い合わせ - 合格.dev",
             )}`}
             className="underline font-extrabold"
           >

@@ -4,9 +4,9 @@ import { MobileFrame } from "@/components/layout/MobileFrame";
 import { listExams } from "@/lib/api-client";
 
 export const metadata: Metadata = {
-  title: "goukaku.dev について",
+  title: "合格.dev について",
   description:
-    "goukaku.dev は基本情報技術者試験 (FE) の過去問を無料で、広告控えめに解ける Web サイトです。13 年分・約 840 問・解説付き。",
+    "合格.dev は基本情報技術者試験 (FE) の過去問を無料で、広告控えめに解ける Web サイトです。13 年分・約 840 問・解説付き。",
   alternates: { canonical: "/about" },
 };
 
@@ -26,7 +26,7 @@ export default async function AboutPage() {
       <Link href="/" className="inline-block text-[14px] mb-4">
         ← ホーム
       </Link>
-      <h1 className="text-[24px] font-extrabold mb-4">goukaku.dev について</h1>
+      <h1 className="text-[24px] font-extrabold mb-4">合格.dev について</h1>
 
       <Section title="このサイトは">
         <p>
@@ -87,7 +87,7 @@ export default async function AboutPage() {
       </Section>
 
       <Section title="運営">
-        <p>運営: goukaku.dev</p>
+        <p>運営: 合格.dev</p>
         <p className="mt-2">
           <Link href="/contact" className="underline">
             お問い合わせ

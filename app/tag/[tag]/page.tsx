@@ -60,7 +60,7 @@ export default async function TagPage({ params }: PageProps) {
 
   return (
     <MobileFrame>
-      <Link href="/" className="inline-block text-[14px] mb-4">← ホーム</Link>
+      <Link href="/fe" className="inline-block text-[14px] mb-4">← ホーム</Link>
       <div className="flex items-center gap-2 mb-3">
         <span className="inline-flex items-center bg-goukaku-cool/35 text-[#1a8acb] text-[13px] font-extrabold px-2.5 py-1.5 rounded-xl">
           #{display}

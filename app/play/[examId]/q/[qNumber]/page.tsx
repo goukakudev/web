@@ -112,7 +112,7 @@ export default async function PlayQuestionPage({ params }: PageProps) {
       {
         "@type": "ListItem",
         position: 1,
-        name: "goukaku.dev",
+        name: "合格.dev",
         item: "https://goukaku.dev/",
       },
       {

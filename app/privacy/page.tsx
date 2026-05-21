@@ -5,7 +5,7 @@ import { MobileFrame } from "@/components/layout/MobileFrame";
 export const metadata: Metadata = {
   title: "プライバシーポリシー",
   description:
-    "goukaku.dev (Web / iOS アプリ) のプライバシーポリシー。Google AdSense のクッキー利用、localStorage / UserDefaults に保存する情報、第三者サービス (Cloudflare R2 / Vercel) について明記します。",
+    "合格.dev (Web / iOS アプリ) のプライバシーポリシー。Google AdSense のクッキー利用、localStorage / UserDefaults に保存する情報、第三者サービス (Cloudflare R2 / Vercel) について明記します。",
   alternates: { canonical: "/privacy" },
 };
 
@@ -22,7 +22,7 @@ export default function PrivacyPage() {
 
       <Section title="1. このページの目的">
         <p>
-          本ポリシーは、goukaku.dev (以下「当サイト」) および同名の iOS アプリ「合格.dev」(以下「本アプリ」) を利用するにあたって、利用者の情報をどのように取り扱うかを明記するものです。
+          本ポリシーは、合格.dev (以下「当サイト」) および同名の iOS アプリ「合格.dev」(以下「本アプリ」) を利用するにあたって、利用者の情報をどのように取り扱うかを明記するものです。
         </p>
       </Section>
 

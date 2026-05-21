@@ -1,13 +1,27 @@
 import katex from "katex";
+import type { ReactNode } from "react";
 import { parseSegments } from "@/lib/math-segments";
+import { findGlossaryMatches } from "@/lib/glossary";
 
 export interface MathTextProps {
   text: string;
   mathSize?: "sm" | "base";
   className?: string;
+  glossaryEnabled?: boolean;
+  glossaryExclude?: ReadonlySet<string>;
+  onGlossaryClick?: (term: string) => void;
 }
 
-export function MathText({ text, mathSize = "base", className }: MathTextProps) {
+const EMPTY_SET: ReadonlySet<string> = new Set();
+
+export function MathText({
+  text,
+  mathSize = "base",
+  className,
+  glossaryEnabled = true,
+  glossaryExclude = EMPTY_SET,
+  onGlossaryClick,
+}: MathTextProps) {
   const segments = parseSegments(text);
   const fontSize = mathSize === "sm" ? "0.85em" : "1em";
   return (
@@ -16,7 +30,9 @@ export function MathText({ text, mathSize = "base", className }: MathTextProps) 
         if (seg.kind === "text") {
           return (
             <span key={idx} className="whitespace-pre-wrap">
-              {seg.value}
+              {glossaryEnabled
+                ? renderTextWithGlossary(seg.value, glossaryExclude, onGlossaryClick)
+                : seg.value}
             </span>
           );
         }
@@ -66,4 +82,50 @@ export function MathText({ text, mathSize = "base", className }: MathTextProps) 
       })}
     </span>
   );
+}
+
+function renderTextWithGlossary(
+  text: string,
+  exclude: ReadonlySet<string>,
+  onClick: ((term: string) => void) | undefined,
+): ReactNode[] {
+  const matches = findGlossaryMatches(text, exclude);
+  if (matches.length === 0) return [text];
+
+  const ordered = [...matches].sort((a, b) => a.start - b.start);
+  const parts: ReactNode[] = [];
+  let cursor = 0;
+  for (let i = 0; i < ordered.length; i++) {
+    const m = ordered[i];
+    if (m.start > cursor) {
+      parts.push(text.slice(cursor, m.start));
+    }
+    const inner = text.slice(m.start, m.end);
+    if (onClick) {
+      parts.push(
+        <button
+          key={`g-${i}`}
+          type="button"
+          onClick={() => onClick(m.term)}
+          className="underline decoration-dotted underline-offset-2 text-goukaku-pink-script font-bold hover:opacity-80"
+        >
+          {inner}
+        </button>,
+      );
+    } else {
+      parts.push(
+        <span
+          key={`g-${i}`}
+          className="underline decoration-dotted underline-offset-2 text-goukaku-pink-script font-bold"
+        >
+          {inner}
+        </span>,
+      );
+    }
+    cursor = m.end;
+  }
+  if (cursor < text.length) {
+    parts.push(text.slice(cursor));
+  }
+  return parts;
 }

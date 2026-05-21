@@ -9,10 +9,17 @@ import { ExplanationCard } from "./ExplanationCard";
 import { ExamTimer } from "./ExamTimer";
 import { ExamResult } from "./ExamResult";
 import { FeedbackSheet, type FeedbackRating } from "./FeedbackSheet";
+import { GlossaryModal } from "./GlossaryModal";
 import type { Question, ChoiceLabel, ExamSummary } from "@/lib/types";
 import { setAnswer, getDeviceId, getAllAnswers } from "@/lib/local-store";
 import { addExamSession } from "@/lib/exam-session";
 import { recordAnswer } from "@/lib/client-api";
+import { withShuffledChoices } from "@/lib/question-display";
+import {
+  getGlossaryEntry,
+  usedGlossaryTerms,
+  type GlossaryEntry,
+} from "@/lib/glossary";
 
 type Mode = "sequential" | "random" | "wrongOnly" | "exam";
 
@@ -65,7 +72,7 @@ export function PlayController({
       next = sortBySequence(initialQuestions);
     }
     // eslint-disable-next-line react-hooks/set-state-in-effect -- mode-dependent filter runs after hydration
-    setQuestions(next);
+    setQuestions(next.map(withShuffledChoices));
   }, [initialQuestions, mode]);
 
   const [currentIndex, setCurrentIndex] = useState(() => {
@@ -85,6 +92,12 @@ export function PlayController({
     open: boolean;
     initialRating: FeedbackRating | null;
   }>({ open: false, initialRating: null });
+  const [glossaryEntry, setGlossaryEntry] = useState<GlossaryEntry | null>(null);
+
+  const handleGlossaryClick = (term: string) => {
+    const entry = getGlossaryEntry(term);
+    if (entry) setGlossaryEntry(entry);
+  };
 
   useEffect(() => {
     if (mode === "exam" && examStartedAt === null) {
@@ -242,13 +255,18 @@ export function PlayController({
         qNumber={current.q_number}
         currentIndex={currentIndex}
         total={questions.length}
+        questionId={current._id}
       />
       {isExamMode && examStartedAt !== null && (
         <div className="flex items-center justify-end mb-3">
           <ExamTimer startedAt={examStartedAt} onTimeout={finishExam} />
         </div>
       )}
-      <QuestionBody body={current.body} figures={current.figures} />
+      <QuestionBody
+        body={current.body}
+        figures={current.figures}
+        onGlossaryClick={handleGlossaryClick}
+      />
       {current.choices.map((c) => {
         const isSelected = selected === c.label;
         const isCorrect = revealed
@@ -270,8 +288,14 @@ export function PlayController({
           explanation={current.explanation}
           correctLabel={current.correct_label}
           tags={current.tags ?? []}
+          priorGlossaryTerms={usedGlossaryTerms(current.body)}
+          onGlossaryClick={handleGlossaryClick}
         />
       )}
+      <GlossaryModal
+        entry={glossaryEntry}
+        onClose={() => setGlossaryEntry(null)}
+      />
       <div className="flex flex-col gap-2 mt-4">
         <div className="flex gap-2 items-center flex-wrap">
           <FeedbackChip

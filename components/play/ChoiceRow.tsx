@@ -52,7 +52,7 @@ export function ChoiceRow({ letter, text, isSelected, isCorrect, onClick }: Choi
         {letter}
       </span>
       <span className="flex-1 text-[13px] font-semibold leading-relaxed">
-        <MathText text={text} mathSize="sm" />
+        <MathText text={text} mathSize="sm" glossaryEnabled={false} />
       </span>
       <span
         data-testid="status-slot"
