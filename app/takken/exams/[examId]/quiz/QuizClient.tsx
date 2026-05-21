@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useMemo, useRef } from "react";
 import type { TakkenQuestion } from "@/lib/takken/api";
 import { recordTkLocalAttempt, postTkAttempt } from "@/lib/takken/device";
+import { LawRefChip } from "./LawRefChip";
 
 type Mode = "instant" | "exam";
 
@@ -372,11 +373,12 @@ function ExplanationBlock({
             <Section title="関連条文・判例">
               <div className="flex flex-wrap gap-2">
                 {exp.key_law.map((law) => (
-                  <span key={law} className="text-xs text-ink-2">
-                    {law}
-                  </span>
+                  <LawRefChip key={law} text={law} />
                 ))}
               </div>
+              <p className="mt-2 text-[11px] text-ink-3">
+                タップで条文の内容を表示
+              </p>
             </Section>
           )}
         </div>
