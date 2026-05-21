@@ -5,6 +5,7 @@ import { useState, useMemo, useRef } from "react";
 import type { TakkenQuestion } from "@/lib/takken/api";
 import { recordTkLocalAttempt, postTkAttempt } from "@/lib/takken/device";
 import { LawRefChip } from "./LawRefChip";
+import { ActionBar } from "./ActionBar";
 
 type Mode = "instant" | "exam";
 
@@ -180,7 +181,11 @@ export default function QuizClient({
         </div>
 
         {isRevealed && mode === "instant" && (
-          <ExplanationBlock question={current} selected={answers[index] ?? null} />
+          <ExplanationBlock
+            question={current}
+            selected={answers[index] ?? null}
+            examId={examId}
+          />
         )}
       </div>
 
@@ -287,9 +292,11 @@ function ChoiceRow({
 function ExplanationBlock({
   question,
   selected,
+  examId,
 }: {
   question: TakkenQuestion;
   selected: number | null;
+  examId: string;
 }) {
   const exp = question.explanation;
   const isCorrect =
@@ -385,6 +392,12 @@ function ExplanationBlock({
       ) : (
         <p className="mt-3 text-sm text-ink-3">この問題の解説は準備中です</p>
       )}
+
+      <ActionBar
+        questionId={question._id}
+        examId={examId}
+        explanation={exp}
+      />
     </div>
   );
 }
