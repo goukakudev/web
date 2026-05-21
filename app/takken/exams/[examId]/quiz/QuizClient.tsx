@@ -5,7 +5,7 @@ import { useState, useMemo, useRef } from "react";
 import type { TakkenQuestion } from "@/lib/takken/api";
 import { recordTkLocalAttempt, postTkAttempt } from "@/lib/takken/device";
 import { LawRefChip } from "./LawRefChip";
-import { ActionBar } from "./ActionBar";
+import { ActionBar, HintButton } from "./ActionBar";
 
 type Mode = "instant" | "exam";
 
@@ -178,6 +178,10 @@ export default function QuizClient({
                 onClick={() => handleSelect(parseInt(k, 10))}
               />
             ))}
+        </div>
+
+        <div className="mt-3 flex justify-end">
+          <HintButton questionId={current._id} explanation={current.explanation} />
         </div>
 
         {isRevealed && mode === "instant" && (
@@ -393,11 +397,7 @@ function ExplanationBlock({
         <p className="mt-3 text-sm text-ink-3">この問題の解説は準備中です</p>
       )}
 
-      <ActionBar
-        questionId={question._id}
-        examId={examId}
-        explanation={exp}
-      />
+      <ActionBar questionId={question._id} examId={examId} />
     </div>
   );
 }

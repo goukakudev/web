@@ -17,11 +17,9 @@ type Sheet = "hint" | "report" | null;
 export function ActionBar({
   questionId,
   examId,
-  explanation,
 }: {
   questionId: string;
   examId: string;
-  explanation: TakkenExplanation | null | undefined;
 }) {
   const [vote, setVote] = useState<VoteValue | null>(null);
   const [sheet, setSheet] = useState<Sheet>(null);
@@ -42,13 +40,7 @@ export function ActionBar({
   };
 
   return (
-    <div className="mt-6 grid grid-cols-2 gap-2 sm:grid-cols-4">
-      <ActionButton
-        kind="default"
-        icon={<HintIcon />}
-        label="Hint"
-        onClick={() => setSheet("hint")}
-      />
+    <div className="mt-6 grid grid-cols-3 gap-2">
       <ActionButton
         kind={vote === "good" ? "good" : "default"}
         icon={<ThumbUpIcon />}
@@ -70,13 +62,6 @@ export function ActionBar({
         onClick={() => setSheet("report")}
       />
 
-      {sheet === "hint" && (
-        <HintPopup
-          questionId={questionId}
-          hint={deriveTkHint(explanation)}
-          onClose={() => setSheet(null)}
-        />
-      )}
       {sheet === "report" && (
         <ReportModal
           questionId={questionId}
@@ -85,6 +70,38 @@ export function ActionBar({
         />
       )}
     </div>
+  );
+}
+
+/**
+ * 常時表示用 Hint ボタン (選択肢下に配置)。
+ */
+export function HintButton({
+  questionId,
+  explanation,
+}: {
+  questionId: string;
+  explanation: TakkenExplanation | null | undefined;
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="inline-flex items-center gap-1.5 rounded-full border border-tk-gold-line bg-tk-gold-soft/60 px-3.5 py-1.5 text-[12px] font-medium text-tk-gold transition hover:bg-tk-gold-soft hover:text-tk-charcoal active:scale-[0.98]"
+      >
+        <HintIcon />
+        <span>Hint</span>
+      </button>
+      {open && (
+        <HintPopup
+          questionId={questionId}
+          hint={deriveTkHint(explanation)}
+          onClose={() => setOpen(false)}
+        />
+      )}
+    </>
   );
 }
 
