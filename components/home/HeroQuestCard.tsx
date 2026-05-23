@@ -1,9 +1,10 @@
 import Link from "next/link"
 
-export function HeroQuestCard() {
+export function HeroQuestCard({ subject = "fe" }: { subject?: "fe" | "ip" } = {}) {
+  const href = subject === "ip" ? "/ip/play/random?count=20" : "/play/random?count=20"
   return (
     <Link
-      href="/play/random?count=20"
+      href={href}
       className="block bg-goukaku-lime rounded-[28px] p-5 relative mb-6"
     >
       <div

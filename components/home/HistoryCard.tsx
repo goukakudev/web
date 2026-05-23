@@ -4,15 +4,21 @@ import Link from "next/link"
 import { useEffect, useState } from "react"
 import { getAllAnswers } from "@/lib/local-store"
 
-export function HistoryCard() {
+export function HistoryCard({ subject = "fe" }: { subject?: "fe" | "ip" } = {}) {
   const [stats, setStats] = useState<{ total: number; examCount: number } | null>(null)
+  const examIdPrefix = `${subject}-`
 
   useEffect(() => {
     const map = getAllAnswers()
     const exams = new Set<string>()
-    for (const rec of Object.values(map)) exams.add(rec.exam_id)
-    setStats({ total: Object.keys(map).length, examCount: exams.size })
-  }, [])
+    let total = 0
+    for (const rec of Object.values(map)) {
+      if (!rec.exam_id.startsWith(examIdPrefix)) continue
+      exams.add(rec.exam_id)
+      total++
+    }
+    setStats({ total, examCount: exams.size })
+  }, [examIdPrefix])
 
   if (!stats || stats.total === 0) return null
 
@@ -23,7 +29,7 @@ export function HistoryCard() {
       </div>
       <div className="text-[18px] font-extrabold mb-3.5">回答履歴</div>
       <Link
-        href="/fe/history"
+        href={`/${subject}/history`}
         className="block p-4 bg-goukaku-surface rounded-2xl border border-goukaku-divider"
       >
         <div className="flex items-center gap-3">
