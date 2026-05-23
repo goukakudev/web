@@ -53,3 +53,16 @@ export async function listPopularTags(limit = 20): Promise<PopularTag[]> {
   )
   return data.tags
 }
+
+export async function listIpExams(): Promise<ExamSummary[]> {
+  const data = await get<ExamListResponse>("/v1/ip/exams", EXAMS_REVALIDATE)
+  return data.exams
+}
+
+export async function listIpQuestions(examId: string): Promise<Question[]> {
+  const data = await get<QuestionListResponse>(
+    `/v1/ip/exams/${encodeURIComponent(examId)}/questions`,
+    QUESTIONS_REVALIDATE,
+  )
+  return data.questions
+}

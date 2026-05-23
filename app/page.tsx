@@ -19,6 +19,14 @@ type Category = {
 
 const CATEGORIES: Category[] = [
   {
+    href: "/ip",
+    label: "ITパスポート試験",
+    sub: "IT Passport Exam",
+    description: "29 年分・各 100 問・全 2,900 問の過去問。解説・ヒント・選択肢ごとの正誤付き",
+    emoji: "📘",
+    status: "available",
+  },
+  {
     href: "/fe",
     label: "基本情報技術者試験",
     sub: "Fundamental IT Engineer",
