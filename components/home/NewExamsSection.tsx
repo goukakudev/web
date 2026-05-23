@@ -2,15 +2,29 @@ import Link from "next/link"
 import type { ExamSummary } from "@/lib/types"
 import { shortTitle } from "@/lib/exam-utils"
 
-const NEW_EXAM_IDS = new Set([
+const NEW_EXAM_IDS_FE = new Set([
   "fe-2020r02t-a",
   "fe-2021r03t-a",
   "fe-2022r04t-a",
 ])
 
-export function NewExamsSection({ exams }: { exams: ExamSummary[] }) {
-  const newExams = exams.filter((e) => NEW_EXAM_IDS.has(e.exam_id))
+const NEW_EXAM_IDS_IP = new Set([
+  "ip-2026r08",
+  "ip-2025r07",
+  "ip-2024r06",
+])
+
+export function NewExamsSection({
+  exams,
+  subject = "fe",
+}: {
+  exams: ExamSummary[]
+  subject?: "fe" | "ip"
+}) {
+  const newIds = subject === "ip" ? NEW_EXAM_IDS_IP : NEW_EXAM_IDS_FE
+  const newExams = exams.filter((e) => newIds.has(e.exam_id))
   if (newExams.length === 0) return null
+  const examUrlBase = subject === "ip" ? "/ip/exam" : "/exam"
   return (
     <div className="mt-7">
       <div
@@ -24,7 +38,7 @@ export function NewExamsSection({ exams }: { exams: ExamSummary[] }) {
         {newExams.map((exam) => (
           <Link
             key={exam.exam_id}
-            href={`/exam/${exam.exam_id}`}
+            href={`${examUrlBase}/${exam.exam_id}`}
             className="relative shrink-0 w-[210px] rounded-[20px] bg-goukaku-surface p-4"
           >
             <span className="absolute top-2.5 right-2.5 bg-goukaku-pink text-goukaku-ink text-[10px] font-extrabold tracking-[1.4px] px-2 py-0.5 rounded-full">

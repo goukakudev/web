@@ -27,13 +27,21 @@ function accuracyPercent(s: ExamSession): number {
   return Math.round((s.correct / s.answered) * 100)
 }
 
-export function ContinueSection({ exams }: { exams: ExamSummary[] }) {
+export function ContinueSection({
+  exams,
+  subject = "fe",
+}: {
+  exams: ExamSummary[]
+  subject?: "fe" | "ip"
+}) {
   const [latest, setLatest] = useState<ExamSession | null>(null)
+  const examIdPrefix = `${subject}-`
 
   useEffect(() => {
     const sessions = loadExamSessions()
-    setLatest(sessions[0] ?? null)
-  }, [])
+    const filtered = sessions.filter((s) => s.exam_id.startsWith(examIdPrefix))
+    setLatest(filtered[0] ?? null)
+  }, [examIdPrefix])
 
   const exam = useMemo(() => {
     if (!latest) return undefined
@@ -42,6 +50,8 @@ export function ContinueSection({ exams }: { exams: ExamSummary[] }) {
 
   if (!latest || !exam) return null
 
+  const examUrl = subject === "ip" ? `/ip/exam/${exam.exam_id}` : `/exam/${exam.exam_id}`
+
   return (
     <div className="mt-7">
       <div className="text-[22px] text-goukaku-pink-script" style={{ fontFamily: "var(--font-script)" }}>
@@ -49,7 +59,7 @@ export function ContinueSection({ exams }: { exams: ExamSummary[] }) {
       </div>
       <div className="text-[18px] font-extrabold mb-3.5">続きから</div>
       <Link
-        href={`/exam/${exam.exam_id}`}
+        href={examUrl}
         className="flex items-center gap-3 rounded-[20px] bg-goukaku-surface p-4"
       >
         <div className="w-11 h-11 rounded-full bg-goukaku-cool flex items-center justify-center text-[18px]">
