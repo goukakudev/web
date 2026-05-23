@@ -9,14 +9,19 @@ function bodyPreview(s: string): string {
 export function TagQuestionRow({
   question,
   exam,
+  subject = "fe",
 }: {
   question: Question
   exam: ExamSummary | undefined
+  subject?: "fe" | "ip"
 }) {
   const examLabel = exam?.title ?? question.exam_id
+  const playHref = subject === "ip"
+    ? `/ip/play/${question.exam_id}/q/${question.q_number}`
+    : `/play/${question.exam_id}/q/${question.q_number}`
   return (
     <Link
-      href={`/play/${question.exam_id}/q/${question.q_number}`}
+      href={playHref}
       className="block bg-goukaku-surface rounded-2xl p-3.5 border border-goukaku-divider"
     >
       <div className="flex items-center gap-2">

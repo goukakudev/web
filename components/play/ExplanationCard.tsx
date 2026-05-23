@@ -10,6 +10,7 @@ export interface ExplanationCardProps {
   tags: string[]
   priorGlossaryTerms?: ReadonlySet<string>
   onGlossaryClick?: (term: string) => void
+  subject?: "fe" | "ip"
 }
 
 export function ExplanationCard({
@@ -18,6 +19,7 @@ export function ExplanationCard({
   tags,
   priorGlossaryTerms,
   onGlossaryClick,
+  subject = "fe",
 }: ExplanationCardProps) {
   const overallText = stripAnswerReferenceTail(explanation.overall)
   const overallExclude = priorGlossaryTerms ?? new Set<string>()
@@ -66,7 +68,7 @@ export function ExplanationCard({
       {tags.length > 0 && (
         <>
           <div className="h-px bg-goukaku-divider mt-3 mb-3" />
-          <TagChips tags={tags} />
+          <TagChips tags={tags} subject={subject} />
         </>
       )}
     </div>
