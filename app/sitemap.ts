@@ -1,11 +1,16 @@
 import type { MetadataRoute } from "next";
-import { listExams, listQuestions } from "@/lib/api-client";
+import {
+  listExams,
+  listQuestions,
+  listIpExams,
+  listIpQuestions,
+} from "@/lib/api-client";
 import { tagToSlug } from "@/lib/tag-url";
 
 const BASE = "https://goukaku.dev";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const exams = await listExams();
+  const [exams, ipExams] = await Promise.all([listExams(), listIpExams()]);
   const now = new Date();
 
   const out: MetadataRoute.Sitemap = [
@@ -14,6 +19,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
       changeFrequency: "weekly",
       priority: 1.0,
+    },
+    {
+      url: `${BASE}/ip`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.9,
     },
     {
       url: `${BASE}/fe`,
@@ -94,6 +105,29 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly",
       priority: 0.5,
     });
+  }
+
+  for (const exam of ipExams) {
+    out.push({
+      url: `${BASE}/ip/exam/${exam.exam_id}`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    });
+
+    try {
+      const questions = await listIpQuestions(exam.exam_id);
+      for (const q of questions) {
+        out.push({
+          url: `${BASE}/ip/play/${exam.exam_id}/q/${q.q_number}`,
+          lastModified: now,
+          changeFrequency: "monthly",
+          priority: 0.6,
+        });
+      }
+    } catch {
+      // skip ip exams whose questions can't be fetched at build time
+    }
   }
 
   return out;
