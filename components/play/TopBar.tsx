@@ -9,12 +9,14 @@ export function PlayTopBar({
   currentIndex,
   total,
   questionId,
+  homeHref = "/fe",
 }: {
   examTitle: string
   qNumber: number
   currentIndex: number
   total: number
   questionId?: string
+  homeHref?: string
 }) {
   const [bookmarked, setBookmarked] = useState(false)
 
@@ -32,7 +34,7 @@ export function PlayTopBar({
   return (
     <div className="flex items-center gap-2.5 py-2 mb-3">
       <Link
-        href="/fe"
+        href={homeHref}
         className="w-9 h-9 rounded-full bg-goukaku-surface shadow-sm flex items-center justify-center text-[16px]"
       >
         ←

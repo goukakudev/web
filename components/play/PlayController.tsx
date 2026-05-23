@@ -41,11 +41,15 @@ export function PlayController({
   exam,
   mode,
   initialQNumber,
+  urlBase = "/play",
+  homeHref = "/fe",
 }: {
   questions: Question[];
   exam: ExamSummary;
   mode: Mode;
   initialQNumber?: number;
+  urlBase?: string;
+  homeHref?: string;
 }) {
   const router = useRouter();
   const [questions, setQuestions] = useState<Question[]>(() =>
@@ -169,6 +173,7 @@ export function PlayController({
           qNumber={0}
           currentIndex={0}
           total={questions.length}
+          homeHref={homeHref}
         />
         <ExamResult
           correct={examCorrect}
@@ -228,7 +233,7 @@ export function PlayController({
     if (mode !== "sequential") return;
     const q = questions[newIndex];
     if (!q) return;
-    router.replace(`/play/${exam.exam_id}/q/${q.q_number}`, { scroll: false });
+    router.replace(`${urlBase}/${exam.exam_id}/q/${q.q_number}`, { scroll: false });
   }
 
   function next() {
@@ -256,6 +261,7 @@ export function PlayController({
         currentIndex={currentIndex}
         total={questions.length}
         questionId={current._id}
+        homeHref={homeHref}
       />
       {isExamMode && examStartedAt !== null && (
         <div className="flex items-center justify-end mb-3">
