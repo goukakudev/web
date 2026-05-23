@@ -50,33 +50,24 @@ export default function SupportPage() {
 
       <Section title="対応試験">
         <p>現時点で 合格.dev が対応している試験は以下のとおりです。</p>
-        <ul className="list-disc pl-5 space-y-2 mt-3">
-          <li>
-            <strong>基本情報技術者試験 (FE)</strong> — 科目A の過去問・解説。
-            令和7年度春期 から 平成25年度春期 まで・約 800 問以上収録。{" "}
-            <Link href="/fe" className="underline">
-              FE トップ
-            </Link>{" "}
-            /{" "}
-            <a
-              href="https://apps.apple.com/jp/app/id6753257968"
-              className="underline"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              iOS アプリ
-            </a>
-          </li>
-          <li>
-            <strong>宅地建物取引士試験 (宅建)</strong> — 4分野
-            (権利関係 / 宅建業法 / 法令上の制限 / 税その他) の過去問・解説。
-            平成16年度 から 令和7年度 まで・1,200 問以上収録。{" "}
-            <Link href="/takken" className="underline">
-              宅建トップ
-            </Link>
-          </li>
-        </ul>
-        <p className="mt-3 text-[12px] text-goukaku-ink/60">
+        <div className="space-y-5 mt-3">
+          <ExamCard
+            title="基本情報技術者試験 (FE)"
+            description="科目A の過去問・解説。令和7年度春期 から 平成25年度春期 まで・約 800 問以上収録。"
+            webHref="/fe"
+            webLabel="FE トップ (Web)"
+            appStoreUrl="https://apps.apple.com/jp/app/id6753257968"
+            appStoreAlt="基本情報技術者試験 合格.dev を App Store でダウンロード"
+          />
+          <ExamCard
+            title="宅地建物取引士試験 (宅建)"
+            description="4分野 (権利関係 / 宅建業法 / 法令上の制限 / 税その他) の過去問・解説。平成16年度 から 令和7年度 まで・1,200 問以上収録。"
+            webHref="/takken"
+            webLabel="宅建トップ (Web)"
+            comingSoonLabel="iOS アプリ近日公開予定"
+          />
+        </div>
+        <p className="mt-4 text-[12px] text-goukaku-ink/60">
           ※
           今後、他の国家資格・検定試験についても順次対応を予定しています。リクエストは{" "}
           <a href={mailto("試験追加リクエスト - 合格.dev")} className="underline">
@@ -229,6 +220,64 @@ function Section({
       <h2 className="text-[16px] font-extrabold mb-2">{title}</h2>
       <div className="text-goukaku-ink/85">{children}</div>
     </section>
+  );
+}
+
+function ExamCard({
+  title,
+  description,
+  webHref,
+  webLabel,
+  appStoreUrl,
+  appStoreAlt,
+  comingSoonLabel,
+}: {
+  title: string;
+  description: string;
+  webHref: string;
+  webLabel: string;
+  appStoreUrl?: string;
+  appStoreAlt?: string;
+  comingSoonLabel?: string;
+}) {
+  return (
+    <div className="border border-goukaku-divider rounded-[10px] p-4">
+      <p className="font-extrabold text-[14px] mb-1">{title}</p>
+      <p className="text-[12.5px] text-goukaku-ink/75 leading-[1.7] mb-3">
+        {description}
+      </p>
+      <div className="flex flex-wrap items-center gap-3">
+        <Link
+          href={webHref}
+          className="inline-flex items-center px-3 py-2 rounded-[6px] border border-goukaku-divider text-[12px] font-bold hover:bg-goukaku-ink/5"
+        >
+          {webLabel} →
+        </Link>
+        {appStoreUrl && appStoreAlt ? (
+          <a
+            href={appStoreUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={appStoreAlt}
+            className="inline-block"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/ja-jp?releaseDate=1746489600"
+              alt={appStoreAlt}
+              width={135}
+              height={40}
+              style={{ height: 40, width: "auto" }}
+              loading="lazy"
+            />
+          </a>
+        ) : comingSoonLabel ? (
+          <span className="inline-flex items-center px-3 py-2 rounded-[6px] bg-goukaku-ink/10 text-[12px] text-goukaku-ink/60">
+            {comingSoonLabel}
+          </span>
+        ) : null}
+      </div>
+    </div>
   );
 }
 
