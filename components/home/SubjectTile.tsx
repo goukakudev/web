@@ -10,11 +10,20 @@ const TILE_COLORS = [
   "bg-goukaku-purple",
 ] as const
 
-export function SubjectTile({ exam, index }: { exam: ExamSummary; index: number }) {
+export function SubjectTile({
+  exam,
+  index,
+  subject = "fe",
+}: {
+  exam: ExamSummary
+  index: number
+  subject?: "fe" | "ip"
+}) {
   const color = TILE_COLORS[index % TILE_COLORS.length]
+  const href = subject === "ip" ? `/ip/exam/${exam.exam_id}` : `/exam/${exam.exam_id}`
   return (
     <Link
-      href={`/exam/${exam.exam_id}`}
+      href={href}
       className="block bg-goukaku-surface rounded-[20px] p-3.5"
     >
       <div className={`w-10 h-10 rounded-full ${color} flex items-center justify-center text-[16px] mb-2.5`}>

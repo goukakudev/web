@@ -5,14 +5,21 @@ import { useEffect, useState } from "react"
 import { getBookmarks } from "@/lib/local-store"
 import type { ExamSummary } from "@/lib/types"
 
-export function BookmarkCard({ exams }: { exams: ExamSummary[] }) {
+export function BookmarkCard({
+  exams,
+  subject = "fe",
+}: {
+  exams: ExamSummary[]
+  subject?: "fe" | "ip"
+}) {
   const [counts, setCounts] = useState<{ total: number; examCount: number } | null>(null)
+  const examIdPrefix = `${subject}-`
 
   useEffect(() => {
     const all = getBookmarks()
+    const filtered = [...all].filter((id) => id.startsWith(examIdPrefix))
     const seenExams = new Set<string>()
-    for (const id of all) {
-      // Match against known exam ids by prefix.
+    for (const id of filtered) {
       for (const e of exams) {
         if (id.startsWith(`${e.exam_id}-`)) {
           seenExams.add(e.exam_id)
@@ -20,8 +27,8 @@ export function BookmarkCard({ exams }: { exams: ExamSummary[] }) {
         }
       }
     }
-    setCounts({ total: all.size, examCount: seenExams.size })
-  }, [exams])
+    setCounts({ total: filtered.length, examCount: seenExams.size })
+  }, [exams, examIdPrefix])
 
   if (!counts || counts.total === 0) return null
 
@@ -32,7 +39,7 @@ export function BookmarkCard({ exams }: { exams: ExamSummary[] }) {
       </div>
       <div className="text-[18px] font-extrabold mb-3.5">ブックマークした試験</div>
       <Link
-        href="/fe/bookmarks"
+        href={`/${subject}/bookmarks`}
         className="block p-4 bg-goukaku-surface rounded-2xl border border-goukaku-divider"
       >
         <div className="flex items-center gap-3">
