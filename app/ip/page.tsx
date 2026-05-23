@@ -74,6 +74,29 @@ export default async function IpHomePage() {
           </Link>
         )}
 
+        <div className="grid grid-cols-2 gap-3 mb-6">
+          <Link
+            href="/ip/bookmarks"
+            className="rounded-[20px] bg-goukaku-surface p-4 flex items-center gap-3"
+          >
+            <div className="text-[24px]">⭐</div>
+            <div>
+              <div className="text-[13px] font-extrabold">ブックマーク</div>
+              <div className="text-[11px] text-goukaku-ink/60">後で見返す問題</div>
+            </div>
+          </Link>
+          <Link
+            href="/ip/history"
+            className="rounded-[20px] bg-goukaku-surface p-4 flex items-center gap-3"
+          >
+            <div className="text-[24px]">📜</div>
+            <div>
+              <div className="text-[13px] font-extrabold">回答履歴</div>
+              <div className="text-[11px] text-goukaku-ink/60">新しい順に表示</div>
+            </div>
+          </Link>
+        </div>
+
         <div
           className="mt-7 text-[22px] text-goukaku-pink-script"
           style={{ fontFamily: "var(--font-script)" }}

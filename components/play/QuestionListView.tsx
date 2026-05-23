@@ -3,11 +3,12 @@
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import { MobileFrame } from "@/components/layout/MobileFrame"
-import { listExams, listQuestions } from "@/lib/api-client"
+import { listExams, listQuestions, listIpExams, listIpQuestions } from "@/lib/api-client"
 import { getAllAnswers, getBookmarks } from "@/lib/local-store"
 import type { Question, ExamSummary } from "@/lib/types"
 
 export type ListMode = "history" | "bookmarks"
+export type SubjectKey = "fe" | "ip"
 
 interface Row {
   questionId: string
@@ -18,7 +19,17 @@ interface Row {
   answeredAt?: string
 }
 
-export function QuestionListView({ mode }: { mode: ListMode }) {
+export function QuestionListView({
+  mode,
+  subject = "fe",
+}: {
+  mode: ListMode
+  subject?: SubjectKey
+}) {
+  const subjectPrefix = `/${subject}`
+  const examIdPrefix = subject === "ip" ? "ip-" : "fe-"
+  const fetchExams = subject === "ip" ? listIpExams : listExams
+  const fetchQuestions = subject === "ip" ? listIpQuestions : listQuestions
   const [rows, setRows] = useState<Row[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -30,10 +41,11 @@ export function QuestionListView({ mode }: { mode: ListMode }) {
       try {
         const answers = getAllAnswers()
         const bookmarks = getBookmarks()
-        const targetIds =
+        const allTargetIds =
           mode === "bookmarks"
             ? [...bookmarks]
             : Object.keys(answers)
+        const targetIds = allTargetIds.filter((id) => id.startsWith(examIdPrefix))
         if (targetIds.length === 0) {
           if (!cancelled) {
             setRows([])
@@ -42,7 +54,7 @@ export function QuestionListView({ mode }: { mode: ListMode }) {
           return
         }
 
-        const exams: ExamSummary[] = await listExams()
+        const exams: ExamSummary[] = await fetchExams()
         const titleByExam = new Map(exams.map((e) => [e.exam_id, e.title ?? e.exam_id]))
 
         const examIds = new Set<string>()
@@ -59,7 +71,7 @@ export function QuestionListView({ mode }: { mode: ListMode }) {
         await Promise.all(
           [...examIds].map(async (examId) => {
             try {
-              const qs = await listQuestions(examId)
+              const qs = await fetchQuestions(examId)
               results.set(examId, qs)
             } catch {
               // ignore individual exam failures
@@ -112,7 +124,7 @@ export function QuestionListView({ mode }: { mode: ListMode }) {
 
   return (
     <MobileFrame>
-      <Link href="/fe" className="inline-block text-[14px] mb-4">
+      <Link href={subjectPrefix} className="inline-block text-[14px] mb-4">
         ← ホーム
       </Link>
       <h1 className="text-[22px] font-extrabold mb-2">
@@ -145,7 +157,7 @@ export function QuestionListView({ mode }: { mode: ListMode }) {
           {rows.map((r) => (
             <li key={r.questionId}>
               <Link
-                href={`/fe/play/${r.examId}/q/${r.qNumber}`}
+                href={`${subjectPrefix}/play/${r.examId}/q/${r.qNumber}`}
                 className="block p-3 bg-goukaku-surface rounded-xl border border-goukaku-divider"
               >
                 <div className="text-[10px] tracking-wider font-bold opacity-55 uppercase">
