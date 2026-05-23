@@ -296,6 +296,7 @@ export function PlayController({
           tags={current.tags ?? []}
           priorGlossaryTerms={usedGlossaryTerms(current.body)}
           onGlossaryClick={handleGlossaryClick}
+          subject={urlBase.startsWith("/ip") ? "ip" : "fe"}
         />
       )}
       <GlossaryModal
