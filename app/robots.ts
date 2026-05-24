@@ -6,7 +6,16 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/", "/diagnosis", "/play/random"],
+        disallow: [
+          "/api/",
+          "/diagnosis",
+          "/play/random",
+          "/ip/play/random",
+          "/fe/bookmarks",
+          "/fe/history",
+          "/ip/bookmarks",
+          "/ip/history",
+        ],
       },
     ],
     sitemap: "https://goukaku.dev/sitemap.xml",
