@@ -4,7 +4,7 @@ import { MobileFrame } from "@/components/layout/MobileFrame"
 export const metadata = {
   title: "合格.dev — 資格の過去問学習サイト",
   description:
-    "基本情報技術者試験・宅地建物取引士など、各種資格の過去問を無料で。解説・選択肢別解説・模試モード付き。",
+    "独学でも合格できる。合格から、人生を変えられる。goukaku.dev は資格に挑むすべての人へ、過去問・解説・ヒントを届ける学習プラットフォームです。",
   alternates: { canonical: "/" },
 }
 
@@ -72,9 +72,18 @@ export default function CategoriesPage() {
         >
           goukaku.dev
         </div>
-        <h1 className="text-[22px] font-extrabold mt-2">合格.dev</h1>
-        <p className="text-[13px] opacity-65 mt-2 leading-relaxed">
-          各種資格の過去問を無料で。学習カテゴリを選んでください。
+        <div className="mt-3 inline-flex rounded-full border border-goukaku-divider bg-goukaku-surface px-3 py-1 text-[11px] font-bold text-goukaku-ink/65">
+          資格に挑むすべての人へ
+        </div>
+        <h1
+          className="mt-5 text-[30px] font-black leading-[1.22] tracking-[-0.04em]"
+          aria-label="独学でも、合格できる。合格から、人生を変えられる。"
+        >
+          <span className="block">独学でも、合格できる。</span>
+          <span className="block">合格から、人生を変えられる。</span>
+        </h1>
+        <p className="text-[13px] opacity-70 mt-4 leading-relaxed">
+          goukaku.dev は、資格に挑むすべての人へ、過去問・解説・ヒントを届ける学習プラットフォームです。
         </p>
       </header>
 
