@@ -102,23 +102,6 @@ export default function CategoriesPage() {
         <p>
           掲載している試験問題は、各実施団体が公開する過去問題を利用しています。解説文は本サイト独自の要約であり、公式見解を示すものではありません。
         </p>
-        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
-          <Link href="/about" className="underline">
-            about
-          </Link>
-          <Link href="/privacy" className="underline">
-            privacy
-          </Link>
-          <Link href="/terms" className="underline">
-            terms
-          </Link>
-          <Link href="/contact" className="underline">
-            contact
-          </Link>
-          <Link href="/support" className="underline">
-            support
-          </Link>
-        </div>
       </footer>
     </MobileFrame>
   )
