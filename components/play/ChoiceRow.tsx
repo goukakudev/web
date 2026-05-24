@@ -20,8 +20,11 @@ function styleFor(
       ? "bg-goukaku-ink/5 border-goukaku-ink"
       : "bg-goukaku-surface border-goukaku-divider"
   }
+  if (isCorrect && isSelected)
+    return "bg-goukaku-lime/40 border-goukaku-lime border-[3px] ring-2 ring-goukaku-lime/40"
   if (isCorrect) return "bg-goukaku-lime/25 border-goukaku-lime"
-  if (isSelected) return "bg-goukaku-pink/15 border-goukaku-pink-script border-2"
+  if (isSelected)
+    return "bg-goukaku-pink/30 border-goukaku-pink-script border-[3px] ring-2 ring-goukaku-pink-script/40"
   return "bg-goukaku-surface border-goukaku-divider opacity-55"
 }
 

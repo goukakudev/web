@@ -10,7 +10,7 @@ export function TagChips({
   subject?: "fe" | "ip"
 }) {
   if (!tags || tags.length === 0) return null
-  const base = subject === "ip" ? "/ip/tag" : "/tag"
+  const base = subject === "ip" ? "/ip/tag" : "/fe/tag"
   return (
     <FlowLayout gapX={6} gapY={6}>
       {tags.map((tag) => (

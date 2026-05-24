@@ -6,7 +6,11 @@ import { getDeviceId } from "@/lib/local-store"
 import { fetchWeakTags, type WeakTag } from "@/lib/client-api"
 import { tagToSlug } from "@/lib/tag-url"
 
-export function WeakTagsSection() {
+export function WeakTagsSection({
+  subject = "fe",
+}: {
+  subject?: "fe" | "ip"
+}) {
   const [tags, setTags] = useState<WeakTag[] | null>(null)
 
   useEffect(() => {
@@ -19,6 +23,8 @@ export function WeakTagsSection() {
   }, [])
 
   if (tags === null || tags.length === 0) return null
+
+  const tagBase = subject === "ip" ? "/ip/tag" : "/fe/tag"
 
   return (
     <div className="mt-7">
@@ -35,7 +41,7 @@ export function WeakTagsSection() {
           return (
             <Link
               key={t.tag}
-              href={`/tag/${tagToSlug(t.tag)}`}
+              href={`${tagBase}/${tagToSlug(t.tag)}`}
               className="flex items-center gap-3 rounded-[14px] bg-goukaku-surface px-3.5 py-2.5"
             >
               <span className="text-[13px] font-bold text-goukaku-ink">

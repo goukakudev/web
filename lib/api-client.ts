@@ -49,6 +49,20 @@ export async function listQuestions(examId: string): Promise<Question[]> {
   return data.questions
 }
 
+export async function getExamStats(
+  examId: string,
+): Promise<Map<string, QuestionStat>> {
+  try {
+    const data = await get<ExamStatsResponse>(
+      `/v1/exams/${encodeURIComponent(examId)}/stats`,
+      STATS_REVALIDATE,
+    )
+    return new Map(data.stats.map((s) => [s.question_id, s]))
+  } catch {
+    return new Map()
+  }
+}
+
 export async function listPopularTags(limit = 20): Promise<PopularTag[]> {
   const data = await get<PopularTagListResponse>(
     `/v1/tags/popular?limit=${limit}`,

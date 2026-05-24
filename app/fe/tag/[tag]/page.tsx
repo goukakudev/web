@@ -16,9 +16,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const tag = slugToTag(tagParam)
   const slug = tagToSlug(tag)
   const display = tag.replace(/^#/, "")
-  const title = `#${display} の過去問`
+  const title = `#${display} の過去問 (基本情報)`
   const description = `基本情報技術者試験の過去問のうち「${display}」タグが付いた問題の一覧。解説付き。`
-  const canonical = `/tag/${slug}`
+  const canonical = `/fe/tag/${slug}`
   return {
     title,
     description,
@@ -28,12 +28,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-export default async function TagPage({ params }: PageProps) {
+export default async function FeTagPage({ params }: PageProps) {
   const { tag: tagParam } = await params
 
-  // Legacy URLs (/tag/%23X) → redirect to clean form (/tag/X)
   if (decodeURIComponent(tagParam).startsWith("#")) {
-    redirect(`/tag/${tagToSlug(slugToTag(tagParam))}`)
+    redirect(`/fe/tag/${tagToSlug(slugToTag(tagParam))}`)
   }
 
   const tag = slugToTag(tagParam)
@@ -50,7 +49,7 @@ export default async function TagPage({ params }: PageProps) {
         if ((q.tags ?? []).includes(tag)) collected.push(q)
       }
     } catch {
-      // ignore individual exam fetch errors — show what we have
+      // ignore
     }
   }
   collected.sort((a, b) => {

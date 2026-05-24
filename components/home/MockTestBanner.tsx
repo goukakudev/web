@@ -12,7 +12,7 @@ export function MockTestBanner({
   const href =
     subject === "ip"
       ? `/ip/play/${exam.exam_id}?mode=exam`
-      : `/play/${exam.exam_id}?mode=exam`
+      : `/fe/play/${exam.exam_id}?mode=exam`
   const duration = subject === "ip" ? "120 分" : "90 分"
   return (
     <Link

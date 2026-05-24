@@ -1,8 +1,9 @@
 import type { Metadata } from "next"
 import { notFound, redirect } from "next/navigation"
-import { listExams, listQuestions } from "@/lib/api-client"
+import { listExams, listQuestions, getExamStats } from "@/lib/api-client"
 import { MobileFrame } from "@/components/layout/MobileFrame"
 import { PlayController } from "@/components/play/PlayController"
+import type { QuestionStat } from "@/lib/types"
 
 export const metadata: Metadata = {
   robots: { index: false, follow: true },
@@ -13,7 +14,7 @@ interface PageProps {
   searchParams: Promise<{ mode?: string }>
 }
 
-export default async function PlayPage({ params, searchParams }: PageProps) {
+export default async function FePlayPage({ params, searchParams }: PageProps) {
   const { examId } = await params
   const { mode } = await searchParams
 
@@ -21,14 +22,17 @@ export default async function PlayPage({ params, searchParams }: PageProps) {
   const exam = exams.find((e) => e.exam_id === examId)
   if (!exam) notFound()
 
-  // sequential (and bare /play/[examId]) → canonical per-question URL
   if (mode === undefined || mode === "sequential") {
     const questions = await listQuestions(examId)
     const first = [...questions].sort((a, b) => a.q_number - b.q_number)[0]
-    if (first) redirect(`/play/${examId}/q/${first.q_number}`)
+    if (first) redirect(`/fe/play/${examId}/q/${first.q_number}`)
   }
 
-  const questions = await listQuestions(examId)
+  const [questions, statsMap] = await Promise.all([
+    listQuestions(examId),
+    getExamStats(examId),
+  ])
+  const stats: Record<string, QuestionStat> = Object.fromEntries(statsMap)
   const playMode: "random" | "wrongOnly" | "exam" =
     mode === "random" ? "random" :
     mode === "wrongOnly" ? "wrongOnly" :
@@ -36,7 +40,12 @@ export default async function PlayPage({ params, searchParams }: PageProps) {
 
   return (
     <MobileFrame>
-      <PlayController questions={questions} exam={exam} mode={playMode} />
+      <PlayController
+        questions={questions}
+        exam={exam}
+        mode={playMode}
+        stats={stats}
+      />
     </MobileFrame>
   )
 }

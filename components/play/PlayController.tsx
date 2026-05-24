@@ -12,6 +12,10 @@ import { FeedbackSheet, type FeedbackRating } from "./FeedbackSheet";
 import { GlossaryModal } from "./GlossaryModal";
 import { CorrectRateBadge } from "./CorrectRateBadge";
 import { SelectionMeter } from "./SelectionMeter";
+import {
+  AnswerFeedbackOverlay,
+  type FeedbackKind,
+} from "./AnswerFeedbackOverlay";
 import type {
   Question,
   ChoiceLabel,
@@ -48,7 +52,7 @@ export function PlayController({
   exam,
   mode,
   initialQNumber,
-  urlBase = "/play",
+  urlBase = "/fe/play",
   homeHref = "/fe",
   stats,
 }: {
@@ -118,6 +122,10 @@ export function PlayController({
     initialRating: FeedbackRating | null;
   }>({ open: false, initialRating: null });
   const [glossaryEntry, setGlossaryEntry] = useState<GlossaryEntry | null>(null);
+  const [feedback, setFeedback] = useState<{
+    trigger: number;
+    kind: FeedbackKind | null;
+  }>({ trigger: 0, kind: null });
 
   const handleGlossaryClick = (term: string) => {
     const entry = getGlossaryEntry(term);
@@ -221,6 +229,12 @@ export function PlayController({
   function handleSelect(label: ChoiceLabel) {
     if (selected !== undefined && !isExamMode) return;
     setSelectedByQid((prev) => ({ ...prev, [current._id]: label }));
+
+    if (!isExamMode && current.correct_label !== undefined) {
+      const kind: FeedbackKind =
+        label === current.correct_label ? "correct" : "wrong";
+      setFeedback((prev) => ({ trigger: prev.trigger + 1, kind }));
+    }
 
     const answeredAt = new Date().toISOString();
     setAnswer({
@@ -438,6 +452,7 @@ export function PlayController({
           }
         />
       )}
+      <AnswerFeedbackOverlay trigger={feedback.trigger} kind={feedback.kind} />
     </>
   );
 }
