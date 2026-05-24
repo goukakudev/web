@@ -10,7 +10,14 @@ import { ExamTimer } from "./ExamTimer";
 import { ExamResult } from "./ExamResult";
 import { FeedbackSheet, type FeedbackRating } from "./FeedbackSheet";
 import { GlossaryModal } from "./GlossaryModal";
-import type { Question, ChoiceLabel, ExamSummary } from "@/lib/types";
+import { CorrectRateBadge } from "./CorrectRateBadge";
+import { SelectionMeter } from "./SelectionMeter";
+import type {
+  Question,
+  ChoiceLabel,
+  ExamSummary,
+  QuestionStat,
+} from "@/lib/types";
 import { setAnswer, getDeviceId, getAllAnswers } from "@/lib/local-store";
 import { addExamSession } from "@/lib/exam-session";
 import { recordAnswer } from "@/lib/client-api";
@@ -43,6 +50,7 @@ export function PlayController({
   initialQNumber,
   urlBase = "/play",
   homeHref = "/fe",
+  stats,
 }: {
   questions: Question[];
   exam: ExamSummary;
@@ -50,6 +58,7 @@ export function PlayController({
   initialQNumber?: number;
   urlBase?: string;
   homeHref?: string;
+  stats?: Record<string, QuestionStat>;
 }) {
   const router = useRouter();
   const [questions, setQuestions] = useState<Question[]>(() =>
@@ -195,6 +204,7 @@ export function PlayController({
 
   const selected = selectedByQid[current._id];
   const revealed = selected !== undefined && !isExamMode;
+  const showsStats = !isExamMode;
 
   function handleSelect(label: ChoiceLabel) {
     if (selected !== undefined && !isExamMode) return;
@@ -278,17 +288,33 @@ export function PlayController({
         const isCorrect = revealed
           ? c.label === current.correct_label
           : undefined;
+        const stat = stats?.[current._id];
+        const showMeter = showsStats && revealed && stat !== undefined;
+        const rate = stat && stat.total > 0
+          ? ((stat.by_label[c.label] ?? 0) / stat.total) * 100
+          : 0;
         return (
-          <ChoiceRow
-            key={c.label}
-            letter={c.label}
-            text={c.text}
-            isSelected={isSelected}
-            isCorrect={isCorrect}
-            onClick={() => handleSelect(c.label)}
-          />
+          <div key={c.label}>
+            <ChoiceRow
+              letter={c.label}
+              text={c.text}
+              isSelected={isSelected}
+              isCorrect={isCorrect}
+              onClick={() => handleSelect(c.label)}
+            />
+            {showMeter && (
+              <SelectionMeter
+                rate={rate}
+                isCorrect={c.label === current.correct_label}
+                revealed={revealed}
+              />
+            )}
+          </div>
         );
       })}
+      {showsStats && stats?.[current._id] && (
+        <CorrectRateBadge stat={stats[current._id]!} />
+      )}
       {revealed && current.explanation && (
         <ExplanationCard
           explanation={current.explanation}
