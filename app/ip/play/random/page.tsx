@@ -1,7 +1,11 @@
-import { listIpExams, listIpQuestions } from "@/lib/api-client"
+import {
+  listIpExams,
+  listIpQuestions,
+  getIpExamStats,
+} from "@/lib/api-client"
 import { MobileFrame } from "@/components/layout/MobileFrame"
 import { PlayController } from "@/components/play/PlayController"
-import type { Question, ExamSummary } from "@/lib/types"
+import type { Question, ExamSummary, QuestionStat } from "@/lib/types"
 
 const VIRTUAL_EXAM: ExamSummary = {
   exam_id: "ip-ALL",
@@ -31,6 +35,16 @@ export default async function IpPlayRandomPage({ searchParams }: PageProps) {
     }
   }
   const seed = all.slice().sort((a, b) => a._id.localeCompare(b._id)).slice(0, limit)
+  const examIdsInSeed = Array.from(new Set(seed.map((q) => q.exam_id)))
+  const statsResults = await Promise.all(
+    examIdsInSeed.map((examId) => getIpExamStats(examId)),
+  )
+  const stats: Record<string, QuestionStat> = {}
+  for (const map of statsResults) {
+    for (const [qid, stat] of map) {
+      stats[qid] = stat
+    }
+  }
 
   return (
     <MobileFrame>
@@ -40,6 +54,7 @@ export default async function IpPlayRandomPage({ searchParams }: PageProps) {
         mode="random"
         urlBase="/ip/play"
         homeHref="/ip"
+        stats={stats}
       />
     </MobileFrame>
   )

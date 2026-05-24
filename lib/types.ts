@@ -77,3 +77,15 @@ export interface WeakTag {
 export interface WeakTagListResponse {
   tags: WeakTag[]
 }
+
+export interface QuestionStat {
+  question_id: string
+  total: number
+  correct: number
+  by_label: Record<string, number>
+}
+
+export interface ExamStatsResponse {
+  exam_id: string
+  stats: QuestionStat[]
+}

@@ -1,8 +1,13 @@
 import type { Metadata } from "next"
 import { notFound, redirect } from "next/navigation"
-import { listIpExams, listIpQuestions } from "@/lib/api-client"
+import {
+  listIpExams,
+  listIpQuestions,
+  getIpExamStats,
+} from "@/lib/api-client"
 import { MobileFrame } from "@/components/layout/MobileFrame"
 import { PlayController } from "@/components/play/PlayController"
+import type { QuestionStat } from "@/lib/types"
 
 export const metadata: Metadata = {
   robots: { index: false, follow: true },
@@ -27,7 +32,11 @@ export default async function IpPlayPage({ params, searchParams }: PageProps) {
     if (first) redirect(`/ip/play/${examId}/q/${first.q_number}`)
   }
 
-  const questions = await listIpQuestions(examId)
+  const [questions, statsMap] = await Promise.all([
+    listIpQuestions(examId),
+    getIpExamStats(examId),
+  ])
+  const stats: Record<string, QuestionStat> = Object.fromEntries(statsMap)
   const playMode: "random" | "wrongOnly" | "exam" =
     mode === "random" ? "random" :
     mode === "wrongOnly" ? "wrongOnly" :
@@ -41,6 +50,7 @@ export default async function IpPlayPage({ params, searchParams }: PageProps) {
         mode={playMode}
         urlBase="/ip/play"
         homeHref="/ip"
+        stats={stats}
       />
     </MobileFrame>
   )

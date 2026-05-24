@@ -5,10 +5,13 @@ import type {
   QuestionListResponse,
   PopularTag,
   PopularTagListResponse,
+  QuestionStat,
+  ExamStatsResponse,
 } from "./types"
 
 const EXAMS_REVALIDATE = 60 * 60 // 1h
 const QUESTIONS_REVALIDATE = 60 * 60 * 24 // 24h
+const STATS_REVALIDATE = 60 * 60 // 1h
 
 function baseUrl(): string {
   const v = process.env.API_BASE
@@ -65,4 +68,18 @@ export async function listIpQuestions(examId: string): Promise<Question[]> {
     QUESTIONS_REVALIDATE,
   )
   return data.questions
+}
+
+export async function getIpExamStats(
+  examId: string,
+): Promise<Map<string, QuestionStat>> {
+  try {
+    const data = await get<ExamStatsResponse>(
+      `/v1/ip/exams/${encodeURIComponent(examId)}/stats`,
+      STATS_REVALIDATE,
+    )
+    return new Map(data.stats.map((s) => [s.question_id, s]))
+  } catch {
+    return new Map()
+  }
 }
