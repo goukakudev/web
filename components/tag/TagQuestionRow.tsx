@@ -18,7 +18,7 @@ export function TagQuestionRow({
   const examLabel = exam?.title ?? question.exam_id
   const playHref = subject === "ip"
     ? `/ip/play/${question.exam_id}/q/${question.q_number}`
-    : `/play/${question.exam_id}/q/${question.q_number}`
+    : `/fe/play/${question.exam_id}/q/${question.q_number}`
   return (
     <Link
       href={playHref}
