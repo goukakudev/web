@@ -9,32 +9,41 @@ export const metadata = {
 }
 
 type Category = {
+  slug: string
   href: string
   label: string
   sub: string
   description: string
   emoji: string
   status: "available" | "coming-soon"
+  iosUrl?: string
+  androidUrl?: string
 }
 
 const CATEGORIES: Category[] = [
   {
+    slug: "ip",
     href: "/ip",
     label: "ITパスポート試験",
     sub: "IT Passport Exam",
-    description: "29 年分・各 100 問・全 2,900 問の過去問。解説・ヒント・選択肢ごとの正誤付き",
+    description:
+      "29 年分・各 100 問・全 2,900 問の過去問。解説・ヒント・選択肢ごとの正誤付き",
     emoji: "📘",
     status: "available",
   },
   {
+    slug: "fe",
     href: "/fe",
     label: "基本情報技術者試験",
     sub: "Fundamental IT Engineer",
-    description: "13 年分・各 80 問前後の過去問。順番 / ランダム / 模試で解けます",
+    description:
+      "13 年分・各 80 問前後の過去問。順番 / ランダム / 模試で解けます",
     emoji: "💻",
     status: "available",
+    iosUrl: "https://apps.apple.com/jp/app/id6753257968",
   },
   {
+    slug: "takken",
     href: "/takken",
     label: "宅地建物取引士",
     sub: "Real Estate Transaction Agent",
@@ -43,6 +52,15 @@ const CATEGORIES: Category[] = [
     status: "available",
   },
 ]
+
+const APP_STORE_BADGE_SRC =
+  "https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/ja-jp?releaseDate=1746489600"
+const GOOGLE_PLAY_BADGE_SRC =
+  "https://play.google.com/intl/ja/badges/static/images/badges/ja_badge_web_generic.png"
+
+const BADGE_BASE =
+  "inline-flex items-center justify-center h-10 rounded-md select-none"
+const BADGE_DISABLED = "opacity-40 grayscale cursor-not-allowed"
 
 export default function CategoriesPage() {
   return (
@@ -60,7 +78,7 @@ export default function CategoriesPage() {
         </p>
       </header>
 
-      <section className="grid grid-cols-1 gap-3">
+      <section className="grid grid-cols-1 gap-5">
         {CATEGORIES.map((c) => {
           const Inner = (
             <div
@@ -88,12 +106,33 @@ export default function CategoriesPage() {
               <div className="text-[14px] font-bold opacity-60">→</div>
             </div>
           )
-          return c.status === "available" ? (
-            <Link key={c.href} href={c.href} className="block">
-              {Inner}
-            </Link>
-          ) : (
-            <div key={c.href}>{Inner}</div>
+
+          return (
+            <div key={c.href}>
+              {c.status === "available" ? (
+                <Link href={c.href} className="block">
+                  {Inner}
+                </Link>
+              ) : (
+                Inner
+              )}
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <StoreBadge
+                  testId={`store-ios-${c.slug}`}
+                  src={APP_STORE_BADGE_SRC}
+                  alt={`${c.label} を App Store でダウンロード`}
+                  href={c.iosUrl}
+                  unavailableLabel="App Store 準備中"
+                />
+                <StoreBadge
+                  testId={`store-android-${c.slug}`}
+                  src={GOOGLE_PLAY_BADGE_SRC}
+                  alt={`${c.label} を Google Play で取得`}
+                  href={c.androidUrl}
+                  unavailableLabel="Google Play 準備中"
+                />
+              </div>
+            </div>
           )
         })}
       </section>
@@ -104,5 +143,49 @@ export default function CategoriesPage() {
         </p>
       </footer>
     </MobileFrame>
+  )
+}
+
+function StoreBadge({
+  testId,
+  src,
+  alt,
+  href,
+  unavailableLabel,
+}: {
+  testId: string
+  src: string
+  alt: string
+  href?: string
+  unavailableLabel: string
+}) {
+  if (href) {
+    return (
+      <a
+        data-testid={testId}
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={alt}
+        className={BADGE_BASE}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={src} alt={alt} height={40} style={{ height: 40, width: "auto" }} loading="lazy" />
+      </a>
+    )
+  }
+
+  return (
+    <span
+      data-testid={testId}
+      role="img"
+      aria-disabled="true"
+      aria-label={`${alt} (${unavailableLabel})`}
+      title={unavailableLabel}
+      className={`${BADGE_BASE} ${BADGE_DISABLED}`}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={src} alt="" height={40} style={{ height: 40, width: "auto" }} loading="lazy" />
+    </span>
   )
 }
