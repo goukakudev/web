@@ -24,7 +24,7 @@ describe("ExplanationCard", () => {
 
   it("renders overall text", () => {
     render(<ExplanationCard explanation={explanation} correctLabel="イ" tags={[]} />)
-    expect(screen.getByText("f(2) = 13")).toBeInTheDocument()
+    expect(screen.getByText("f(2) = 13。")).toBeInTheDocument()
   })
 
   it("renders per_choice rows when present", () => {
