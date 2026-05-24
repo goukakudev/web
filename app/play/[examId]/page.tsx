@@ -1,8 +1,9 @@
 import type { Metadata } from "next"
 import { notFound, redirect } from "next/navigation"
-import { listExams, listQuestions } from "@/lib/api-client"
+import { listExams, listQuestions, getExamStats } from "@/lib/api-client"
 import { MobileFrame } from "@/components/layout/MobileFrame"
 import { PlayController } from "@/components/play/PlayController"
+import type { QuestionStat } from "@/lib/types"
 
 export const metadata: Metadata = {
   robots: { index: false, follow: true },
@@ -28,7 +29,11 @@ export default async function PlayPage({ params, searchParams }: PageProps) {
     if (first) redirect(`/play/${examId}/q/${first.q_number}`)
   }
 
-  const questions = await listQuestions(examId)
+  const [questions, statsMap] = await Promise.all([
+    listQuestions(examId),
+    getExamStats(examId),
+  ])
+  const stats: Record<string, QuestionStat> = Object.fromEntries(statsMap)
   const playMode: "random" | "wrongOnly" | "exam" =
     mode === "random" ? "random" :
     mode === "wrongOnly" ? "wrongOnly" :
@@ -36,7 +41,12 @@ export default async function PlayPage({ params, searchParams }: PageProps) {
 
   return (
     <MobileFrame>
-      <PlayController questions={questions} exam={exam} mode={playMode} />
+      <PlayController
+        questions={questions}
+        exam={exam}
+        mode={playMode}
+        stats={stats}
+      />
     </MobileFrame>
   )
 }

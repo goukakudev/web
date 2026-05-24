@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { listExams, listQuestions } from "@/lib/api-client";
+import { listExams, listQuestions, getExamStats } from "@/lib/api-client";
 import { MobileFrame } from "@/components/layout/MobileFrame";
 import { PlayController } from "@/components/play/PlayController";
+import type { QuestionStat } from "@/lib/types";
 
 interface PageProps {
   params: Promise<{ examId: string; qNumber: string }>;
@@ -68,7 +69,11 @@ export default async function PlayQuestionPage({ params }: PageProps) {
   const exam = exams.find((e) => e.exam_id === examId);
   if (!exam) notFound();
 
-  const questions = await listQuestions(examId);
+  const [questions, statsMap] = await Promise.all([
+    listQuestions(examId),
+    getExamStats(examId),
+  ]);
+  const stats: Record<string, QuestionStat> = Object.fromEntries(statsMap);
   const q = questions.find((q) => q.q_number === n);
   if (!q) notFound();
 
@@ -145,6 +150,7 @@ export default async function PlayQuestionPage({ params }: PageProps) {
         exam={exam}
         mode="sequential"
         initialQNumber={n}
+        stats={stats}
       />
     </MobileFrame>
   );
