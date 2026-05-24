@@ -21,7 +21,7 @@ import type {
 import { setAnswer, getDeviceId, getAllAnswers } from "@/lib/local-store";
 import { addExamSession } from "@/lib/exam-session";
 import { recordAnswer } from "@/lib/client-api";
-import { withShuffledChoices } from "@/lib/question-display";
+import { withShuffledChoicesAndMap } from "@/lib/question-display";
 import {
   getGlossaryEntry,
   usedGlossaryTerms,
@@ -64,6 +64,11 @@ export function PlayController({
   const [questions, setQuestions] = useState<Question[]>(() =>
     sortBySequence(initialQuestions),
   );
+  // questionId → (displayed label → original label) のマップ。
+  // stats を表示ラベル空間へ remap する際に使う。
+  const [shuffleMaps, setShuffleMaps] = useState<
+    Record<string, Record<string, string>>
+  >({});
 
   useEffect(() => {
     let next: Question[];
@@ -84,8 +89,15 @@ export function PlayController({
     } else {
       next = sortBySequence(initialQuestions);
     }
+    const shuffled = next.map(withShuffledChoicesAndMap);
+    const maps: Record<string, Record<string, string>> = {};
+    for (const r of shuffled) {
+      maps[r.question._id] = r.displayedToOriginal;
+    }
     // eslint-disable-next-line react-hooks/set-state-in-effect -- mode-dependent filter runs after hydration
-    setQuestions(next.map(withShuffledChoices));
+    setQuestions(shuffled.map((r) => r.question));
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- mode-dependent filter runs after hydration
+    setShuffleMaps(maps);
   }, [initialQuestions, mode]);
 
   const [currentIndex, setCurrentIndex] = useState(() => {
@@ -290,8 +302,12 @@ export function PlayController({
           : undefined;
         const stat = stats?.[current._id];
         const showMeter = showsStats && revealed && stat !== undefined;
+        // stats.by_label は DB のシャッフル前ラベルで keyed。表示ラベル c.label を
+        // shuffleMaps で原ラベルに変換してから lookup する。マップが無ければ identity。
+        const originalLabel =
+          shuffleMaps[current._id]?.[c.label] ?? c.label;
         const rate = stat && stat.total > 0
-          ? ((stat.by_label[c.label] ?? 0) / stat.total) * 100
+          ? ((stat.by_label[originalLabel] ?? 0) / stat.total) * 100
           : 0;
         return (
           <div key={c.label}>

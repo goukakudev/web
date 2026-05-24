@@ -13,7 +13,29 @@ import type {
  * moved text.
  */
 export function withShuffledChoices(q: Question): Question {
-  if (q.choices.length < 2) return q
+  return withShuffledChoicesAndMap(q).question
+}
+
+export type ShuffleResult = {
+  question: Question
+  /**
+   * 表示ラベル → シャッフル前 (DB 上) のラベル の対応。stats など外部から
+   * 渡される label-keyed データを表示ラベル空間へ remap するときに使う。
+   */
+  displayedToOriginal: Record<string, string>
+}
+
+/**
+ * Same as `withShuffledChoices` but additionally returns the displayed→original
+ * label mapping. Use this when external label-keyed data (e.g. stats) must be
+ * remapped to align with the shuffled display order.
+ */
+export function withShuffledChoicesAndMap(q: Question): ShuffleResult {
+  if (q.choices.length < 2) {
+    const identity: Record<string, string> = {}
+    for (const c of q.choices) identity[c.label] = c.label
+    return { question: q, displayedToOriginal: identity }
+  }
 
   const n = q.choices.length
   const indices = Array.from({ length: n }, (_, i) => i)
@@ -47,11 +69,21 @@ export function withShuffledChoices(q: Question): Question {
     newExplanation = { overall: q.explanation.overall, per_choice: remapped }
   }
 
+  const displayedToOriginal: Record<string, string> = {}
+  indices.forEach((oldIdx, newPos) => {
+    const displayed = q.choices[newPos].label
+    const original = q.choices[oldIdx].label
+    displayedToOriginal[displayed] = original
+  })
+
   return {
-    ...q,
-    choices: newChoices,
-    correct_label: newCorrectLabel,
-    explanation: newExplanation,
+    question: {
+      ...q,
+      choices: newChoices,
+      correct_label: newCorrectLabel,
+      explanation: newExplanation,
+    },
+    displayedToOriginal,
   }
 }
 
