@@ -14,7 +14,7 @@ interface PageProps {
   searchParams: Promise<{ mode?: string }>
 }
 
-export default async function PlayPage({ params, searchParams }: PageProps) {
+export default async function FePlayPage({ params, searchParams }: PageProps) {
   const { examId } = await params
   const { mode } = await searchParams
 
@@ -22,11 +22,10 @@ export default async function PlayPage({ params, searchParams }: PageProps) {
   const exam = exams.find((e) => e.exam_id === examId)
   if (!exam) notFound()
 
-  // sequential (and bare /play/[examId]) → canonical per-question URL
   if (mode === undefined || mode === "sequential") {
     const questions = await listQuestions(examId)
     const first = [...questions].sort((a, b) => a.q_number - b.q_number)[0]
-    if (first) redirect(`/play/${examId}/q/${first.q_number}`)
+    if (first) redirect(`/fe/play/${examId}/q/${first.q_number}`)
   }
 
   const [questions, statsMap] = await Promise.all([

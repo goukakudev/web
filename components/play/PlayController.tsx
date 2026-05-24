@@ -52,7 +52,7 @@ export function PlayController({
   exam,
   mode,
   initialQNumber,
-  urlBase = "/play",
+  urlBase = "/fe/play",
   homeHref = "/fe",
   stats,
 }: {

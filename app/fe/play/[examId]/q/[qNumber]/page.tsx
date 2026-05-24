@@ -37,7 +37,7 @@ export async function generateMetadata({
     const bodyPreview = stripMd(q.body).slice(0, 90);
     const title = `${examLabel} 午前 問${n}：${bodyPreview}`;
     const description = `基本情報技術者試験 ${examLabel} 午前 問${n} の問題本文・選択肢・正解・解説。${bodyPreview}…`;
-    const canonical = `/play/${exam.exam_id}/q/${n}`;
+    const canonical = `/fe/play/${exam.exam_id}/q/${n}`;
 
     return {
       title,
@@ -60,7 +60,7 @@ export async function generateMetadata({
   }
 }
 
-export default async function PlayQuestionPage({ params }: PageProps) {
+export default async function FePlayQuestionPage({ params }: PageProps) {
   const { examId, qNumber } = await params;
   const n = Number(qNumber);
   if (!Number.isInteger(n) || n < 1) notFound();
@@ -77,7 +77,7 @@ export default async function PlayQuestionPage({ params }: PageProps) {
   const q = questions.find((q) => q.q_number === n);
   if (!q) notFound();
 
-  const url = `https://goukaku.dev/play/${exam.exam_id}/q/${n}`;
+  const url = `https://goukaku.dev/fe/play/${exam.exam_id}/q/${n}`;
   const acceptedText = q.choices.find((c) => c.label === q.correct_label)?.text;
 
   const jsonLd = {
@@ -106,7 +106,7 @@ export default async function PlayQuestionPage({ params }: PageProps) {
     isPartOf: {
       "@type": "LearningResource",
       name: `${exam.title ?? exam.exam_id} 過去問`,
-      url: `https://goukaku.dev/exam/${exam.exam_id}`,
+      url: `https://goukaku.dev/fe/exam/${exam.exam_id}`,
     },
   };
 
@@ -123,12 +123,18 @@ export default async function PlayQuestionPage({ params }: PageProps) {
       {
         "@type": "ListItem",
         position: 2,
-        name: exam.title ?? exam.exam_id,
-        item: `https://goukaku.dev/exam/${exam.exam_id}`,
+        name: "基本情報技術者試験",
+        item: "https://goukaku.dev/fe",
       },
       {
         "@type": "ListItem",
         position: 3,
+        name: exam.title ?? exam.exam_id,
+        item: `https://goukaku.dev/fe/exam/${exam.exam_id}`,
+      },
+      {
+        "@type": "ListItem",
+        position: 4,
         name: `問${n}`,
         item: url,
       },

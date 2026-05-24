@@ -42,6 +42,9 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  other: {
+    ...(ADSENSE_CLIENT ? { "google-adsense-account": ADSENSE_CLIENT } : {}),
+  },
 }
 
 const websiteJsonLd = {

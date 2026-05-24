@@ -74,7 +74,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   for (const exam of exams) {
     out.push({
-      url: `${BASE}/exam/${exam.exam_id}`,
+      url: `${BASE}/fe/exam/${exam.exam_id}`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.8,
@@ -84,7 +84,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       const questions = await listQuestions(exam.exam_id);
       for (const q of questions) {
         out.push({
-          url: `${BASE}/play/${exam.exam_id}/q/${q.q_number}`,
+          url: `${BASE}/fe/play/${exam.exam_id}/q/${q.q_number}`,
           lastModified: now,
           changeFrequency: "monthly",
           priority: 0.6,
@@ -100,7 +100,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   for (const tag of [...tagSet].sort()) {
     out.push({
-      url: `${BASE}/tag/${tagToSlug(tag)}`,
+      url: `${BASE}/fe/tag/${tagToSlug(tag)}`,
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.5,

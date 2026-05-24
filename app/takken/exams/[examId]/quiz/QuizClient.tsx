@@ -11,10 +11,12 @@ type Mode = "instant" | "exam";
 
 export default function QuizClient({
   examId,
+  breadcrumb,
   questions,
   mode,
 }: {
   examId: string;
+  breadcrumb?: string;
   questions: TakkenQuestion[];
   mode: Mode;
 }) {
@@ -130,7 +132,7 @@ export default function QuizClient({
           ✕
         </Link>
         <p className="font-medium tracking-wider text-ink">
-          {index + 1}/{questions.length}問
+          {breadcrumb ?? `${index + 1}/${questions.length}問`}
         </p>
         <div className="flex-1" />
       </div>

@@ -2,8 +2,15 @@ import Link from "next/link"
 import type { PopularTag } from "@/lib/types"
 import { tagToSlug } from "@/lib/tag-url"
 
-export function PopularTags({ tags }: { tags: PopularTag[] }) {
+export function PopularTags({
+  tags,
+  subject = "fe",
+}: {
+  tags: PopularTag[]
+  subject?: "fe" | "ip"
+}) {
   if (tags.length === 0) return null
+  const tagBase = subject === "ip" ? "/ip/tag" : "/fe/tag"
   return (
     <div className="mt-7">
       <div className="text-[22px] text-goukaku-pink-script" style={{ fontFamily: "var(--font-script)" }}>
@@ -16,7 +23,7 @@ export function PopularTags({ tags }: { tags: PopularTag[] }) {
           return (
             <Link
               key={t.tag}
-              href={`/tag/${tagToSlug(t.tag)}`}
+              href={`${tagBase}/${tagToSlug(t.tag)}`}
               className="inline-flex items-center gap-1.5 rounded-full bg-goukaku-surface px-3 py-1.5 text-[12px] font-bold text-goukaku-ink hover:bg-goukaku-pink/20 transition-colors"
             >
               <span>#{display}</span>

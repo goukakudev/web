@@ -4,37 +4,46 @@ import { MobileFrame } from "@/components/layout/MobileFrame"
 export const metadata = {
   title: "合格.dev — 資格の過去問学習サイト",
   description:
-    "基本情報技術者試験・宅地建物取引士など、各種資格の過去問を無料で。解説・選択肢別解説・模試モード付き。",
+    "独学でも合格できる。合格から、人生を変えられる。goukaku.dev は資格に挑むすべての人へ、過去問・解説・ヒントを届ける学習プラットフォームです。",
   alternates: { canonical: "/" },
 }
 
 type Category = {
+  slug: string
   href: string
   label: string
   sub: string
   description: string
   emoji: string
   status: "available" | "coming-soon"
+  iosUrl?: string
+  androidUrl?: string
 }
 
 const CATEGORIES: Category[] = [
   {
+    slug: "ip",
     href: "/ip",
     label: "ITパスポート試験",
     sub: "IT Passport Exam",
-    description: "29 年分・各 100 問・全 2,900 問の過去問。解説・ヒント・選択肢ごとの正誤付き",
+    description:
+      "29 年分・各 100 問・全 2,900 問の過去問。解説・ヒント・選択肢ごとの正誤付き",
     emoji: "📘",
     status: "available",
   },
   {
+    slug: "fe",
     href: "/fe",
     label: "基本情報技術者試験",
     sub: "Fundamental IT Engineer",
-    description: "13 年分・各 80 問前後の過去問。順番 / ランダム / 模試で解けます",
+    description:
+      "13 年分・各 80 問前後の過去問。順番 / ランダム / 模試で解けます",
     emoji: "💻",
     status: "available",
+    iosUrl: "https://apps.apple.com/jp/app/id6753257968",
   },
   {
+    slug: "takken",
     href: "/takken",
     label: "宅地建物取引士",
     sub: "Real Estate Transaction Agent",
@@ -43,6 +52,15 @@ const CATEGORIES: Category[] = [
     status: "available",
   },
 ]
+
+const APP_STORE_BADGE_SRC =
+  "https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/ja-jp?releaseDate=1746489600"
+const GOOGLE_PLAY_BADGE_SRC =
+  "https://play.google.com/intl/ja/badges/static/images/badges/ja_badge_web_generic.png"
+
+const BADGE_BASE =
+  "inline-flex items-center justify-center h-10 rounded-md select-none"
+const BADGE_DISABLED = "opacity-40 grayscale cursor-not-allowed"
 
 export default function CategoriesPage() {
   return (
@@ -54,13 +72,22 @@ export default function CategoriesPage() {
         >
           goukaku.dev
         </div>
-        <h1 className="text-[22px] font-extrabold mt-2">合格.dev</h1>
-        <p className="text-[13px] opacity-65 mt-2 leading-relaxed">
-          各種資格の過去問を無料で。学習カテゴリを選んでください。
+        <div className="mt-3 inline-flex rounded-full border border-goukaku-divider bg-goukaku-surface px-3 py-1 text-[11px] font-bold text-goukaku-ink/65">
+          資格に挑むすべての人へ
+        </div>
+        <h1
+          className="mt-5 text-[30px] font-black leading-[1.22] tracking-[-0.04em]"
+          aria-label="独学でも、合格できる。合格から、人生を変えられる。"
+        >
+          <span className="block">独学でも、合格できる。</span>
+          <span className="block">合格から、人生を変えられる。</span>
+        </h1>
+        <p className="text-[13px] opacity-70 mt-4 leading-relaxed">
+          goukaku.dev は、資格に挑むすべての人へ、過去問・解説・ヒントを届ける学習プラットフォームです。
         </p>
       </header>
 
-      <section className="grid grid-cols-1 gap-3">
+      <section className="grid grid-cols-1 gap-5">
         {CATEGORIES.map((c) => {
           const Inner = (
             <div
@@ -88,12 +115,33 @@ export default function CategoriesPage() {
               <div className="text-[14px] font-bold opacity-60">→</div>
             </div>
           )
-          return c.status === "available" ? (
-            <Link key={c.href} href={c.href} className="block">
-              {Inner}
-            </Link>
-          ) : (
-            <div key={c.href}>{Inner}</div>
+
+          return (
+            <div key={c.href}>
+              {c.status === "available" ? (
+                <Link href={c.href} className="block">
+                  {Inner}
+                </Link>
+              ) : (
+                Inner
+              )}
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <StoreBadge
+                  testId={`store-ios-${c.slug}`}
+                  src={APP_STORE_BADGE_SRC}
+                  alt={`${c.label} を App Store でダウンロード`}
+                  href={c.iosUrl}
+                  unavailableLabel="App Store 準備中"
+                />
+                <StoreBadge
+                  testId={`store-android-${c.slug}`}
+                  src={GOOGLE_PLAY_BADGE_SRC}
+                  alt={`${c.label} を Google Play で取得`}
+                  href={c.androidUrl}
+                  unavailableLabel="Google Play 準備中"
+                />
+              </div>
+            </div>
           )
         })}
       </section>
@@ -104,5 +152,49 @@ export default function CategoriesPage() {
         </p>
       </footer>
     </MobileFrame>
+  )
+}
+
+function StoreBadge({
+  testId,
+  src,
+  alt,
+  href,
+  unavailableLabel,
+}: {
+  testId: string
+  src: string
+  alt: string
+  href?: string
+  unavailableLabel: string
+}) {
+  if (href) {
+    return (
+      <a
+        data-testid={testId}
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={alt}
+        className={BADGE_BASE}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={src} alt={alt} height={40} style={{ height: 40, width: "auto" }} loading="lazy" />
+      </a>
+    )
+  }
+
+  return (
+    <span
+      data-testid={testId}
+      role="img"
+      aria-disabled="true"
+      aria-label={`${alt} (${unavailableLabel})`}
+      title={unavailableLabel}
+      className={`${BADGE_BASE} ${BADGE_DISABLED}`}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={src} alt="" height={40} style={{ height: 40, width: "auto" }} loading="lazy" />
+    </span>
   )
 }
