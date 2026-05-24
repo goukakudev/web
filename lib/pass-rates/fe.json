@@ -1,0 +1,191 @@
+{
+  "schemaVersion": 1,
+  "exam": "fe",
+  "lastUpdated": "2026-05-24",
+  "sourceDocuments": {
+    "h21_r4": "https://www.ipa.go.jp/shiken/reports/hjuojm000000ll0f-att/suii_hyo.pdf",
+    "r5_r7": "https://www.ipa.go.jp/shiken/reports/ps6vr70000016ew6-att/202603_fe_toukei.pdf"
+  },
+  "sourcePage": "https://www.ipa.go.jp/shiken/reports/toukei_fe.html",
+  "notes": [
+    "H21〜R4: IPA 集計推移表 (suii_hyo.pdf, 令和8年4月21日現在) の「基本情報技術者」列 (col 3) より。各 session の pass rate を passers/examinees で再計算して内部整合性を確認済み。",
+    "R5〜R7: IPA FE 専用推移表 (202603_fe_toukei.pdf, 令和8年4月) より。月別の applicants/examinees/passers を積算した年度合計を採用。FE 専用 PDF は monthly sum が年度合計と完全一致するため、これを最も信頼。",
+    "R5 については集計推移表と FE 専用推移表で受験者数/合格者数の数値が乖離 (集計: 132,308/70,103/53.0%、FE 専用: 121,611/57,278/47.1%)。月別積算が正確に合う FE 専用の値を採用。R6 は両 PDF で一致。",
+    "期別 (上期/下期) データは本ファイルでは未採用 (年度集計のみ)。",
+    "平成20年度以前のデータは別 PDF (suii_6a_12a.pdf / suii_13h_20a.pdf) に記載あり。今回はスコープ外。"
+  ],
+  "sessions": [
+    {
+      "year": 2009,
+      "era": "平成",
+      "eraYear": 21,
+      "applicants": 198552,
+      "examinees": 144373,
+      "passers": 45955,
+      "passRate": 0.318,
+      "source": "https://www.ipa.go.jp/shiken/reports/hjuojm000000ll0f-att/suii_hyo.pdf"
+    },
+    {
+      "year": 2010,
+      "era": "平成",
+      "eraYear": 22,
+      "applicants": 192221,
+      "examinees": 131728,
+      "passers": 31618,
+      "passRate": 0.240,
+      "source": "https://www.ipa.go.jp/shiken/reports/hjuojm000000ll0f-att/suii_hyo.pdf"
+    },
+    {
+      "year": 2011,
+      "era": "平成",
+      "eraYear": 23,
+      "applicants": 170091,
+      "examinees": 118198,
+      "passers": 30148,
+      "passRate": 0.255,
+      "source": "https://www.ipa.go.jp/shiken/reports/hjuojm000000ll0f-att/suii_hyo.pdf"
+    },
+    {
+      "year": 2012,
+      "era": "平成",
+      "eraYear": 24,
+      "applicants": 162862,
+      "examinees": 112802,
+      "passers": 35986,
+      "passRate": 0.319,
+      "source": "https://www.ipa.go.jp/shiken/reports/hjuojm000000ll0f-att/suii_hyo.pdf"
+    },
+    {
+      "year": 2013,
+      "era": "平成",
+      "eraYear": 25,
+      "applicants": 142687,
+      "examinees": 106869,
+      "passers": 22928,
+      "passRate": 0.215,
+      "source": "https://www.ipa.go.jp/shiken/reports/hjuojm000000ll0f-att/suii_hyo.pdf"
+    },
+    {
+      "year": 2014,
+      "era": "平成",
+      "eraYear": 26,
+      "applicants": 139718,
+      "examinees": 99477,
+      "passers": 22168,
+      "passRate": 0.223,
+      "source": "https://www.ipa.go.jp/shiken/reports/hjuojm000000ll0f-att/suii_hyo.pdf"
+    },
+    {
+      "year": 2015,
+      "era": "平成",
+      "eraYear": 27,
+      "applicants": 138791,
+      "examinees": 101221,
+      "passers": 25096,
+      "passRate": 0.248,
+      "source": "https://www.ipa.go.jp/shiken/reports/hjuojm000000ll0f-att/suii_hyo.pdf"
+    },
+    {
+      "year": 2016,
+      "era": "平成",
+      "eraYear": 28,
+      "applicants": 136376,
+      "examinees": 99999,
+      "passers": 25109,
+      "passRate": 0.251,
+      "source": "https://www.ipa.go.jp/shiken/reports/hjuojm000000ll0f-att/suii_hyo.pdf"
+    },
+    {
+      "year": 2017,
+      "era": "平成",
+      "eraYear": 29,
+      "applicants": 144501,
+      "examinees": 100392,
+      "passers": 26109,
+      "passRate": 0.260,
+      "source": "https://www.ipa.go.jp/shiken/reports/hjuojm000000ll0f-att/suii_hyo.pdf"
+    },
+    {
+      "year": 2018,
+      "era": "平成",
+      "eraYear": 30,
+      "applicants": 155928,
+      "examinees": 111381,
+      "passers": 28552,
+      "passRate": 0.256,
+      "source": "https://www.ipa.go.jp/shiken/reports/hjuojm000000ll0f-att/suii_hyo.pdf"
+    },
+    {
+      "year": 2019,
+      "era": "令和",
+      "eraYear": 1,
+      "applicants": 121556,
+      "examinees": 86669,
+      "passers": 31224,
+      "passRate": 0.360,
+      "source": "https://www.ipa.go.jp/shiken/reports/hjuojm000000ll0f-att/suii_hyo.pdf"
+    },
+    {
+      "year": 2020,
+      "era": "令和",
+      "eraYear": 2,
+      "applicants": 60411,
+      "examinees": 52993,
+      "passers": 25409,
+      "passRate": 0.479,
+      "source": "https://www.ipa.go.jp/shiken/reports/hjuojm000000ll0f-att/suii_hyo.pdf",
+      "note": "コロナ禍で春期中止。下期から CBT 通年移行の最初の年度。"
+    },
+    {
+      "year": 2021,
+      "era": "令和",
+      "eraYear": 3,
+      "applicants": 91577,
+      "examinees": 85428,
+      "passers": 34734,
+      "passRate": 0.406,
+      "source": "https://www.ipa.go.jp/shiken/reports/hjuojm000000ll0f-att/suii_hyo.pdf"
+    },
+    {
+      "year": 2022,
+      "era": "令和",
+      "eraYear": 4,
+      "applicants": 117624,
+      "examinees": 110620,
+      "passers": 47716,
+      "passRate": 0.431,
+      "source": "https://www.ipa.go.jp/shiken/reports/hjuojm000000ll0f-att/suii_hyo.pdf"
+    },
+    {
+      "year": 2023,
+      "era": "令和",
+      "eraYear": 5,
+      "applicants": 140774,
+      "examinees": 121611,
+      "passers": 57278,
+      "passRate": 0.471,
+      "source": "https://www.ipa.go.jp/shiken/reports/ps6vr70000016ew6-att/202603_fe_toukei.pdf",
+      "note": "2023年4月のシラバス改訂 (科目B 新形式) 適用後の最初の年度。月別積算を採用。"
+    },
+    {
+      "year": 2024,
+      "era": "令和",
+      "eraYear": 6,
+      "applicants": 157239,
+      "examinees": 133732,
+      "passers": 54501,
+      "passRate": 0.408,
+      "source": "https://www.ipa.go.jp/shiken/reports/ps6vr70000016ew6-att/202603_fe_toukei.pdf"
+    },
+    {
+      "year": 2025,
+      "era": "令和",
+      "eraYear": 7,
+      "applicants": 172217,
+      "examinees": 147186,
+      "passers": 56370,
+      "passRate": 0.383,
+      "source": "https://www.ipa.go.jp/shiken/reports/ps6vr70000016ew6-att/202603_fe_toukei.pdf"
+    }
+  ]
+}

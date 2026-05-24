@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { MobileFrame } from "@/components/layout/MobileFrame"
+import { latestPassRate, type ExamKey } from "@/lib/pass-rates"
 
 export const metadata = {
   title: "合格.dev — 資格の過去問学習サイト",
@@ -58,6 +59,15 @@ const APP_STORE_BADGE_SRC =
 const GOOGLE_PLAY_BADGE_SRC =
   "https://play.google.com/intl/ja/badges/static/images/badges/ja_badge_web_generic.png"
 
+function slugToExamKey(slug: string): ExamKey | null {
+  switch (slug) {
+    case "fe": return "fe"
+    case "ip": return "ip"
+    case "takken": return "tk"
+    default: return null
+  }
+}
+
 const BADGE_BASE =
   "inline-flex items-center justify-center h-10 rounded-md select-none"
 const BADGE_DISABLED = "opacity-40 grayscale cursor-not-allowed"
@@ -89,6 +99,8 @@ export default function CategoriesPage() {
 
       <section className="grid grid-cols-1 gap-5">
         {CATEGORIES.map((c) => {
+          const examKey = slugToExamKey(c.slug)
+          const latest = examKey ? latestPassRate(examKey) : null
           const Inner = (
             <div
               className={`p-5 rounded-2xl border border-goukaku-divider bg-goukaku-surface flex items-center gap-4 ${
@@ -111,6 +123,12 @@ export default function CategoriesPage() {
                 <div className="text-[12px] opacity-75 mt-2 leading-relaxed">
                   {c.description}
                 </div>
+                {latest && (
+                  <div className="mt-2 inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-goukaku-cool/20 text-[11px] font-bold tabular-nums">
+                    <span aria-hidden>🏆</span>
+                    <span>{latest.displayYear} 合格率 {(latest.passRate * 100).toFixed(1)}%</span>
+                  </div>
+                )}
               </div>
               <div className="text-[14px] font-bold opacity-60">→</div>
             </div>

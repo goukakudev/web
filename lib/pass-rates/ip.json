@@ -1,0 +1,168 @@
+{
+  "schemaVersion": 1,
+  "exam": "ip",
+  "lastUpdated": "2026-05-24",
+  "sourceDocument": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/statistics/202603_ip_toukei.pdf",
+  "sourcePage": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/statistics.html",
+  "notes": [
+    "数値は IPA 公表「情報処理技術者試験(ITパスポート試験) 推移表」(令和8年4月21日現在) より年度合計を採用。",
+    "IT パスポート試験は平成21年12月開始の CBT 通年試験。本ファイルでは平成23年度〜令和7年度をカバー。平成21〜22年度の数値は本 PDF に記載なし。",
+    "令和7年度の受験者数は IPA 報道発表 (https://www.ipa.go.jp/shiken/reports/ip-oubo2025.html) の 271,352 を採用 (PDF 読取りでは 271,392 だったが報道発表値の方を優先)。",
+    "期別 (上期/下期) は本ファイルでは未採用、すべて年度合計。"
+  ],
+  "sessions": [
+    {
+      "year": 2011,
+      "era": "平成",
+      "eraYear": 23,
+      "applicants": 17064,
+      "examinees": 15506,
+      "passers": 6289,
+      "passRate": 0.406,
+      "source": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/statistics/202603_ip_toukei.pdf"
+    },
+    {
+      "year": 2012,
+      "era": "平成",
+      "eraYear": 24,
+      "applicants": 68983,
+      "examinees": 62838,
+      "passers": 25796,
+      "passRate": 0.410,
+      "source": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/statistics/202603_ip_toukei.pdf"
+    },
+    {
+      "year": 2013,
+      "era": "平成",
+      "eraYear": 25,
+      "applicants": 74391,
+      "examinees": 67326,
+      "passers": 31816,
+      "passRate": 0.473,
+      "source": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/statistics/202603_ip_toukei.pdf"
+    },
+    {
+      "year": 2014,
+      "era": "平成",
+      "eraYear": 26,
+      "applicants": 78720,
+      "examinees": 71464,
+      "passers": 36114,
+      "passRate": 0.505,
+      "source": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/statistics/202603_ip_toukei.pdf"
+    },
+    {
+      "year": 2015,
+      "era": "平成",
+      "eraYear": 27,
+      "applicants": 80949,
+      "examinees": 73185,
+      "passers": 34496,
+      "passRate": 0.471,
+      "source": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/statistics/202603_ip_toukei.pdf"
+    },
+    {
+      "year": 2016,
+      "era": "平成",
+      "eraYear": 28,
+      "applicants": 86305,
+      "examinees": 77765,
+      "passers": 37570,
+      "passRate": 0.483,
+      "source": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/statistics/202603_ip_toukei.pdf"
+    },
+    {
+      "year": 2017,
+      "era": "平成",
+      "eraYear": 29,
+      "applicants": 94298,
+      "examinees": 84235,
+      "passers": 42432,
+      "passRate": 0.504,
+      "source": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/statistics/202603_ip_toukei.pdf"
+    },
+    {
+      "year": 2018,
+      "era": "平成",
+      "eraYear": 30,
+      "applicants": 107172,
+      "examinees": 95187,
+      "passers": 49221,
+      "passRate": 0.517,
+      "source": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/statistics/202603_ip_toukei.pdf"
+    },
+    {
+      "year": 2019,
+      "era": "令和",
+      "eraYear": 1,
+      "applicants": 117923,
+      "examinees": 103812,
+      "passers": 56323,
+      "passRate": 0.543,
+      "source": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/statistics/202603_ip_toukei.pdf"
+    },
+    {
+      "year": 2020,
+      "era": "令和",
+      "eraYear": 2,
+      "applicants": 146971,
+      "examinees": 131788,
+      "passers": 77512,
+      "passRate": 0.588,
+      "source": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/statistics/202603_ip_toukei.pdf",
+      "note": "コロナ禍下でも CBT 通年実施のため受験者数が急増した年度。"
+    },
+    {
+      "year": 2021,
+      "era": "令和",
+      "eraYear": 3,
+      "applicants": 244254,
+      "examinees": 211145,
+      "passers": 111241,
+      "passRate": 0.527,
+      "source": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/statistics/202603_ip_toukei.pdf"
+    },
+    {
+      "year": 2022,
+      "era": "令和",
+      "eraYear": 4,
+      "applicants": 253159,
+      "examinees": 231526,
+      "passers": 119495,
+      "passRate": 0.516,
+      "source": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/statistics/202603_ip_toukei.pdf"
+    },
+    {
+      "year": 2023,
+      "era": "令和",
+      "eraYear": 5,
+      "applicants": 297864,
+      "examinees": 265040,
+      "passers": 133292,
+      "passRate": 0.503,
+      "source": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/statistics/202603_ip_toukei.pdf"
+    },
+    {
+      "year": 2024,
+      "era": "令和",
+      "eraYear": 6,
+      "applicants": 309068,
+      "examinees": 273905,
+      "passers": 134647,
+      "passRate": 0.491,
+      "source": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/statistics/202603_ip_toukei.pdf",
+      "note": "現行試験制度 (2009年〜) で初の年間応募者数30万人超。"
+    },
+    {
+      "year": 2025,
+      "era": "令和",
+      "eraYear": 7,
+      "applicants": 307266,
+      "examinees": 271352,
+      "passers": 132012,
+      "passRate": 0.486,
+      "source": "https://www.ipa.go.jp/shiken/reports/ip-oubo2025.html",
+      "note": "受験者数は IPA 報道発表値 (271,352) を採用。年間応募者数は2年連続で30万人超。"
+    }
+  ]
+}

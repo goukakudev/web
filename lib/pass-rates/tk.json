@@ -1,0 +1,159 @@
+{
+  "schemaVersion": 1,
+  "exam": "tk",
+  "lastUpdated": "2026-05-24",
+  "sourceDocument": "https://www.retio.or.jp/wp-content/uploads/2024/10/zissigaikyo.pdf",
+  "sourcePage": "https://www.retio.or.jp/exam/",
+  "notes": [
+    "数値は (一財) 不動産適正取引推進機構 (RETIO) 公表「試験実施概況 (過去10年間)」および年度別「試験結果の概要」より。",
+    "平成26年度〜令和7年度の 12 年分。令和2年度・令和3年度はコロナ禍で 10月試験と 12月試験に分裂したため、年度内に複数 session を含む。",
+    "TK (宅建) は原則年1回 10月開催。10月組と12月組がある年度は note で区別。",
+    "本ファイルでは申込者数を applicants として記録 (FE/IP の応募者数と意味的に同じ)。"
+  ],
+  "sessions": [
+    {
+      "year": 2014,
+      "era": "平成",
+      "eraYear": 26,
+      "applicants": 238343,
+      "examinees": 192029,
+      "passers": 33670,
+      "passRate": 0.175,
+      "source": "https://www.retio.or.jp/wp-content/uploads/2024/10/zissigaikyo.pdf"
+    },
+    {
+      "year": 2015,
+      "era": "平成",
+      "eraYear": 27,
+      "applicants": 243199,
+      "examinees": 194926,
+      "passers": 30028,
+      "passRate": 0.154,
+      "source": "https://www.retio.or.jp/wp-content/uploads/2024/10/zissigaikyo.pdf"
+    },
+    {
+      "year": 2016,
+      "era": "平成",
+      "eraYear": 28,
+      "applicants": 245742,
+      "examinees": 198463,
+      "passers": 30589,
+      "passRate": 0.154,
+      "source": "https://www.retio.or.jp/wp-content/uploads/2024/10/zissigaikyo.pdf"
+    },
+    {
+      "year": 2017,
+      "era": "平成",
+      "eraYear": 29,
+      "applicants": 258511,
+      "examinees": 209354,
+      "passers": 32644,
+      "passRate": 0.156,
+      "source": "https://www.retio.or.jp/wp-content/uploads/2024/10/zissigaikyo.pdf"
+    },
+    {
+      "year": 2018,
+      "era": "平成",
+      "eraYear": 30,
+      "applicants": 265444,
+      "examinees": 213993,
+      "passers": 33360,
+      "passRate": 0.156,
+      "source": "https://www.retio.or.jp/wp-content/uploads/2024/10/zissigaikyo.pdf"
+    },
+    {
+      "year": 2019,
+      "era": "令和",
+      "eraYear": 1,
+      "applicants": 276019,
+      "examinees": 220797,
+      "passers": 37481,
+      "passRate": 0.170,
+      "source": "https://www.retio.or.jp/wp-content/uploads/2024/10/zissigaikyo.pdf"
+    },
+    {
+      "year": 2020,
+      "era": "令和",
+      "eraYear": 2,
+      "applicants": 204163,
+      "examinees": 168989,
+      "passers": 29728,
+      "passRate": 0.176,
+      "source": "https://www.retio.or.jp/wp-content/uploads/2024/10/zissigaikyo.pdf",
+      "note": "10月試験。コロナ禍で2部開催。"
+    },
+    {
+      "year": 2020,
+      "era": "令和",
+      "eraYear": 2,
+      "applicants": 55121,
+      "examinees": 35261,
+      "passers": 4610,
+      "passRate": 0.131,
+      "source": "https://www.retio.or.jp/wp-content/uploads/2024/10/zissigaikyo.pdf",
+      "note": "12月試験。10月試験会場が確保できなかった都府県向け。"
+    },
+    {
+      "year": 2021,
+      "era": "令和",
+      "eraYear": 3,
+      "applicants": 256704,
+      "examinees": 209749,
+      "passers": 37579,
+      "passRate": 0.179,
+      "source": "https://www.retio.or.jp/wp-content/uploads/2024/10/zissigaikyo.pdf",
+      "note": "10月試験。"
+    },
+    {
+      "year": 2021,
+      "era": "令和",
+      "eraYear": 3,
+      "applicants": 39814,
+      "examinees": 24965,
+      "passers": 3892,
+      "passRate": 0.156,
+      "source": "https://www.retio.or.jp/wp-content/uploads/2024/10/zissigaikyo.pdf",
+      "note": "12月試験。コロナ禍最終の2部開催。"
+    },
+    {
+      "year": 2022,
+      "era": "令和",
+      "eraYear": 4,
+      "applicants": 283856,
+      "examinees": 226048,
+      "passers": 38525,
+      "passRate": 0.170,
+      "source": "https://www.retio.or.jp/wp-content/uploads/2024/10/zissigaikyo.pdf"
+    },
+    {
+      "year": 2023,
+      "era": "令和",
+      "eraYear": 5,
+      "applicants": 289096,
+      "examinees": 233276,
+      "passers": 40025,
+      "passRate": 0.172,
+      "source": "https://www.retio.or.jp/wp-content/uploads/2024/10/zissigaikyo.pdf"
+    },
+    {
+      "year": 2024,
+      "era": "令和",
+      "eraYear": 6,
+      "applicants": 301336,
+      "examinees": 241436,
+      "passers": 44992,
+      "passRate": 0.186,
+      "source": "https://www.retio.or.jp/wp-content/uploads/2024/12/2024result.pdf"
+    },
+    {
+      "year": 2025,
+      "era": "令和",
+      "eraYear": 7,
+      "applicants": 306099,
+      "examinees": 245462,
+      "passers": 45821,
+      "passRate": 0.187,
+      "source": "https://goukaku.retio.or.jp/exam/pdf_2025_1_UWbaZCx6hm/2025result.pdf"
+    }
+  ]
+}
