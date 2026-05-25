@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { MobileFrame } from "@/components/layout/MobileFrame";
+import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 
 export const metadata: Metadata = {
   title: "利用規約",
@@ -14,9 +15,10 @@ const REVISED = "2026-05-19";
 export default function TermsPage() {
   return (
     <MobileFrame>
-      <Link href="/" className="inline-block text-[14px] mb-4">
-        ← ホーム
-      </Link>
+      <Breadcrumbs items={[
+        { name: "合格.dev", href: "/" },
+        { name: "利用規約", href: "/terms" },
+      ]} />
       <h1 className="text-[24px] font-extrabold mb-2">利用規約</h1>
       <p className="text-[12px] text-goukaku-ink/55 mb-6">最終更新日: {REVISED}</p>
 
