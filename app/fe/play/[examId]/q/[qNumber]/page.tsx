@@ -87,12 +87,12 @@ export default async function FePlayQuestionPage({ params }: PageProps) {
     qq._id === q._id
       ? qq
       : {
-          ...qq,
+          _id: qq._id,
+          kind: qq.kind,
+          exam_id: qq.exam_id,
+          q_number: qq.q_number,
+          body: "",
           choices: [],
-          explanation: undefined,
-          figures: undefined,
-          per_choice: undefined,
-          hint: undefined,
         },
   );
 
