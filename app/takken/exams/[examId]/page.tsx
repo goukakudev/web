@@ -24,6 +24,22 @@ export default async function ExamDetailPage({ params }: Props) {
   const { examId } = await params;
   const exam = await TakkenAPI.getExam(examId);
   if (!exam) notFound();
+  const questionsResult = await TakkenAPI.listExamQuestions(examId);
+  const questions = questionsResult?.questions ?? [];
+  const categoryCounts = new Map<string, number>();
+  for (const q of questions) {
+    if (!q.category) continue;
+    categoryCounts.set(q.category, (categoryCounts.get(q.category) ?? 0) + 1);
+  }
+  const topCategories = [...categoryCounts.entries()].sort((a, b) => b[1] - a[1]);
+  const intro =
+    `宅地建物取引士試験 ${exam.label} の過去問演習ページです。` +
+    `本ページから全 ${exam.question_count} 問を、通常演習 / 模試モード の 2 モードで解けます。` +
+    `関連条文や判例をタップすると本文がポップアップ表示され、解説付きで理解を深められます。` +
+    (exam.passing_score
+      ? `合格点は ${exam.passing_score} 点で、過去の平均正答率もあわせて確認できます。`
+      : ``) +
+    `分野別の出題内訳は下記の「分野別の出題」を参照してください。`;
 
   return (
     <main className="min-h-screen bg-bg">
@@ -99,6 +115,68 @@ export default async function ExamDetailPage({ params }: Props) {
             </Link>
           </div>
         </section>
+
+        <section className="mb-8">
+          <h2 className="mb-3 font-mincho text-sm tracking-widest text-ink-3">
+            このページについて
+          </h2>
+          <p className="text-[13px] leading-[1.85] text-ink-2">{intro}</p>
+        </section>
+
+        {topCategories.length > 0 && (
+          <section className="mb-8">
+            <h2 className="mb-3 font-mincho text-sm tracking-widest text-ink-3">
+              分野別の出題
+            </h2>
+            <ul className="grid grid-cols-2 gap-1.5">
+              {topCategories.map(([cat, count]) => (
+                <li key={cat}>
+                  <Link
+                    href={`/takken/categories/${encodeURIComponent(cat)}`}
+                    className="flex items-center justify-between rounded-lg border border-line bg-bg px-3 py-2 text-[12px] hover:bg-canvas"
+                  >
+                    <span className="font-mincho font-semibold text-ink">{cat}</span>
+                    <span className="text-[11px] text-ink-3 tabular-nums">
+                      {count} 問
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {questions.length > 0 && (
+          <section className="mb-8">
+            <h2 className="mb-3 font-mincho text-sm tracking-widest text-ink-3">
+              収録問題一覧
+            </h2>
+            <p className="mb-2 text-[11px] text-ink-3">
+              全 {questions.length} 問。クリックで問題ページへ
+            </p>
+            <ol className="space-y-1">
+              {questions
+                .slice()
+                .sort((a, b) => a.question_number - b.question_number)
+                .map((q) => (
+                  <li key={q._id}>
+                    <Link
+                      href={`/takken/exams/${exam.exam_id}/quiz?q=${q.question_number}`}
+                      className="flex items-baseline gap-2 rounded-md px-2 py-1 hover:bg-canvas"
+                    >
+                      <span className="w-[2.5em] shrink-0 text-[11px] font-bold text-ink-3 tabular-nums">
+                        問{q.question_number}
+                      </span>
+                      <span className="truncate text-[12px] text-ink-2">
+                        {q.question_text.slice(0, 60)}
+                        {q.question_text.length > 60 ? "…" : ""}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+            </ol>
+          </section>
+        )}
       </div>
     </main>
   );
