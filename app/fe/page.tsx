@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { listExams, listPopularTags } from "@/lib/api-client"
 import { MobileFrame } from "@/components/layout/MobileFrame"
 import { TopBar } from "@/components/home/TopBar"
@@ -13,13 +14,16 @@ import { SiteIntro } from "@/components/home/SiteIntro"
 import { BookmarkCard } from "@/components/home/BookmarkCard"
 import { HistoryCard } from "@/components/home/HistoryCard"
 import { OnboardingFlow } from "@/components/home/OnboardingFlow"
+import { makeMetadata } from "@/lib/seo/metadata"
+import { itemListJsonLd, SITE_URL } from "@/lib/seo/structured-data"
+import { JsonLd } from "@/components/seo/JsonLd"
 
-export const metadata = {
+export const metadata: Metadata = makeMetadata({
   title: "基本情報技術者試験 過去問 + 解説",
   description:
     "基本情報技術者試験の過去問を無料で。13 年分・各 80 問前後を、順番に / ランダムに / 模試形式で解けます。全問解説・選択肢ごとの解説付き。",
-  alternates: { canonical: "/fe" },
-}
+  path: "/fe",
+})
 
 export default async function FeHomePage() {
   const [exams, popularTags] = await Promise.all([
@@ -28,6 +32,15 @@ export default async function FeHomePage() {
   ])
   return (
     <MobileFrame>
+      <h1 className="sr-only">基本情報技術者試験 過去問</h1>
+      <JsonLd
+        data={itemListJsonLd(
+          exams.map((e) => ({
+            name: `${e.title ?? e.exam_id} 過去問`,
+            url: `${SITE_URL}/fe/exam/${e.exam_id}`,
+          })),
+        )}
+      />
       <OnboardingFlow />
       <TopBar />
       <HeroQuestCard />

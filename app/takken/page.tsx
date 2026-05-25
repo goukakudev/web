@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { TakkenAPI } from "@/lib/takken/api";
 import { makeMetadata } from "@/lib/seo/metadata";
-import { webPageJsonLd } from "@/lib/seo/structured-data";
+import { itemListJsonLd, SITE_URL, webPageJsonLd } from "@/lib/seo/structured-data";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 import { TakkenSectionNav } from "@/components/layout/TakkenSectionNav";
@@ -29,6 +29,12 @@ export default async function TakkenHome() {
           url: "https://goukaku.dev/takken",
           description: "宅地建物取引士(宅建士)試験の過去問演習サイト。H16〜R7 の全試験を解説付きで。",
         })} />
+        <JsonLd data={itemListJsonLd(
+          exams.map((e) => ({
+            name: `${e.label} 宅建過去問`,
+            url: `${SITE_URL}/takken/exams/${e.exam_id}`,
+          })),
+        )} />
 
         <header className="mb-10">
           <h1 className="font-mincho text-4xl font-semibold tracking-wide text-ink">
@@ -71,6 +77,39 @@ export default async function TakkenHome() {
             </Link>
           </div>
         </div>
+
+        <section className="mt-12 text-[13px] leading-[1.85] text-ink-2">
+          <h2 className="font-mincho text-lg font-semibold text-ink mb-3">
+            合格.dev について
+          </h2>
+          <p className="mb-3">
+            合格.dev は、宅地建物取引士(宅建士)試験の過去問を無料で演習できる学習サイトです。<strong>H16(2004 年)〜 R7(2025 年)</strong> までの全試験を、関連条文・判例タップで本文ポップアップ表示できる UI で学習できます。
+          </p>
+          <h3 className="font-mincho text-base font-semibold text-ink mt-5 mb-2">
+            関連条文・判例ポップアップ
+          </h3>
+          <p className="mb-3">
+            問題文中の条文番号や判例参照箇所をタップすると、本文がオーバーレイ表示されます。条文集を別タブで開く必要がなく、解答中の流れを切らさずに参照できます。
+          </p>
+          <h3 className="font-mincho text-base font-semibold text-ink mt-5 mb-2">
+            分野別 / 年度別の 2 視点
+          </h3>
+          <p className="mb-3">
+            <strong>権利関係 / 宅建業法 / 法令上の制限 / 税その他</strong> の 4 分野で横断学習するか、年度ごとに通し演習(模試モード)するか選べます。各問題には独自編集の解説を順次整備中です。
+          </p>
+          <h3 className="font-mincho text-base font-semibold text-ink mt-5 mb-2">
+            出典について
+          </h3>
+          <p className="mb-3">
+            掲載問題は、一般財団法人不動産適正取引推進機構が公表する宅地建物取引士試験の過去問題に基づきます。解説・UI は本サイト独自の編集物であり、公式見解を示すものではありません。詳しくは{" "}
+            <Link href="/about" className="underline">About</Link>{" "}
+            ・{" "}
+            <Link href="/privacy" className="underline">プライバシーポリシー</Link>{" "}
+            ・{" "}
+            <Link href="/terms" className="underline">利用規約</Link>{" "}
+            をご覧ください。
+          </p>
+        </section>
 
         <footer className="mt-16 border-t border-line pt-6 text-xs text-ink-3">
           <div className="mb-6">

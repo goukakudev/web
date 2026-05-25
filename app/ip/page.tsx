@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { listIpExams } from "@/lib/api-client"
 import { MobileFrame } from "@/components/layout/MobileFrame"
 import { TopBar } from "@/components/home/TopBar"
@@ -10,18 +11,30 @@ import { MockTestBanner } from "@/components/home/MockTestBanner"
 import { SiteIntro } from "@/components/home/SiteIntro"
 import { BookmarkCard } from "@/components/home/BookmarkCard"
 import { HistoryCard } from "@/components/home/HistoryCard"
+import { makeMetadata } from "@/lib/seo/metadata"
+import { itemListJsonLd, SITE_URL } from "@/lib/seo/structured-data"
+import { JsonLd } from "@/components/seo/JsonLd"
 
-export const metadata = {
+export const metadata: Metadata = makeMetadata({
   title: "ITパスポート試験 過去問 + 解説",
   description:
     "ITパスポート試験の過去問を無料で。29 年分・各 100 問・全 2,900 問を、順番に / ランダムに / 模試形式で解けます。全問解説・選択肢ごとの解説・ヒント付き。",
-  alternates: { canonical: "/ip" },
-}
+  path: "/ip",
+})
 
 export default async function IpHomePage() {
   const exams = await listIpExams()
   return (
     <MobileFrame>
+      <h1 className="sr-only">ITパスポート試験 過去問</h1>
+      <JsonLd
+        data={itemListJsonLd(
+          exams.map((e) => ({
+            name: `${e.title ?? e.exam_id} 過去問`,
+            url: `${SITE_URL}/ip/exam/${e.exam_id}`,
+          })),
+        )}
+      />
       <TopBar />
       <HeroQuestCard subject="ip" />
       <ContinueSection exams={exams} subject="ip" />
@@ -45,7 +58,7 @@ export default async function IpHomePage() {
         ))}
       </div>
       <MockTestBanner exam={exams[0]} subject="ip" />
-      <SiteIntro />
+      <SiteIntro subject="ip" />
     </MobileFrame>
   )
 }

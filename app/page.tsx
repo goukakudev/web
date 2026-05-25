@@ -1,13 +1,17 @@
+import type { Metadata } from "next"
 import Link from "next/link"
 import { MobileFrame } from "@/components/layout/MobileFrame"
 import { latestPassRate, type ExamKey } from "@/lib/pass-rates"
+import { makeMetadata } from "@/lib/seo/metadata"
+import { itemListJsonLd, SITE_URL } from "@/lib/seo/structured-data"
+import { JsonLd } from "@/components/seo/JsonLd"
 
-export const metadata = {
+export const metadata: Metadata = makeMetadata({
   title: "合格.dev — 資格の過去問学習サイト",
   description:
     "独学でも合格できる。合格から、人生を変えられる。goukaku.dev は資格に挑むすべての人へ、過去問・解説・ヒントを届ける学習プラットフォームです。",
-  alternates: { canonical: "/" },
-}
+  path: "/",
+})
 
 type Category = {
   slug: string
@@ -75,6 +79,14 @@ const BADGE_DISABLED = "opacity-40 grayscale cursor-not-allowed"
 export default function CategoriesPage() {
   return (
     <MobileFrame>
+      <JsonLd
+        data={itemListJsonLd(
+          CATEGORIES.filter((c) => c.status === "available").map((c) => ({
+            name: c.label,
+            url: `${SITE_URL}${c.href}`,
+          })),
+        )}
+      />
       <header className="pt-6 pb-8">
         <div
           className="text-[28px] text-goukaku-pink-script leading-none"
