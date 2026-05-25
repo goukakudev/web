@@ -37,7 +37,7 @@ export default function NotFound() {
           ホームに戻る
         </Link>
         <Link
-          href="/play/random?count=20"
+          href="/fe/play/random?count=20"
           className="block text-center py-3.5 rounded-full font-extrabold text-[13px] tracking-wider bg-goukaku-surface border border-goukaku-divider"
         >
           ランダム 20 問に挑戦 →

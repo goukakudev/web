@@ -50,7 +50,7 @@ export function ContinueSection({
 
   if (!latest || !exam) return null
 
-  const examUrl = subject === "ip" ? `/ip/exam/${exam.exam_id}` : `/exam/${exam.exam_id}`
+  const examUrl = subject === "ip" ? `/ip/exam/${exam.exam_id}` : `/fe/exam/${exam.exam_id}`
 
   return (
     <div className="mt-7">
