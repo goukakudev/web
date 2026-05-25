@@ -73,6 +73,7 @@ export default async function IpExamDetailPage({ params }: PageProps) {
         intro={intro}
         questions={questions}
         playBase={`${base}/q`}
+        tagBase="/ip/tag"
         parentLabel="ITパスポート試験"
         parentHref="/ip"
         examLabel={examLabel}

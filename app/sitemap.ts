@@ -96,6 +96,7 @@ async function ipPartition(): Promise<MetadataRoute.Sitemap> {
   const now = new Date()
   const out: MetadataRoute.Sitemap = []
   const exams = await listIpExams().catch(() => [])
+  const tagSet = new Set<string>()
   for (const exam of exams) {
     out.push({
       url: `${BASE}/ip/exam/${exam.exam_id}`,
@@ -112,10 +113,19 @@ async function ipPartition(): Promise<MetadataRoute.Sitemap> {
           changeFrequency: "monthly",
           priority: 0.6,
         })
+        for (const t of q.tags ?? []) if (t) tagSet.add(t)
       }
     } catch {
       // skip
     }
+  }
+  for (const tag of [...tagSet].sort()) {
+    out.push({
+      url: `${BASE}/ip/tag/${tagToSlug(tag)}`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.5,
+    })
   }
   return out
 }

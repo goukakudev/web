@@ -145,3 +145,31 @@ export function webPageJsonLd(i: WebPageInput) {
     inLanguage: "ja",
   }
 }
+
+export interface CollectionPageInput {
+  name: string
+  description: string
+  url: string
+  items: { name: string; url: string }[]
+}
+
+export function collectionPageJsonLd(i: CollectionPageInput) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: i.name,
+    description: i.description,
+    url: i.url,
+    inLanguage: "ja",
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: i.items.length,
+      itemListElement: i.items.map((it, idx) => ({
+        "@type": "ListItem",
+        position: idx + 1,
+        name: it.name,
+        url: it.url,
+      })),
+    },
+  }
+}

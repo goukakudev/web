@@ -1,13 +1,11 @@
 import type { Metadata } from "next"
 import { redirect } from "next/navigation"
-import { listExams, listQuestions } from "@/lib/api-client"
 import { MobileFrame } from "@/components/layout/MobileFrame"
-import { TagQuestionRow } from "@/components/tag/TagQuestionRow"
-import Link from "next/link"
-import type { Question, ExamSummary } from "@/lib/types"
 import { tagToSlug, slugToTag } from "@/lib/tag-url"
 import { makeMetadata } from "@/lib/seo/metadata"
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs"
+import { TagPageContent } from "@/components/seo/TagPageContent"
+import { buildTagIntro, fetchTagPageData } from "@/lib/seo/tag-page"
 
 interface PageProps {
   params: Promise<{ tag: string }>
@@ -33,57 +31,31 @@ export default async function FeTagPage({ params }: PageProps) {
 
   const tag = slugToTag(tagParam)
   const display = tag.replace(/^#/, "")
+  const slug = tagToSlug(tag)
 
-  const exams = await listExams()
-  const examsById = new Map<string, ExamSummary>(exams.map((e) => [e.exam_id, e]))
-
-  const collected: Question[] = []
-  for (const exam of exams) {
-    try {
-      const qs = await listQuestions(exam.exam_id)
-      for (const q of qs) {
-        if ((q.tags ?? []).includes(tag)) collected.push(q)
-      }
-    } catch {
-      // ignore
-    }
-  }
-  collected.sort((a, b) => {
-    if (a.exam_id !== b.exam_id) return a.exam_id < b.exam_id ? -1 : 1
-    return a.q_number - b.q_number
-  })
+  const data = await fetchTagPageData("fe", tag)
+  const intro = buildTagIntro({ subject: "fe", display, count: data.questions.length })
 
   return (
     <MobileFrame>
-      <Link href="/fe" className="inline-block text-[14px] mb-4">← ホーム</Link>
       <Breadcrumbs items={[
         { name: "合格.dev", href: "/" },
         { name: "基本情報技術者試験", href: "/fe" },
-        { name: `#${display}`, href: `/fe/tag/${tagToSlug(tag)}` },
+        { name: `#${display}`, href: `/fe/tag/${slug}` },
       ]} />
-      <div className="flex items-center gap-2 mb-3">
-        <span className="inline-flex items-center bg-goukaku-cool/35 text-[#1a8acb] text-[13px] font-extrabold px-2.5 py-1.5 rounded-xl">
-          #{display}
-        </span>
-        <span className="text-[12px] font-extrabold text-goukaku-ink/55">
-          {collected.length} 問
-        </span>
-      </div>
-      {collected.length === 0 ? (
-        <p className="text-[13px] text-goukaku-ink/55 mt-6 text-center">
-          該当する問題がありません
-        </p>
-      ) : (
-        <div className="flex flex-col gap-2.5">
-          {collected.map((q) => (
-            <TagQuestionRow
-              key={q._id}
-              question={q}
-              exam={examsById.get(q.exam_id)}
-            />
-          ))}
-        </div>
-      )}
+      <TagPageContent
+        display={display}
+        slug={slug}
+        intro={intro}
+        questions={data.questions}
+        examsById={data.examsById}
+        relatedTags={data.relatedTags}
+        subject="fe"
+        tagBase="/fe/tag"
+        playBase="/fe/play"
+        examBase="/fe/exam"
+        subjectFullName="基本情報技術者試験"
+      />
     </MobileFrame>
   )
 }
