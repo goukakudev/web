@@ -205,6 +205,12 @@ async function takkenPartition(): Promise<MetadataRoute.Sitemap> {
 }
 
 async function glossaryPartition(): Promise<MetadataRoute.Sitemap> {
-  // Phase 1 placeholder: glossary detail pages land in Phase 3.
-  return []
+  const { listAllTerms, termToSlug } = await import("@/lib/seo/glossary")
+  const now = new Date()
+  return listAllTerms().map((e) => ({
+    url: `${BASE}/glossary/${termToSlug(e.term)}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.4,
+  }))
 }
