@@ -17,47 +17,48 @@ const ACCENTS = {
   charcoal: { from: "#1E1E22", to: "#2A2A30", ink: "#FFFFFF", tag: "#FFD27A" },
 } as const
 
-// Cache fetched fonts across invocations within a single process
-let fontsPromise: Promise<
-  { name: string; data: ArrayBuffer; weight: 400 | 700 | 900; style: "normal" }[]
-> | null = null
+// satori (next/og) only accepts OTF/TTF — it rejects woff2 with
+// "Unsupported OpenType signature wOF2". Google Fonts returns woff2 to
+// modern UAs, so we use the old-UA + text=... API to get an opentype/
+// truetype subset containing only the glyphs we actually render.
+const LEGACY_UA =
+  "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.116 Safari/537.36"
 
-// Fetched via Firefox 40 UA from Google Fonts (v56, full Japanese coverage, ~2 MB each).
-// Single woff2 per weight — no unicode-range subsetting — so all CJK glyphs are available.
-// To refresh: fetch https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap
-// with UA "Mozilla/5.0 (Windows NT 6.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"
-// and copy the three src: url(...) values.
-const FONT_SOURCES = [
-  {
-    weight: 400 as const,
-    url: "https://fonts.gstatic.com/s/notosansjp/v56/-F6jfjtqLzI2JPCgQBnw7HFyzSD-AsregP8VFBEj754.woff2",
-  },
-  {
-    weight: 700 as const,
-    url: "https://fonts.gstatic.com/s/notosansjp/v56/-F6jfjtqLzI2JPCgQBnw7HFyzSD-AsregP8VFPYk754.woff2",
-  },
-  {
-    weight: 900 as const,
-    url: "https://fonts.gstatic.com/s/notosansjp/v56/-F6jfjtqLzI2JPCgQBnw7HFyzSD-AsregP8VFLgk754.woff2",
-  },
-] as const
-
-async function loadFonts() {
-  if (!fontsPromise) {
-    fontsPromise = Promise.all(
-      FONT_SOURCES.map(async (src) => {
-        const res = await fetch(src.url)
-        if (!res.ok) throw new Error(`Failed to fetch OG font (${src.weight}): ${src.url}`)
-        const data = await res.arrayBuffer()
-        return { name: "Noto Sans JP", data, weight: src.weight, style: "normal" as const }
-      }),
-    )
+async function loadFontSubset(
+  text: string,
+  weight: 400 | 700 | 900,
+): Promise<ArrayBuffer> {
+  const url = `https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@${weight}&text=${encodeURIComponent(text)}&display=swap`
+  const css = await fetch(url, { headers: { "User-Agent": LEGACY_UA } }).then(
+    (r) => r.text(),
+  )
+  const match = css.match(/src:\s*url\((.+?)\)\s*format\('(opentype|truetype|woff)'\)/)
+  if (!match) {
+    throw new Error(`OG font: could not extract opentype/truetype/woff URL for weight ${weight} (css: ${css.slice(0, 200)})`)
   }
-  return fontsPromise
+  const fontRes = await fetch(match[1])
+  if (!fontRes.ok) {
+    throw new Error(`OG font: fetch failed for ${match[1]}`)
+  }
+  return fontRes.arrayBuffer()
 }
 
 export async function renderOgImage(input: RenderOgInput): Promise<ImageResponse> {
   const accent = ACCENTS[input.accent ?? "pink"]
+  const allText = ["合格.dev", input.title, input.subtitle ?? "", input.badge ?? ""].join(
+    " ",
+  )
+  const [regular, bold, black] = await Promise.all([
+    loadFontSubset(allText, 400),
+    loadFontSubset(allText, 700),
+    loadFontSubset(allText, 900),
+  ])
+  const fonts = [
+    { name: "Noto Sans JP", data: regular, weight: 400 as const, style: "normal" as const },
+    { name: "Noto Sans JP", data: bold, weight: 700 as const, style: "normal" as const },
+    { name: "Noto Sans JP", data: black, weight: 900 as const, style: "normal" as const },
+  ]
+
   const element: ReactElement = (
     <div
       style={{
@@ -105,6 +106,5 @@ export async function renderOgImage(input: RenderOgInput): Promise<ImageResponse
       </div>
     </div>
   )
-  const fonts = await loadFonts()
   return new ImageResponse(element, { ...OG_SIZE, fonts })
 }
