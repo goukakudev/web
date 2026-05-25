@@ -1,17 +1,10 @@
 import { listIpExams, listIpQuestions } from "@/lib/api-client"
 import { renderOgImage, OG_SIZE, OG_CONTENT_TYPE } from "@/lib/seo/og"
+import { stripMd } from "@/lib/text-utils"
 
 export const size = OG_SIZE
 export const contentType = OG_CONTENT_TYPE
 export const alt = "IP 過去問 問題"
-
-function stripMd(text: string): string {
-  return text
-    .replace(/\$[^$]+\$/g, "")
-    .replace(/\|[^\n]*\|/g, "")
-    .replace(/\s+/g, " ")
-    .trim()
-}
 
 export default async function Image({
   params,

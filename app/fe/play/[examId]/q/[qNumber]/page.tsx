@@ -10,17 +10,10 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 import { QuestionSeoExtras } from "@/components/seo/QuestionSeoExtras";
 import { RelatedQuestions } from "@/components/seo/RelatedQuestions";
+import { stripMd } from "@/lib/text-utils";
 
 interface PageProps {
   params: Promise<{ examId: string; qNumber: string }>;
-}
-
-function stripMd(text: string): string {
-  return text
-    .replace(/\$[^$]+\$/g, "")
-    .replace(/\|[^\n]*\|/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
 }
 
 export async function generateMetadata({
