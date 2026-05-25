@@ -53,9 +53,11 @@ describe("structured-data", () => {
       partOfUrl: "https://goukaku.dev/fe/exam/r5h",
     })
     expect(d["@type"]).toBe("Question")
-    expect(d.acceptedAnswer.text).toBe("ア: A")
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect((d as any).acceptedAnswer.text).toBe("ア: A")
     expect(d.answerCount).toBe(2)
-    expect(d.isPartOf.url).toBe("https://goukaku.dev/fe/exam/r5h")
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect((d as any).isPartOf.url).toBe("https://goukaku.dev/fe/exam/r5h")
   })
 
   it("itemListJsonLd produces positioned items", () => {
