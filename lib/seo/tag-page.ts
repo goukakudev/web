@@ -41,13 +41,15 @@ export async function fetchTagPageData(
 
   const matched: Question[] = []
   const coTagCount = new Map<string, number>()
-  for (const exam of exams) {
-    let qs: Question[] = []
-    try {
-      qs = (await api.listQuestions(exam.exam_id)) as Question[]
-    } catch {
-      continue
-    }
+  // Parallelize per-exam fetches; api-client caches each one independently.
+  const questionLists = await Promise.all(
+    exams.map((e) =>
+      (api.listQuestions(e.exam_id) as Promise<Question[]>).catch(
+        () => [] as Question[],
+      ),
+    ),
+  )
+  for (const qs of questionLists) {
     for (const q of qs) {
       if (!(q.tags ?? []).includes(tag)) continue
       matched.push(q)

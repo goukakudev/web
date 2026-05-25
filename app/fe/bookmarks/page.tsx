@@ -1,9 +1,10 @@
+import type { Metadata } from "next"
 import { QuestionListView } from "@/components/play/QuestionListView"
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "ブックマークした問題",
   description: "ブックマークした問題の一覧。",
-  alternates: { canonical: "/fe/bookmarks" },
+  robots: { index: false, follow: true },
 }
 
 export default function BookmarksPage() {

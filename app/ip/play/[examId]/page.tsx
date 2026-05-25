@@ -22,20 +22,18 @@ export default async function IpPlayPage({ params, searchParams }: PageProps) {
   const { examId } = await params
   const { mode } = await searchParams
 
-  const exams = await listIpExams()
+  const [exams, questions, statsMap] = await Promise.all([
+    listIpExams(),
+    listIpQuestions(examId),
+    getIpExamStats(examId),
+  ])
   const exam = exams.find((e) => e.exam_id === examId)
   if (!exam) notFound()
 
   if (mode === undefined || mode === "sequential") {
-    const questions = await listIpQuestions(examId)
     const first = [...questions].sort((a, b) => a.q_number - b.q_number)[0]
     if (first) redirect(`/ip/play/${examId}/q/${first.q_number}`)
   }
-
-  const [questions, statsMap] = await Promise.all([
-    listIpQuestions(examId),
-    getIpExamStats(examId),
-  ])
   const stats: Record<string, QuestionStat> = Object.fromEntries(statsMap)
   const playMode: "random" | "wrongOnly" | "exam" =
     mode === "random" ? "random" :

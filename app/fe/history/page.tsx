@@ -1,9 +1,10 @@
+import type { Metadata } from "next"
 import { QuestionListView } from "@/components/play/QuestionListView"
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "回答履歴",
   description: "これまでに回答した問題を新しい順に表示します。",
-  alternates: { canonical: "/fe/history" },
+  robots: { index: false, follow: true },
 }
 
 export default function HistoryPage() {

@@ -35,13 +35,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function IpExamDetailPage({ params }: PageProps) {
   const { examId } = await params
-  const exams = await listIpExams()
+  const [exams, questions] = await Promise.all([
+    listIpExams(),
+    listIpQuestions(examId).catch(() => []),
+  ])
   const exam = exams.find((e) => e.exam_id === examId)
   if (!exam) notFound()
 
   const base = `/ip/play/${exam.exam_id}`
   const examLabel = exam.title ?? `${exam.year} ${exam.section}`
-  const questions = await listIpQuestions(exam.exam_id).catch(() => [])
   const intro = buildExamIntro({ exam, subject: "ip" })
 
   return (

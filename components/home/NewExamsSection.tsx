@@ -24,7 +24,7 @@ export function NewExamsSection({
   const newIds = subject === "ip" ? NEW_EXAM_IDS_IP : NEW_EXAM_IDS_FE
   const newExams = exams.filter((e) => newIds.has(e.exam_id))
   if (newExams.length === 0) return null
-  const examUrlBase = subject === "ip" ? "/ip/exam" : "/exam"
+  const examUrlBase = subject === "ip" ? "/ip/exam" : "/fe/exam"
   return (
     <div className="mt-7">
       <div

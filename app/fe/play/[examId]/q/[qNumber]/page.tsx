@@ -56,14 +56,13 @@ export default async function FePlayQuestionPage({ params }: PageProps) {
   const n = Number(qNumber);
   if (!Number.isInteger(n) || n < 1) notFound();
 
-  const exams = await listExams();
-  const exam = exams.find((e) => e.exam_id === examId);
-  if (!exam) notFound();
-
-  const [questions, statsMap] = await Promise.all([
+  const [exams, questions, statsMap] = await Promise.all([
+    listExams(),
     listQuestions(examId),
     getExamStats(examId),
   ]);
+  const exam = exams.find((e) => e.exam_id === examId);
+  if (!exam) notFound();
   const stats: Record<string, QuestionStat> = Object.fromEntries(statsMap);
   const q = questions.find((q) => q.q_number === n);
   if (!q) notFound();

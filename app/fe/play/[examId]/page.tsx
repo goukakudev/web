@@ -18,20 +18,18 @@ export default async function FePlayPage({ params, searchParams }: PageProps) {
   const { examId } = await params
   const { mode } = await searchParams
 
-  const exams = await listExams()
+  const [exams, questions, statsMap] = await Promise.all([
+    listExams(),
+    listQuestions(examId),
+    getExamStats(examId),
+  ])
   const exam = exams.find((e) => e.exam_id === examId)
   if (!exam) notFound()
 
   if (mode === undefined || mode === "sequential") {
-    const questions = await listQuestions(examId)
     const first = [...questions].sort((a, b) => a.q_number - b.q_number)[0]
     if (first) redirect(`/fe/play/${examId}/q/${first.q_number}`)
   }
-
-  const [questions, statsMap] = await Promise.all([
-    listQuestions(examId),
-    getExamStats(examId),
-  ])
   const stats: Record<string, QuestionStat> = Object.fromEntries(statsMap)
   const playMode: "random" | "wrongOnly" | "exam" =
     mode === "random" ? "random" :

@@ -35,13 +35,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function FeExamDetailPage({ params }: PageProps) {
   const { examId } = await params
-  const exams = await listExams()
+  const [exams, questions] = await Promise.all([
+    listExams(),
+    listQuestions(examId).catch(() => []),
+  ])
   const exam = exams.find((e) => e.exam_id === examId)
   if (!exam) notFound()
 
   const base = `/fe/play/${exam.exam_id}`
   const examLabel = exam.title ?? `${exam.year} ${exam.section}`
-  const questions = await listQuestions(exam.exam_id).catch(() => [])
   const intro = buildExamIntro({ exam, subject: "fe" })
 
   return (

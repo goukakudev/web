@@ -67,26 +67,25 @@ async function fePartition(): Promise<MetadataRoute.Sitemap> {
   const out: MetadataRoute.Sitemap = []
   const exams = await listExams().catch(() => [])
   const tagSet = new Set<string>()
-  for (const exam of exams) {
+  const questionLists = await Promise.all(
+    exams.map((e) => listQuestions(e.exam_id).catch(() => [])),
+  )
+  for (let i = 0; i < exams.length; i++) {
+    const exam = exams[i]
     out.push({
       url: `${BASE}/fe/exam/${exam.exam_id}`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.8,
     })
-    try {
-      const questions = await listQuestions(exam.exam_id)
-      for (const q of questions) {
-        out.push({
-          url: `${BASE}/fe/play/${exam.exam_id}/q/${q.q_number}`,
-          lastModified: now,
-          changeFrequency: "monthly",
-          priority: 0.6,
-        })
-        for (const t of q.tags ?? []) if (t) tagSet.add(t)
-      }
-    } catch {
-      // skip
+    for (const q of questionLists[i]) {
+      out.push({
+        url: `${BASE}/fe/play/${exam.exam_id}/q/${q.q_number}`,
+        lastModified: now,
+        changeFrequency: "monthly",
+        priority: 0.6,
+      })
+      for (const t of q.tags ?? []) if (t) tagSet.add(t)
     }
   }
   for (const tag of [...tagSet].sort()) {
@@ -123,26 +122,25 @@ async function ipPartition(): Promise<MetadataRoute.Sitemap> {
   const out: MetadataRoute.Sitemap = []
   const exams = await listIpExams().catch(() => [])
   const tagSet = new Set<string>()
-  for (const exam of exams) {
+  const questionLists = await Promise.all(
+    exams.map((e) => listIpQuestions(e.exam_id).catch(() => [])),
+  )
+  for (let i = 0; i < exams.length; i++) {
+    const exam = exams[i]
     out.push({
       url: `${BASE}/ip/exam/${exam.exam_id}`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.8,
     })
-    try {
-      const questions = await listIpQuestions(exam.exam_id)
-      for (const q of questions) {
-        out.push({
-          url: `${BASE}/ip/play/${exam.exam_id}/q/${q.q_number}`,
-          lastModified: now,
-          changeFrequency: "monthly",
-          priority: 0.6,
-        })
-        for (const t of q.tags ?? []) if (t) tagSet.add(t)
-      }
-    } catch {
-      // skip
+    for (const q of questionLists[i]) {
+      out.push({
+        url: `${BASE}/ip/play/${exam.exam_id}/q/${q.q_number}`,
+        lastModified: now,
+        changeFrequency: "monthly",
+        priority: 0.6,
+      })
+      for (const t of q.tags ?? []) if (t) tagSet.add(t)
     }
   }
   for (const tag of [...tagSet].sort()) {
@@ -182,14 +180,18 @@ async function takkenPartition(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/takken/categories`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
   ]
   const exams = await TakkenAPI.listExams().catch(() => [])
-  for (const exam of exams) {
+  const wrappedLists = await Promise.all(
+    exams.map((e) => TakkenAPI.listExamQuestions(e.exam_id)),
+  )
+  for (let i = 0; i < exams.length; i++) {
+    const exam = exams[i]
     out.push({
       url: `${BASE}/takken/exams/${exam.exam_id}`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.8,
     })
-    const wrapped = await TakkenAPI.listExamQuestions(exam.exam_id)
+    const wrapped = wrappedLists[i]
     if (wrapped) {
       for (const q of wrapped.questions) {
         out.push({

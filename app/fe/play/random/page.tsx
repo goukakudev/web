@@ -25,16 +25,17 @@ export default async function FePlayRandomPage({ searchParams }: PageProps) {
   const limit = Math.max(1, Math.min(100, Number(count ?? 20) || 20))
 
   const exams = await listExams()
-  const all: Question[] = []
-  for (const exam of exams) {
-    try {
-      const qs = await listQuestions(exam.exam_id)
-      all.push(...qs)
-    } catch {
-      // ignore individual exam fetch errors
-    }
+  const questionLists = await Promise.all(
+    exams.map((e) => listQuestions(e.exam_id).catch(() => [] as Question[])),
+  )
+  const all: Question[] = questionLists.flat()
+  // Fisher-Yates shuffle for a per-request random sample.
+  const shuffled = [...all]
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
   }
-  const seed = all.slice().sort((a, b) => a._id.localeCompare(b._id)).slice(0, limit)
+  const seed = shuffled.slice(0, limit)
   const examIdsInSeed = Array.from(new Set(seed.map((q) => q.exam_id)))
   const statsResults = await Promise.all(
     examIdsInSeed.map((examId) => getExamStats(examId)),

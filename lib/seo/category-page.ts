@@ -33,9 +33,15 @@ export async function fetchCategoryPageData(
   const tagCount = new Map<string, number>()
   const sampleByTag = new Map<string, { q: Question; exam: ExamSummary | undefined }>()
 
-  for (const exam of exams) {
-    let qs: Question[] = []
-    try { qs = await api.listQuestions(exam.exam_id) } catch { continue }
+  // Fetch all exams' question lists in parallel; each call is independently cached
+  // by the upstream API client (revalidate = 24h), so parallelism just reduces
+  // wall-clock build time.
+  const questionLists = await Promise.all(
+    exams.map((e) =>
+      api.listQuestions(e.exam_id).catch(() => [] as Question[]),
+    ),
+  )
+  for (const qs of questionLists) {
     for (const q of qs) {
       for (const t of q.tags ?? []) {
         const matches = meta.tagKeywords.some((kw) => t.includes(kw))
