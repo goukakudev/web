@@ -17,7 +17,46 @@ const ACCENTS = {
   charcoal: { from: "#1E1E22", to: "#2A2A30", ink: "#FFFFFF", tag: "#FFD27A" },
 } as const
 
-export function renderOgImage(input: RenderOgInput): ImageResponse {
+// Cache fetched fonts across invocations within a single process
+let fontsPromise: Promise<
+  { name: string; data: ArrayBuffer; weight: 400 | 700 | 900; style: "normal" }[]
+> | null = null
+
+// Fetched via Firefox 40 UA from Google Fonts (v56, full Japanese coverage, ~2 MB each).
+// Single woff2 per weight — no unicode-range subsetting — so all CJK glyphs are available.
+// To refresh: fetch https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap
+// with UA "Mozilla/5.0 (Windows NT 6.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"
+// and copy the three src: url(...) values.
+const FONT_SOURCES = [
+  {
+    weight: 400 as const,
+    url: "https://fonts.gstatic.com/s/notosansjp/v56/-F6jfjtqLzI2JPCgQBnw7HFyzSD-AsregP8VFBEj754.woff2",
+  },
+  {
+    weight: 700 as const,
+    url: "https://fonts.gstatic.com/s/notosansjp/v56/-F6jfjtqLzI2JPCgQBnw7HFyzSD-AsregP8VFPYk754.woff2",
+  },
+  {
+    weight: 900 as const,
+    url: "https://fonts.gstatic.com/s/notosansjp/v56/-F6jfjtqLzI2JPCgQBnw7HFyzSD-AsregP8VFLgk754.woff2",
+  },
+] as const
+
+async function loadFonts() {
+  if (!fontsPromise) {
+    fontsPromise = Promise.all(
+      FONT_SOURCES.map(async (src) => {
+        const res = await fetch(src.url)
+        if (!res.ok) throw new Error(`Failed to fetch OG font (${src.weight}): ${src.url}`)
+        const data = await res.arrayBuffer()
+        return { name: "Noto Sans JP", data, weight: src.weight, style: "normal" as const }
+      }),
+    )
+  }
+  return fontsPromise
+}
+
+export async function renderOgImage(input: RenderOgInput): Promise<ImageResponse> {
   const accent = ACCENTS[input.accent ?? "pink"]
   const element: ReactElement = (
     <div
@@ -27,7 +66,7 @@ export function renderOgImage(input: RenderOgInput): ImageResponse {
         padding: 80,
         background: `linear-gradient(135deg, ${accent.from}, ${accent.to})`,
         color: accent.ink,
-        fontFamily: "sans-serif",
+        fontFamily: "Noto Sans JP",
       }}
     >
       <div style={{ fontSize: 36, fontWeight: 800, letterSpacing: "-0.02em" }}>
@@ -66,5 +105,6 @@ export function renderOgImage(input: RenderOgInput): ImageResponse {
       </div>
     </div>
   )
-  return new ImageResponse(element, OG_SIZE)
+  const fonts = await loadFonts()
+  return new ImageResponse(element, { ...OG_SIZE, fonts })
 }
