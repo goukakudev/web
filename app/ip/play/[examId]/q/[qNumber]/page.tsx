@@ -67,7 +67,13 @@ export default async function IpPlayQuestionPage({ params }: PageProps) {
   ])
   const exam = exams.find((e) => e.exam_id === examId)
   if (!exam) notFound()
-  const stats: Record<string, QuestionStat> = Object.fromEntries(statsMap)
+  // Filter stats to question_ids in this exam; upstream may include
+  // pollution that blows up the client RSC payload + Worker CPU.
+  const knownIds = new Set(questions.map((qq) => qq._id))
+  const stats: Record<string, QuestionStat> = {}
+  for (const [qid, stat] of statsMap) {
+    if (knownIds.has(qid)) stats[qid] = stat
+  }
   const q = questions.find((q) => q.q_number === n)
   if (!q) notFound()
 

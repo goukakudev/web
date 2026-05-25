@@ -63,7 +63,17 @@ export default async function FePlayQuestionPage({ params }: PageProps) {
   ]);
   const exam = exams.find((e) => e.exam_id === examId);
   if (!exam) notFound();
-  const stats: Record<string, QuestionStat> = Object.fromEntries(statsMap);
+  // Filter stats to only entries whose question_id belongs to this exam.
+  // The upstream stats DB can include pollution from old test data; passing
+  // the unfiltered map to the client component blows up the RSC payload
+  // (we observed 140KB+ from this on a question page) and the per-request
+  // CPU time in the Cloudflare Worker. PlayController only ever uses
+  // stats[currentQuestion._id], so we limit to the known ID set.
+  const knownIds = new Set(questions.map((qq) => qq._id));
+  const stats: Record<string, QuestionStat> = {};
+  for (const [qid, stat] of statsMap) {
+    if (knownIds.has(qid)) stats[qid] = stat;
+  }
   const q = questions.find((q) => q.q_number === n);
   if (!q) notFound();
 

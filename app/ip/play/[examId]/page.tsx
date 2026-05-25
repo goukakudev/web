@@ -34,7 +34,13 @@ export default async function IpPlayPage({ params, searchParams }: PageProps) {
     const first = [...questions].sort((a, b) => a.q_number - b.q_number)[0]
     if (first) redirect(`/ip/play/${examId}/q/${first.q_number}`)
   }
-  const stats: Record<string, QuestionStat> = Object.fromEntries(statsMap)
+  // Filter stats to question_ids in this exam; upstream may include
+  // pollution that blows up the client RSC payload.
+  const knownIds = new Set(questions.map((qq) => qq._id))
+  const stats: Record<string, QuestionStat> = {}
+  for (const [qid, stat] of statsMap) {
+    if (knownIds.has(qid)) stats[qid] = stat
+  }
   const playMode: "random" | "wrongOnly" | "exam" =
     mode === "random" ? "random" :
     mode === "wrongOnly" ? "wrongOnly" :

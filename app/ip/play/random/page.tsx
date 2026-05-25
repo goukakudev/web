@@ -40,10 +40,12 @@ export default async function IpPlayRandomPage({ searchParams }: PageProps) {
   const statsResults = await Promise.all(
     examIdsInSeed.map((examId) => getIpExamStats(examId)),
   )
+  // Only keep stats for the seeded questions to keep the RSC payload tight.
+  const seedIds = new Set(seed.map((q) => q._id))
   const stats: Record<string, QuestionStat> = {}
   for (const map of statsResults) {
     for (const [qid, stat] of map) {
-      stats[qid] = stat
+      if (seedIds.has(qid)) stats[qid] = stat
     }
   }
 
