@@ -77,6 +77,23 @@ export default async function IpPlayQuestionPage({ params }: PageProps) {
   const q = questions.find((q) => q.q_number === n)
   if (!q) notFound()
 
+  // Slim non-current questions for the client component; only the current
+  // question needs full body/choices/explanation/hint/figures for display.
+  // Other entries only need _id, q_number, body, tags for navigation +
+  // related-questions rendering. Cuts RSC payload by ~60-70%.
+  const slimQuestions = questions.map((qq) =>
+    qq._id === q._id
+      ? qq
+      : {
+          ...qq,
+          choices: [],
+          explanation: undefined,
+          figures: undefined,
+          per_choice: undefined,
+          hint: undefined,
+        },
+  )
+
   const url = `${SITE_URL}/ip/play/${exam.exam_id}/q/${n}`
   const examLabel = exam.title ?? exam.exam_id
   const examUrl = `/ip/exam/${exam.exam_id}`
@@ -105,7 +122,7 @@ export default async function IpPlayQuestionPage({ params }: PageProps) {
         ITパスポート試験 {examLabel} 問{n}: {stripMd(q.body).slice(0, 80)}
       </h1>
       <PlayController
-        questions={questions}
+        questions={slimQuestions}
         exam={exam}
         mode="sequential"
         initialQNumber={n}

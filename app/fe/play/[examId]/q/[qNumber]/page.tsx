@@ -77,6 +77,25 @@ export default async function FePlayQuestionPage({ params }: PageProps) {
   const q = questions.find((q) => q.q_number === n);
   if (!q) notFound();
 
+  // Slim non-current questions to just the fields PlayController needs for
+  // navigation (_id, q_number, body for related-question previews). Drops
+  // explanation / figures / per_choice — the heaviest fields — saving ~60-70%
+  // of the RSC payload that ships to the client when the user is only
+  // looking at one question at a time. Sequential mode re-renders on
+  // next/prev anyway, so the stripped data is fine.
+  const slimQuestions = questions.map((qq) =>
+    qq._id === q._id
+      ? qq
+      : {
+          ...qq,
+          choices: [],
+          explanation: undefined,
+          figures: undefined,
+          per_choice: undefined,
+          hint: undefined,
+        },
+  );
+
   const url = `${SITE_URL}/fe/play/${exam.exam_id}/q/${n}`;
   const examLabel = exam.title ?? exam.exam_id;
   const examUrl = `/fe/exam/${exam.exam_id}`;
@@ -105,7 +124,7 @@ export default async function FePlayQuestionPage({ params }: PageProps) {
         基本情報技術者試験 {examLabel} 午前 問{n}: {stripMd(q.body).slice(0, 80)}
       </h1>
       <PlayController
-        questions={questions}
+        questions={slimQuestions}
         exam={exam}
         mode="sequential"
         initialQNumber={n}
