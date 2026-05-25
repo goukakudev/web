@@ -10,32 +10,15 @@ import { tagToSlug } from "@/lib/tag-url"
 
 const BASE = "https://goukaku.dev"
 
-export async function generateSitemaps() {
-  return [{ id: 0 }, { id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }]
-}
-
-export default async function sitemap({
-  id,
-}: {
-  id: number | Promise<number>
-}): Promise<MetadataRoute.Sitemap> {
-  // Next.js 16 passes `id` as a Promise; await defensively for both shapes.
-  const resolved = await Promise.resolve(id)
-  const n = typeof resolved === "string" ? Number(resolved) : resolved
-  switch (n) {
-    case 0:
-      return rootPartition()
-    case 1:
-      return fePartition()
-    case 2:
-      return ipPartition()
-    case 3:
-      return takkenPartition()
-    case 4:
-      return glossaryPartition()
-    default:
-      return []
-  }
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const [root, fe, ip, takken, glossary] = await Promise.all([
+    Promise.resolve(rootPartition()),
+    fePartition(),
+    ipPartition(),
+    takkenPartition(),
+    glossaryPartition(),
+  ])
+  return [...root, ...fe, ...ip, ...takken, ...glossary]
 }
 
 function rootPartition(): MetadataRoute.Sitemap {

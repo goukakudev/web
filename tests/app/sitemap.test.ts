@@ -41,19 +41,13 @@ vi.mock("@/lib/takken/api", () => ({
   },
 }))
 
-describe("sitemap (split)", () => {
+describe("sitemap (unified)", () => {
   beforeEach(() => vi.resetModules())
   afterEach(() => vi.clearAllMocks())
 
-  it("generateSitemaps returns 5 partitions (0..4)", async () => {
-    const { generateSitemaps } = await import("@/app/sitemap")
-    const out = await generateSitemaps()
-    expect(out).toEqual([{ id: 0 }, { id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }])
-  })
-
-  it("partition 0 contains site root and exam landings", async () => {
+  it("contains site root, section landings, and policy pages", async () => {
     const mod = await import("@/app/sitemap")
-    const urls = (await mod.default({ id: 0 })).map((e) => e.url)
+    const urls = (await mod.default()).map((e) => e.url)
     expect(urls).toContain("https://goukaku.dev/")
     expect(urls).toContain("https://goukaku.dev/fe")
     expect(urls).toContain("https://goukaku.dev/ip")
@@ -61,33 +55,33 @@ describe("sitemap (split)", () => {
     expect(urls).toContain("https://goukaku.dev/about")
   })
 
-  it("partition 1 contains FE exam, question, and tag URLs", async () => {
+  it("contains FE exam, question, and tag URLs", async () => {
     const mod = await import("@/app/sitemap")
-    const urls = (await mod.default({ id: 1 })).map((e) => e.url)
+    const urls = (await mod.default()).map((e) => e.url)
     expect(urls).toContain("https://goukaku.dev/fe/exam/fe-2023h")
     expect(urls).toContain("https://goukaku.dev/fe/play/fe-2023h/q/1")
     expect(urls).toContain("https://goukaku.dev/fe/play/fe-2023h/q/2")
     expect(urls.some((u) => u.startsWith("https://goukaku.dev/fe/tag/"))).toBe(true)
   })
 
-  it("partition 2 contains IP URLs", async () => {
+  it("contains IP URLs", async () => {
     const mod = await import("@/app/sitemap")
-    const urls = (await mod.default({ id: 2 })).map((e) => e.url)
+    const urls = (await mod.default()).map((e) => e.url)
     expect(urls).toContain("https://goukaku.dev/ip/exam/ip-r5")
     expect(urls).toContain("https://goukaku.dev/ip/play/ip-r5/q/1")
   })
 
-  it("partition 3 contains takken URLs", async () => {
+  it("contains takken URLs", async () => {
     const mod = await import("@/app/sitemap")
-    const urls = (await mod.default({ id: 3 })).map((e) => e.url)
+    const urls = (await mod.default()).map((e) => e.url)
     expect(urls).toContain("https://goukaku.dev/takken")
     expect(urls).toContain("https://goukaku.dev/takken/exams/tk-r5")
     expect(urls).toContain("https://goukaku.dev/takken/exams/tk-r5/quiz?q=1")
   })
 
-  it("partition 4 is reserved for glossary (returns array)", async () => {
+  it("returns an array", async () => {
     const mod = await import("@/app/sitemap")
-    const list = await mod.default({ id: 4 })
+    const list = await mod.default()
     expect(Array.isArray(list)).toBe(true)
   })
 })
