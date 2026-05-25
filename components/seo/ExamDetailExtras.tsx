@@ -125,6 +125,36 @@ export function ExamDetailExtras({
         </div>
       )}
 
+      <section>
+        <h2 className="text-[15px] font-extrabold mb-2.5 text-goukaku-ink/85">
+          関連ページ
+        </h2>
+        <ul className="grid grid-cols-2 gap-1.5 text-[12px]">
+          <li>
+            <Link
+              href={`${parentHref}/guide`}
+              className="block rounded-lg border border-goukaku-divider bg-goukaku-surface/40 px-3 py-2 hover:bg-goukaku-surface"
+            >
+              <span className="font-bold">📚 学習ガイド</span>
+              <span className="block text-[11px] opacity-55 mt-0.5">
+                試験概要・出題範囲・勉強法
+              </span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              href={`${parentHref}/faq`}
+              className="block rounded-lg border border-goukaku-divider bg-goukaku-surface/40 px-3 py-2 hover:bg-goukaku-surface"
+            >
+              <span className="font-bold">❓ FAQ</span>
+              <span className="block text-[11px] opacity-55 mt-0.5">
+                よくある質問
+              </span>
+            </Link>
+          </li>
+        </ul>
+      </section>
+
       <p className="text-[11px] opacity-60 pt-3 border-t border-goukaku-divider">
         ← <Link href={parentHref} className="underline">{parentLabel} のトップ</Link>へ戻る ({examLabel})
       </p>

@@ -51,6 +51,8 @@ function rootPartition(): MetadataRoute.Sitemap {
     { url: `${BASE}/fe/guide`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/ip/guide`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/takken/guide`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE}/methodology`, lastModified: now, changeFrequency: "yearly", priority: 0.4 },
+    { url: `${BASE}/sources`, lastModified: now, changeFrequency: "yearly", priority: 0.4 },
     { url: `${BASE}/about`, lastModified: now, changeFrequency: "yearly", priority: 0.4 },
     { url: `${BASE}/privacy`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
     { url: `${BASE}/terms`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },

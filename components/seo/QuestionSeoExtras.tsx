@@ -1,4 +1,5 @@
 import type { Choice, ChoiceLabel, Explanation } from "@/lib/types"
+import { GlossaryInline } from "@/components/seo/GlossaryInline"
 
 export interface QuestionSeoExtrasProps {
   examLabel: string
@@ -40,7 +41,9 @@ export function QuestionSeoExtras({
       <div className="mt-4 space-y-4 text-goukaku-ink/85">
         <section>
           <h3 className="text-[12px] font-bold opacity-60 mb-1">問題本文</h3>
-          <p>{stripPlain(body)}</p>
+          <p>
+            <GlossaryInline text={stripPlain(body)} />
+          </p>
         </section>
 
         <section>
@@ -68,7 +71,9 @@ export function QuestionSeoExtras({
         {explanation?.overall && (
           <section>
             <h3 className="text-[12px] font-bold opacity-60 mb-1">解説</h3>
-            <p>{stripPlain(explanation.overall)}</p>
+            <p>
+              <GlossaryInline text={stripPlain(explanation.overall)} />
+            </p>
           </section>
         )}
 
