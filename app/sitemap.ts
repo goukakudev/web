@@ -45,6 +45,9 @@ function rootPartition(): MetadataRoute.Sitemap {
     { url: `${BASE}/fe`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
     { url: `${BASE}/ip`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
     { url: `${BASE}/takken`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
+    { url: `${BASE}/fe/faq`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${BASE}/ip/faq`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${BASE}/takken/faq`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE}/about`, lastModified: now, changeFrequency: "yearly", priority: 0.4 },
     { url: `${BASE}/privacy`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
     { url: `${BASE}/terms`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
@@ -89,6 +92,16 @@ async function fePartition(): Promise<MetadataRoute.Sitemap> {
       priority: 0.5,
     })
   }
+  const yearSet = new Set<string>()
+  for (const e of exams) if (e.year) yearSet.add(e.year)
+  for (const y of [...yearSet].sort()) {
+    out.push({
+      url: `${BASE}/fe/year/${encodeURIComponent(y)}`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    })
+  }
   return out
 }
 
@@ -127,6 +140,16 @@ async function ipPartition(): Promise<MetadataRoute.Sitemap> {
       priority: 0.5,
     })
   }
+  const yearSet = new Set<string>()
+  for (const e of exams) if (e.year) yearSet.add(e.year)
+  for (const y of [...yearSet].sort()) {
+    out.push({
+      url: `${BASE}/ip/year/${encodeURIComponent(y)}`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    })
+  }
   return out
 }
 
@@ -163,6 +186,16 @@ async function takkenPartition(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.7,
+    })
+  }
+  const yearSet = new Set<number>()
+  for (const e of exams) yearSet.add(e.year)
+  for (const y of [...yearSet].sort((a, b) => b - a)) {
+    out.push({
+      url: `${BASE}/takken/year/${y}`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.6,
     })
   }
   return out
