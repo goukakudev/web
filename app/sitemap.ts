@@ -105,6 +105,14 @@ async function fePartition(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
     })
   }
+  for (const slug of ["technology", "management", "strategy"]) {
+    out.push({
+      url: `${BASE}/fe/category/${slug}`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    })
+  }
   return out
 }
 
@@ -151,6 +159,14 @@ async function ipPartition(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.6,
+    })
+  }
+  for (const slug of ["technology", "management", "strategy"]) {
+    out.push({
+      url: `${BASE}/ip/category/${slug}`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
     })
   }
   return out
