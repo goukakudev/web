@@ -1,11 +1,12 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { TakkenAPI } from "@/lib/takken/api";
 import { makeMetadata } from "@/lib/seo/metadata";
 import { webPageJsonLd } from "@/lib/seo/structured-data";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 
-export const metadata = makeMetadata({
+export const metadata: Metadata = makeMetadata({
   title: "宅建士 過去問",
   description: "宅地建物取引士(宅建士)試験の過去問演習サイト。H16〜R7 の全試験・1,200 問以上を解説付きで掲載。関連条文・判例タップで本文ポップアップ表示。",
   path: "/takken",
