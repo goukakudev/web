@@ -1,5 +1,3 @@
-import * as React from "react"
-
 export interface JsonLdProps {
   data: Record<string, unknown> | Record<string, unknown>[]
 }
