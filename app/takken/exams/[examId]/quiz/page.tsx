@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import Link from "next/link"
 import { notFound } from "next/navigation"
 import { TakkenAPI } from "@/lib/takken/api"
 import { makeMetadata } from "@/lib/seo/metadata"
@@ -37,9 +38,11 @@ export async function generateMetadata({
 export default async function QuizPage({ params, searchParams }: Props) {
   const { examId } = await params
   const { mode, q } = await searchParams
-  const result = await TakkenAPI.listExamQuestions(examId)
+  const [result, exam] = await Promise.all([
+    TakkenAPI.listExamQuestions(examId),
+    TakkenAPI.getExam(examId),
+  ])
   if (!result || result.questions.length === 0) notFound()
-  const exam = await TakkenAPI.getExam(examId)
   const parsed = Number(q ?? "1")
   const qn = Number.isInteger(parsed) && parsed > 0 ? parsed : 1
   const current =
@@ -125,7 +128,7 @@ export default async function QuizPage({ params, searchParams }: Props) {
           )}
           {exam && (
             <p className="text-[11px] text-ink-3 pt-2 border-t border-line">
-              {exam.label} の<a className="underline" href={`/takken/exams/${exam.exam_id}`}>過去問一覧</a>へ戻る・問{current.question_number}
+              {exam.label} の<Link className="underline" href={`/takken/exams/${exam.exam_id}`}>過去問一覧</Link>へ戻る・問{current.question_number}
             </p>
           )}
         </div>
@@ -152,16 +155,16 @@ export default async function QuizPage({ params, searchParams }: Props) {
             {(prev || next) && (
               <nav aria-label="前後の問題" className="flex gap-2 mb-3 text-[12px]">
                 {prev && (
-                  <a href={`/takken/exams/${examId}/quiz?q=${prev.question_number}`}
+                  <Link href={`/takken/exams/${examId}/quiz?q=${prev.question_number}`}
                     className="flex-1 rounded-lg border border-line px-3 py-2 text-ink-2 hover:bg-canvas">
                     ← 問{prev.question_number}
-                  </a>
+                  </Link>
                 )}
                 {next && (
-                  <a href={`/takken/exams/${examId}/quiz?q=${next.question_number}`}
+                  <Link href={`/takken/exams/${examId}/quiz?q=${next.question_number}`}
                     className="flex-1 rounded-lg border border-line px-3 py-2 text-right text-ink-2 hover:bg-canvas">
                     問{next.question_number} →
-                  </a>
+                  </Link>
                 )}
               </nav>
             )}
@@ -169,14 +172,14 @@ export default async function QuizPage({ params, searchParams }: Props) {
               <ul className="space-y-1.5">
                 {sameTag.map((qq) => (
                   <li key={qq._id}>
-                    <a href={`/takken/exams/${examId}/quiz?q=${qq.question_number}`}
+                    <Link href={`/takken/exams/${examId}/quiz?q=${qq.question_number}`}
                       className="block rounded-lg border border-line px-3 py-2 hover:bg-canvas">
                       <span className="text-[11px] font-bold text-ink-3">問{qq.question_number}</span>
                       <span className="block text-[12px] text-ink-2 mt-0.5 line-clamp-2">
                         {qq.question_text.slice(0, 60)}
                         {qq.question_text.length > 60 ? "…" : ""}
                       </span>
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>

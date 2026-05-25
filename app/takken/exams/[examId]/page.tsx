@@ -22,9 +22,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ExamDetailPage({ params }: Props) {
   const { examId } = await params;
-  const exam = await TakkenAPI.getExam(examId);
+  const [exam, questionsResult] = await Promise.all([
+    TakkenAPI.getExam(examId),
+    TakkenAPI.listExamQuestions(examId),
+  ]);
   if (!exam) notFound();
-  const questionsResult = await TakkenAPI.listExamQuestions(examId);
   const questions = questionsResult?.questions ?? [];
   const categoryCounts = new Map<string, number>();
   for (const q of questions) {

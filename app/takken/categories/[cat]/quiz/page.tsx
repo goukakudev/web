@@ -31,7 +31,14 @@ export default async function CategoryQuizPage({ params, searchParams }: Props) 
   if (count) {
     const n = parseInt(count, 10)
     if (!Number.isNaN(n) && n > 0 && n < questions.length) {
-      questions = [...questions].sort(() => Math.random() - 0.5).slice(0, n)
+      // Fisher-Yates shuffle; the previous `sort(() => Math.random() - 0.5)`
+      // is biased on most engines because the comparator isn't transitive.
+      const shuffled = [...questions]
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1))
+        ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+      }
+      questions = shuffled.slice(0, n)
     }
   }
 
