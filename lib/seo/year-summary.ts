@@ -37,6 +37,25 @@ export function sortYearsDesc(years: string[]): string[] {
   return [...years].sort((a, b) => (a < b ? 1 : -1))
 }
 
+/** Pretty-print a yearKey: "2013h25h" → "2013年(平成25年度 春期)" etc. */
+export function prettyYear(key: string): string {
+  // First 4 digits = western year.
+  const yMatch = key.match(/^(\d{4})/)
+  const western = yMatch ? yMatch[1] : key
+  let era = ""
+  const eraMatch = key.match(/(\d{4})([hr])(\d{2})/)
+  if (eraMatch) {
+    const ePrefix = eraMatch[2] === "h" ? "平成" : "令和"
+    era = `${ePrefix}${parseInt(eraMatch[3], 10)}年度`
+  }
+  let season = ""
+  if (/h$/i.test(key) && eraMatch) season = "春期"
+  else if (/a$/i.test(key) && eraMatch) season = "秋期"
+  const parts = [`${western}年`]
+  if (era) parts.push(`(${era}${season ? ` ${season}` : ""})`)
+  return parts.join("")
+}
+
 export function buildYearSummary({
   yearKey,
   exams,
@@ -52,7 +71,7 @@ export function buildYearSummary({
   const totalQuestions = exams.reduce((s, e) => s + (e.question_count ?? 0), 0)
   return {
     yearKey,
-    yearDisplay: yearKey,
+    yearDisplay: prettyYear(yearKey),
     exams,
     totalQuestions,
     prevYear,

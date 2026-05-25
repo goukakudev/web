@@ -15,6 +15,7 @@ import {
   buildYearIntro,
   buildYearSummary,
   groupExamsByYear,
+  prettyYear,
   sortYearsDesc,
 } from "@/lib/seo/year-summary"
 
@@ -36,9 +37,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!byYear.has(yearKey)) return {}
   const yearExams = byYear.get(yearKey)!
   const total = yearExams.reduce((s, e) => s + e.question_count, 0)
+  const display = prettyYear(yearKey)
   return makeMetadata({
-    title: `${yearKey} ITパスポート試験 過去問 ${total} 問`,
-    description: `ITパスポート試験 ${yearKey} の過去問 ${yearExams.length} 回・全 ${total} 問の一覧。試験回ごとの出題内訳・解説・ヒント付き。`,
+    title: `${display} ITパスポート試験 過去問 ${total} 問`,
+    description: `ITパスポート試験 ${display} の過去問 ${yearExams.length} 回・全 ${total} 問の一覧。試験回ごとの出題内訳・解説・ヒント付き。`,
     path: `/ip/year/${yearSlug}`,
   })
 }
@@ -64,12 +66,12 @@ export default async function IpYearPage({ params }: PageProps) {
       <Breadcrumbs items={[
         { name: "合格.dev", href: "/" },
         { name: "ITパスポート試験", href: "/ip" },
-        { name: `${yearKey} 年度`, href: `/ip/year/${yearSlug}` },
+        { name: summary.yearDisplay, href: `/ip/year/${yearSlug}` },
       ]} />
       <JsonLd
         data={collectionPageJsonLd({
-          name: `${yearKey} ITパスポート試験 過去問`,
-          description: `ITパスポート試験 ${yearKey} の試験回 ${yearExams.length} 件`,
+          name: `${summary.yearDisplay} ITパスポート試験 過去問`,
+          description: `ITパスポート試験 ${summary.yearDisplay} の試験回 ${yearExams.length} 件`,
           url: `${SITE_URL}/ip/year/${yearSlug}`,
           items: yearExams.map((e) => ({
             name: e.title ?? `${e.year} ${e.section}`,
@@ -87,13 +89,13 @@ export default async function IpYearPage({ params }: PageProps) {
       />
 
       <h1 className="text-[20px] font-extrabold mb-3">
-        {yearKey} ITパスポート試験 過去問
+        {summary.yearDisplay} ITパスポート試験 過去問
       </h1>
       <p className="text-[13px] leading-[1.85] text-goukaku-ink/80 mb-6">{intro}</p>
 
       <section className="mb-7">
         <h2 className="text-[15px] font-extrabold mb-3 text-goukaku-ink/85">
-          {yearKey} の試験回
+          {summary.yearDisplay} の試験回
         </h2>
         <ul className="space-y-2">
           {yearExams.map((e) => (
@@ -124,7 +126,7 @@ export default async function IpYearPage({ params }: PageProps) {
               href={`/ip/year/${encodeURIComponent(summary.prevYear)}`}
               className="flex-1 rounded-lg border border-goukaku-divider px-3 py-2 hover:bg-goukaku-surface"
             >
-              ← {summary.prevYear} 年度
+              ← {prettyYear(summary.prevYear)}
             </Link>
           )}
           {summary.nextYear && (
@@ -132,7 +134,7 @@ export default async function IpYearPage({ params }: PageProps) {
               href={`/ip/year/${encodeURIComponent(summary.nextYear)}`}
               className="flex-1 rounded-lg border border-goukaku-divider px-3 py-2 text-right hover:bg-goukaku-surface"
             >
-              {summary.nextYear} 年度 →
+              {prettyYear(summary.nextYear)} →
             </Link>
           )}
         </nav>
