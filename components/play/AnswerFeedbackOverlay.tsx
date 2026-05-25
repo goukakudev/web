@@ -19,8 +19,8 @@ export function AnswerFeedbackOverlay({
     setVisible(true)
     setAnimateIn(false)
     const showId = requestAnimationFrame(() => setAnimateIn(true))
-    const fadeOutId = window.setTimeout(() => setAnimateIn(false), 900)
-    const hideId = window.setTimeout(() => setVisible(false), 1300)
+    const fadeOutId = window.setTimeout(() => setAnimateIn(false), 600)
+    const hideId = window.setTimeout(() => setVisible(false), 870)
     return () => {
       cancelAnimationFrame(showId)
       window.clearTimeout(fadeOutId)
@@ -39,7 +39,7 @@ export function AnswerFeedbackOverlay({
     >
       <div
         className={[
-          "transition-all duration-[400ms] ease-out",
+          "transition-all duration-[270ms] ease-out",
           animateIn ? "opacity-100 scale-100" : "opacity-0 scale-75",
         ].join(" ")}
       >
