@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return makeMetadata({
     title: `${decoded} 宅建 分野別演習`,
     description: `宅地建物取引士試験 ${decoded} 分野の過去問演習。ランダム出題で実力チェック。`,
-    path: `/takken/categories/${cat}`,
+    path: `/takken/categories/${cat}/quiz`,
   })
 }
 
