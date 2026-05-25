@@ -4,6 +4,10 @@ import { listIpExams } from "@/lib/api-client"
 import { MobileFrame } from "@/components/layout/MobileFrame"
 import { ModeButton } from "@/components/exam/ModeButton"
 import Link from "next/link"
+import { makeMetadata } from "@/lib/seo/metadata"
+import { learningResourceJsonLd, SITE_URL } from "@/lib/seo/structured-data"
+import { JsonLd } from "@/components/seo/JsonLd"
+import { Breadcrumbs } from "@/components/seo/Breadcrumbs"
 
 export async function generateStaticParams() {
   const exams = await listIpExams()
@@ -25,22 +29,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const description = `ITパスポート試験 ${examLabel} の過去問 ${exam.question_count} 問。順番・ランダム・模試 (120 分) の 3 モードで解け、全問に解説と選択肢ごとの正誤解説・ヒント付き。`
   const canonical = `/ip/exam/${exam.exam_id}`
 
-  return {
-    title,
-    description,
-    alternates: { canonical },
-    openGraph: {
-      type: "website",
-      title,
-      description,
-      url: canonical,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-    },
-  }
+  return makeMetadata({ title, description, path: canonical })
 }
 
 export default async function IpExamDetailPage({ params }: PageProps) {
@@ -52,27 +41,21 @@ export default async function IpExamDetailPage({ params }: PageProps) {
   const base = `/ip/play/${exam.exam_id}`
   const examLabel = exam.title ?? `${exam.year} ${exam.section}`
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "LearningResource",
-    name: `${examLabel} 過去問`,
-    description: `ITパスポート試験 ${examLabel} の過去問 ${exam.question_count} 問・解説・ヒント付き`,
-    inLanguage: "ja",
-    educationalLevel: "professional",
-    learningResourceType: "Quiz",
-    url: `https://goukaku.dev/ip/exam/${exam.exam_id}`,
-    numberOfItems: exam.question_count,
-    about: {
-      "@type": "Thing",
-      name: "ITパスポート試験",
-    },
-  }
-
   return (
     <MobileFrame>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      <Breadcrumbs items={[
+        { name: "合格.dev", href: "/" },
+        { name: "ITパスポート試験", href: "/ip" },
+        { name: examLabel, href: `/ip/exam/${exam.exam_id}` },
+      ]} />
+      <JsonLd
+        data={learningResourceJsonLd({
+          name: `${examLabel} 過去問`,
+          description: `ITパスポート試験 ${examLabel} の過去問 ${exam.question_count} 問・解説・ヒント付き`,
+          url: `${SITE_URL}/ip/exam/${exam.exam_id}`,
+          numberOfItems: exam.question_count,
+          aboutName: "ITパスポート試験",
+        })}
       />
       <Link href="/ip" className="inline-block text-[14px] mb-4">← ホーム</Link>
       <div className="text-[10px] tracking-[1.2px] font-bold text-goukaku-ink/50 uppercase">
