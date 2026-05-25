@@ -2,17 +2,22 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { TakkenAPI } from "@/lib/takken/api";
 import type { Metadata } from "next";
+import { makeMetadata } from "@/lib/seo/metadata";
+import { learningResourceJsonLd } from "@/lib/seo/structured-data";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 
 type Props = { params: Promise<{ examId: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { examId } = await params;
   const exam = await TakkenAPI.getExam(examId);
-  if (!exam) return { title: "試験が見つかりません" };
-  return {
-    title: `${exam.label} — 宅建`,
-    description: `${exam.label}の宅建士試験 全${exam.question_count}問+解説。`,
-  };
+  if (!exam) return {};
+  return makeMetadata({
+    title: `${exam.label} 宅建過去問 ${exam.question_count} 問`,
+    description: `宅地建物取引士試験 ${exam.label} の過去問 ${exam.question_count} 問。関連条文・判例タップで本文ポップアップ表示・解説付き。`,
+    path: `/takken/exams/${exam.exam_id}`,
+  });
 }
 
 export default async function ExamDetailPage({ params }: Props) {
@@ -23,15 +28,19 @@ export default async function ExamDetailPage({ params }: Props) {
   return (
     <main className="min-h-screen bg-bg">
       <div className="mx-auto max-w-3xl px-6 py-12">
-        <nav className="mb-8 text-xs tracking-widest text-ink-3">
-          <Link href="/" className="hover:text-ink-2">合格.dev</Link>
-          <span className="mx-2">／</span>
-          <Link href="/takken" className="hover:text-ink-2">宅建</Link>
-          <span className="mx-2">／</span>
-          <Link href="/takken/exams" className="hover:text-ink-2">年度別</Link>
-          <span className="mx-2">／</span>
-          <span>{exam.label}</span>
-        </nav>
+        <Breadcrumbs items={[
+          { name: "合格.dev", href: "/" },
+          { name: "宅建", href: "/takken" },
+          { name: "年度別", href: "/takken/exams" },
+          { name: exam.label, href: `/takken/exams/${exam.exam_id}` },
+        ]} />
+        <JsonLd data={learningResourceJsonLd({
+          name: `${exam.label} 宅建過去問`,
+          description: `宅地建物取引士試験 ${exam.label} 全 ${exam.question_count} 問・解説付き`,
+          url: `https://goukaku.dev/takken/exams/${exam.exam_id}`,
+          numberOfItems: exam.question_count,
+          aboutName: "宅地建物取引士試験",
+        })} />
 
         {/* Hero */}
         <div className="mb-6 rounded-2xl bg-charcoal p-6 text-white">
