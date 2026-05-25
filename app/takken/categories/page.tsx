@@ -1,10 +1,14 @@
 import Link from "next/link";
-import type { Metadata } from "next";
+import { makeMetadata } from "@/lib/seo/metadata";
+import { itemListJsonLd } from "@/lib/seo/structured-data";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 
-export const metadata: Metadata = {
-  title: "分野別 — 宅建",
-  description: "宅建士試験の分野別過去問演習。権利関係・宅建業法・法令上の制限・税その他。",
-};
+export const metadata = makeMetadata({
+  title: "宅建 分野別過去問",
+  description: "宅地建物取引士試験の過去問を、権利関係 / 宅建業法 / 法令上の制限 / 税その他 の 4 分野別に学習。解説付き。",
+  path: "/takken/categories",
+});
 
 const CATEGORIES = [
   { name: "権利関係", subtitle: "民法・借地借家法・区分所有法 等", gradient: "from-[#8c7367] to-[#574039]" },
@@ -17,13 +21,15 @@ export default function CategoriesPage() {
   return (
     <main className="min-h-screen bg-bg">
       <div className="mx-auto max-w-3xl px-6 py-12">
-        <nav className="mb-8 text-xs tracking-widest text-ink-3">
-          <Link href="/" className="hover:text-ink-2">合格.dev</Link>
-          <span className="mx-2">／</span>
-          <Link href="/takken" className="hover:text-ink-2">宅建</Link>
-          <span className="mx-2">／</span>
-          <span>分野別</span>
-        </nav>
+        <Breadcrumbs items={[
+          { name: "合格.dev", href: "/" },
+          { name: "宅建", href: "/takken" },
+          { name: "分野別", href: "/takken/categories" },
+        ]} />
+        <JsonLd data={itemListJsonLd(CATEGORIES.map((c) => ({
+          name: `${c.name} 宅建過去問`,
+          url: `https://goukaku.dev/takken/categories/${encodeURIComponent(c.name)}`,
+        })))} />
 
         <h1 className="mb-8 font-mincho text-3xl font-semibold tracking-wide text-ink">
           分野別に学習
