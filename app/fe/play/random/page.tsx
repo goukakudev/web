@@ -25,8 +25,25 @@ export default async function FePlayRandomPage({ searchParams }: PageProps) {
   const limit = Math.max(1, Math.min(100, Number(count ?? 20) || 20))
 
   const exams = await listExams()
+  // Pick exams in random order until we have ~3× the requested count in the
+  // candidate pool. Avoids fetching every exam just to throw 95% away.
+  const shuffledExams = [...exams]
+  for (let i = shuffledExams.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[shuffledExams[i], shuffledExams[j]] = [shuffledExams[j], shuffledExams[i]]
+  }
+  const targetPoolSize = limit * 3
+  const selectedExams: typeof exams = []
+  let pool = 0
+  for (const e of shuffledExams) {
+    selectedExams.push(e)
+    pool += e.question_count
+    if (pool >= targetPoolSize) break
+  }
   const questionLists = await Promise.all(
-    exams.map((e) => listQuestions(e.exam_id).catch(() => [] as Question[])),
+    selectedExams.map((e) =>
+      listQuestions(e.exam_id).catch(() => [] as Question[]),
+    ),
   )
   const all: Question[] = questionLists.flat()
   // Fisher-Yates shuffle for a per-request random sample.
