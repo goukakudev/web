@@ -10,15 +10,26 @@ describe("robots", () => {
     for (const path of [
       "/api/",
       "/diagnosis",
-      "/play/random",
       "/ip/play/random",
+      "/fe/play/random",
       "/fe/bookmarks",
       "/fe/history",
       "/ip/bookmarks",
       "/ip/history",
+      "/takken/bookmarks",
+      "/takken/wrong",
+      "/takken/stats",
+      "/takken/search",
     ]) {
       expect(disallow).toContain(path)
     }
+  })
+
+  it("does NOT block the legacy /play/random alias (it 301s to /fe/play/random)", () => {
+    const result = robots()
+    const rule = Array.isArray(result.rules) ? result.rules[0] : result.rules
+    const disallow = Array.isArray(rule?.disallow) ? rule!.disallow : [rule?.disallow]
+    expect(disallow).not.toContain("/play/random")
   })
 
   it("declares the production sitemap", () => {
