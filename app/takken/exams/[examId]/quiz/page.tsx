@@ -20,9 +20,10 @@ export async function generateMetadata({
   const { q } = await searchParams
   const exam = await TakkenAPI.getExam(examId)
   if (!exam) return {}
-  const qn = Number(q ?? "1")
+  const parsed = Number(q ?? "1")
+  const qn = Number.isInteger(parsed) && parsed > 0 ? parsed : 1
   const path =
-    q && qn > 1
+    qn > 1
       ? `/takken/exams/${exam.exam_id}/quiz?q=${qn}`
       : `/takken/exams/${exam.exam_id}/quiz`
   return makeMetadata({
@@ -39,7 +40,8 @@ export default async function QuizPage({ params, searchParams }: Props) {
   const result = await TakkenAPI.listExamQuestions(examId)
   if (!result || result.questions.length === 0) notFound()
   const exam = await TakkenAPI.getExam(examId)
-  const qn = Number(q ?? "1")
+  const parsed = Number(q ?? "1")
+  const qn = Number.isInteger(parsed) && parsed > 0 ? parsed : 1
   const current =
     result.questions.find((qq) => qq.question_number === qn) ??
     result.questions[0]
