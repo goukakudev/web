@@ -1,0 +1,23 @@
+#!/bin/sh
+# Pre-commit secret scan (gitleaks).
+# 露出事故 (2026-05-25, ANTHROPIC_API_KEY) を受けて導入。
+#
+# gitleaks がインストールされていない場合 commit を block する (緩い skip にせず
+# 強制スキャン)。Install: brew install gitleaks
+#
+# 一時的にスキャンを bypass したい場合は SKIP_GITLEAKS=1 git commit ...
+if [ "$SKIP_GITLEAKS" = "1" ]; then
+  echo "[pre-commit] gitleaks skipped via SKIP_GITLEAKS=1" >&2
+  exit 0
+fi
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+  cat >&2 <<'EOF'
+[pre-commit] gitleaks not installed — commit blocked.
+  Install:    brew install gitleaks
+  Bypass:     SKIP_GITLEAKS=1 git commit ...   (緊急時のみ)
+EOF
+  exit 1
+fi
+
+gitleaks protect --staged --redact --no-banner
