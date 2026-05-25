@@ -17,9 +17,12 @@ export async function generateSitemaps() {
 export default async function sitemap({
   id,
 }: {
-  id: number
+  id: number | Promise<number>
 }): Promise<MetadataRoute.Sitemap> {
-  switch (id) {
+  // Next.js 16 passes `id` as a Promise; await defensively for both shapes.
+  const resolved = await Promise.resolve(id)
+  const n = typeof resolved === "string" ? Number(resolved) : resolved
+  switch (n) {
     case 0:
       return rootPartition()
     case 1:
