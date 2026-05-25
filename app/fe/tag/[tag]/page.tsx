@@ -6,6 +6,8 @@ import { TagQuestionRow } from "@/components/tag/TagQuestionRow"
 import Link from "next/link"
 import type { Question, ExamSummary } from "@/lib/types"
 import { tagToSlug, slugToTag } from "@/lib/tag-url"
+import { makeMetadata } from "@/lib/seo/metadata"
+import { Breadcrumbs } from "@/components/seo/Breadcrumbs"
 
 interface PageProps {
   params: Promise<{ tag: string }>
@@ -19,13 +21,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const title = `#${display} の過去問 (基本情報)`
   const description = `基本情報技術者試験の過去問のうち「${display}」タグが付いた問題の一覧。解説付き。`
   const canonical = `/fe/tag/${slug}`
-  return {
-    title,
-    description,
-    alternates: { canonical },
-    openGraph: { type: "website", title, description, url: canonical },
-    twitter: { card: "summary", title, description },
-  }
+  return makeMetadata({ title, description, path: canonical })
 }
 
 export default async function FeTagPage({ params }: PageProps) {
@@ -60,6 +56,11 @@ export default async function FeTagPage({ params }: PageProps) {
   return (
     <MobileFrame>
       <Link href="/fe" className="inline-block text-[14px] mb-4">← ホーム</Link>
+      <Breadcrumbs items={[
+        { name: "合格.dev", href: "/" },
+        { name: "基本情報技術者試験", href: "/fe" },
+        { name: `#${display}`, href: `/fe/tag/${tagToSlug(tag)}` },
+      ]} />
       <div className="flex items-center gap-2 mb-3">
         <span className="inline-flex items-center bg-goukaku-cool/35 text-[#1a8acb] text-[13px] font-extrabold px-2.5 py-1.5 rounded-xl">
           #{display}
