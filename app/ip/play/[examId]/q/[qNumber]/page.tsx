@@ -8,6 +8,10 @@ import {
 import { MobileFrame } from "@/components/layout/MobileFrame"
 import { PlayController } from "@/components/play/PlayController"
 import type { QuestionStat } from "@/lib/types"
+import { makeMetadata } from "@/lib/seo/metadata"
+import { questionJsonLd, SITE_URL } from "@/lib/seo/structured-data"
+import { JsonLd } from "@/components/seo/JsonLd"
+import { Breadcrumbs } from "@/components/seo/Breadcrumbs"
 
 interface PageProps {
   params: Promise<{ examId: string; qNumber: string }>
@@ -43,22 +47,7 @@ export async function generateMetadata({
     const description = `ITパスポート試験 ${examLabel} 問${n} の問題本文・選択肢・正解・解説・ヒント。${bodyPreview}…`
     const canonical = `/ip/play/${exam.exam_id}/q/${n}`
 
-    return {
-      title,
-      description,
-      alternates: { canonical },
-      openGraph: {
-        type: "article",
-        title,
-        description,
-        url: canonical,
-      },
-      twitter: {
-        card: "summary",
-        title,
-        description,
-      },
-    }
+    return makeMetadata({ title, description, path: canonical, type: "article" })
   } catch {
     return {}
   }
@@ -81,79 +70,27 @@ export default async function IpPlayQuestionPage({ params }: PageProps) {
   const q = questions.find((q) => q.q_number === n)
   if (!q) notFound()
 
-  const url = `https://goukaku.dev/ip/play/${exam.exam_id}/q/${n}`
-  const acceptedText = q.choices.find((c) => c.label === q.correct_label)?.text
-
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Question",
-    inLanguage: "ja",
-    name: `${exam.title ?? exam.exam_id} 問${n}`,
-    text: stripMd(q.body),
-    url,
-    answerCount: q.choices.length,
-    suggestedAnswer: q.choices.map((c) => ({
-      "@type": "Answer",
-      text: `${c.label}: ${c.text}`,
-    })),
-    ...(acceptedText && q.correct_label
-      ? {
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: `${q.correct_label}: ${acceptedText}`,
-            ...(q.explanation?.overall
-              ? { encodingFormat: "text/plain", abstract: q.explanation.overall }
-              : {}),
-          },
-        }
-      : {}),
-    isPartOf: {
-      "@type": "LearningResource",
-      name: `${exam.title ?? exam.exam_id} 過去問`,
-      url: `https://goukaku.dev/ip/exam/${exam.exam_id}`,
-    },
-  }
-
-  const breadcrumbJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "合格.dev",
-        item: "https://goukaku.dev/",
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "ITパスポート",
-        item: "https://goukaku.dev/ip",
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: exam.title ?? exam.exam_id,
-        item: `https://goukaku.dev/ip/exam/${exam.exam_id}`,
-      },
-      {
-        "@type": "ListItem",
-        position: 4,
-        name: `問${n}`,
-        item: url,
-      },
-    ],
-  }
+  const url = `${SITE_URL}/ip/play/${exam.exam_id}/q/${n}`
 
   return (
     <MobileFrame>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      <Breadcrumbs items={[
+        { name: "合格.dev", href: "/" },
+        { name: "ITパスポート試験", href: "/ip" },
+        { name: exam.title ?? exam.exam_id, href: `/ip/exam/${exam.exam_id}` },
+        { name: `問${n}`, href: `/ip/play/${exam.exam_id}/q/${n}` },
+      ]} />
+      <JsonLd
+        data={questionJsonLd({
+          name: `${exam.title ?? exam.exam_id} 問${n}`,
+          text: stripMd(q.body),
+          url,
+          choices: q.choices.map((c) => ({ label: c.label, text: c.text })),
+          correctLabel: q.correct_label,
+          explanation: q.explanation?.overall,
+          partOfName: `${exam.title ?? exam.exam_id} 過去問`,
+          partOfUrl: `${SITE_URL}/ip/exam/${exam.exam_id}`,
+        })}
       />
       <PlayController
         questions={questions}
