@@ -37,13 +37,8 @@ yarn-error.log*
 # claude code local state
 .claude
 
-# vercel (legacy — migrated to Cloudflare 2026-05-25)
+# vercel
 .vercel
-
-# cloudflare workers / opennextjs
-.open-next
-.wrangler
-cloudflare-env.d.ts
 
 # typescript
 *.tsbuildinfo
