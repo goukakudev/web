@@ -1,10 +1,11 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { makeMetadata } from "@/lib/seo/metadata";
 import { itemListJsonLd } from "@/lib/seo/structured-data";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 
-export const metadata = makeMetadata({
+export const metadata: Metadata = makeMetadata({
   title: "宅建 分野別過去問",
   description: "宅地建物取引士試験の過去問を、権利関係 / 宅建業法 / 法令上の制限 / 税その他 の 4 分野別に学習。解説付き。",
   path: "/takken/categories",
