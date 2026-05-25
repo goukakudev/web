@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { MobileFrame } from "@/components/layout/MobileFrame";
+import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 import { listExams, listIpExams } from "@/lib/api-client";
 
 export const metadata: Metadata = {
@@ -61,9 +62,10 @@ export default async function AboutPage() {
 
   return (
     <MobileFrame>
-      <Link href="/" className="inline-block text-[14px] mb-4">
-        ← ホーム
-      </Link>
+      <Breadcrumbs items={[
+        { name: "合格.dev", href: "/" },
+        { name: "合格.dev について", href: "/about" },
+      ]} />
       <h1 className="text-[24px] font-extrabold mb-4">{COMPANY_NAME} について</h1>
 
       <section className="mb-7 rounded-3xl border border-goukaku-divider bg-goukaku-surface p-5">

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { MobileFrame } from "@/components/layout/MobileFrame";
+import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 
 const CONTACT_EMAIL = "contact@goukaku.dev";
 
@@ -17,9 +18,10 @@ export default function SupportPage() {
 
   return (
     <MobileFrame>
-      <Link href="/" className="inline-block text-[14px] mb-4">
-        ← ホーム
-      </Link>
+      <Breadcrumbs items={[
+        { name: "合格.dev", href: "/" },
+        { name: "サポート", href: "/support" },
+      ]} />
       <h1 className="text-[24px] font-extrabold mb-2">サポート</h1>
       <p className="text-[13px] text-goukaku-ink/70 mb-6 leading-[1.7]">
         各種資格試験の過去問演習サービス <strong>合格.dev</strong>{" "}
