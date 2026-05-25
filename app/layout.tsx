@@ -8,6 +8,7 @@ const ADSENSE_CLIENT =
   process.env.NEXT_PUBLIC_ADSENSE_CLIENT ?? "ca-pub-0806107180807915"
 
 const SITE_NAME = "合格.dev"
+// TODO(seo-phase1 Batch 4): import SITE_URL/SITE_NAME from @/lib/seo/structured-data
 const SITE_URL = "https://goukaku.dev"
 const DEFAULT_TITLE = "合格.dev — 資格試験の過去問学習サイト"
 const DEFAULT_DESCRIPTION =
