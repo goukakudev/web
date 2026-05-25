@@ -80,11 +80,110 @@ export default async function QuizPage({ params, searchParams }: Props) {
           partOfUrl: `https://goukaku.dev/takken/exams/${examId}`,
         })}
       />
+      <h1 className="sr-only">
+        宅地建物取引士試験 {exam?.label ?? examId} 問{current.question_number}: {current.question_text.slice(0, 80)}
+      </h1>
       <QuizClient
         examId={examId}
         questions={result.questions}
         mode={mode === "exam" ? "exam" : "instant"}
       />
+      <details className="mx-auto max-w-3xl mt-6 rounded-2xl border border-line bg-bg px-4 py-3 text-[13px] leading-relaxed text-ink-2">
+        <summary className="cursor-pointer font-mincho font-semibold text-ink text-[13px]">
+          この問題の本文・選択肢・正解・解説(展開)
+        </summary>
+        <div className="mt-4 space-y-4">
+          <section>
+            <h3 className="text-[11px] font-bold text-ink-3 mb-1">問題本文</h3>
+            <p>{current.question_text}</p>
+          </section>
+          <section>
+            <h3 className="text-[11px] font-bold text-ink-3 mb-1">選択肢</h3>
+            <ul className="space-y-1">
+              {choices.map((c) => (
+                <li key={c.label}>
+                  <span className="font-bold mr-1">{c.label}.</span>
+                  {c.text}
+                </li>
+              ))}
+            </ul>
+          </section>
+          {current.correct_answer != null && (
+            <section>
+              <h3 className="text-[11px] font-bold text-ink-3 mb-1">正解</h3>
+              <p>
+                <span className="font-bold">{current.correct_answer}.</span>{" "}
+                {String(current.choices[String(current.correct_answer)] ?? "")}
+              </p>
+            </section>
+          )}
+          {current.explanation?.commentary && (
+            <section>
+              <h3 className="text-[11px] font-bold text-ink-3 mb-1">解説</h3>
+              <p>{current.explanation.commentary}</p>
+            </section>
+          )}
+          {exam && (
+            <p className="text-[11px] text-ink-3 pt-2 border-t border-line">
+              {exam.label} の<a className="underline" href={`/takken/exams/${exam.exam_id}`}>過去問一覧</a>へ戻る・問{current.question_number}
+            </p>
+          )}
+        </div>
+      </details>
+      {(() => {
+        const cur = current
+        const tags = new Set(cur.tags ?? [])
+        const sameTag = result.questions
+          .filter((qq) => qq.question_number !== cur.question_number)
+          .map((qq) => ({
+            qq,
+            overlap: (qq.tags ?? []).filter((t) => tags.has(t)).length,
+          }))
+          .filter((x) => x.overlap > 0)
+          .sort((a, b) => b.overlap - a.overlap || a.qq.question_number - b.qq.question_number)
+          .slice(0, 5)
+          .map((x) => x.qq)
+        const prev = result.questions.find((qq) => qq.question_number === cur.question_number - 1)
+        const next = result.questions.find((qq) => qq.question_number === cur.question_number + 1)
+        if (sameTag.length === 0 && !prev && !next) return null
+        return (
+          <aside className="mx-auto max-w-3xl mt-6 border-t border-line pt-4">
+            <h2 className="text-[13px] font-mincho font-semibold mb-2 text-ink">関連問題</h2>
+            {(prev || next) && (
+              <nav aria-label="前後の問題" className="flex gap-2 mb-3 text-[12px]">
+                {prev && (
+                  <a href={`/takken/exams/${examId}/quiz?q=${prev.question_number}`}
+                    className="flex-1 rounded-lg border border-line px-3 py-2 text-ink-2 hover:bg-canvas">
+                    ← 問{prev.question_number}
+                  </a>
+                )}
+                {next && (
+                  <a href={`/takken/exams/${examId}/quiz?q=${next.question_number}`}
+                    className="flex-1 rounded-lg border border-line px-3 py-2 text-right text-ink-2 hover:bg-canvas">
+                    問{next.question_number} →
+                  </a>
+                )}
+              </nav>
+            )}
+            {sameTag.length > 0 && (
+              <ul className="space-y-1.5">
+                {sameTag.map((qq) => (
+                  <li key={qq._id}>
+                    <a href={`/takken/exams/${examId}/quiz?q=${qq.question_number}`}
+                      className="block rounded-lg border border-line px-3 py-2 hover:bg-canvas">
+                      <span className="text-[11px] font-bold text-ink-3">問{qq.question_number}</span>
+                      <span className="block text-[12px] text-ink-2 mt-0.5 line-clamp-2">
+                        {qq.question_text.slice(0, 60)}
+                        {qq.question_text.length > 60 ? "…" : ""}
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </aside>
+        )
+      })()}
     </>
   )
 }

@@ -12,6 +12,8 @@ import { makeMetadata } from "@/lib/seo/metadata"
 import { questionJsonLd, SITE_URL } from "@/lib/seo/structured-data"
 import { JsonLd } from "@/components/seo/JsonLd"
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs"
+import { QuestionSeoExtras } from "@/components/seo/QuestionSeoExtras"
+import { RelatedQuestions } from "@/components/seo/RelatedQuestions"
 
 interface PageProps {
   params: Promise<{ examId: string; qNumber: string }>
@@ -71,27 +73,32 @@ export default async function IpPlayQuestionPage({ params }: PageProps) {
   if (!q) notFound()
 
   const url = `${SITE_URL}/ip/play/${exam.exam_id}/q/${n}`
+  const examLabel = exam.title ?? exam.exam_id
+  const examUrl = `/ip/exam/${exam.exam_id}`
 
   return (
     <MobileFrame>
       <Breadcrumbs items={[
         { name: "合格.dev", href: "/" },
         { name: "ITパスポート試験", href: "/ip" },
-        { name: exam.title ?? exam.exam_id, href: `/ip/exam/${exam.exam_id}` },
+        { name: examLabel, href: examUrl },
         { name: `問${n}`, href: `/ip/play/${exam.exam_id}/q/${n}` },
       ]} />
       <JsonLd
         data={questionJsonLd({
-          name: `${exam.title ?? exam.exam_id} 問${n}`,
+          name: `${examLabel} 問${n}`,
           text: stripMd(q.body),
           url,
           choices: q.choices.map((c) => ({ label: c.label, text: c.text })),
           correctLabel: q.correct_label,
           explanation: q.explanation?.overall,
-          partOfName: `${exam.title ?? exam.exam_id} 過去問`,
+          partOfName: `${examLabel} 過去問`,
           partOfUrl: `${SITE_URL}/ip/exam/${exam.exam_id}`,
         })}
       />
+      <h1 className="sr-only">
+        ITパスポート試験 {examLabel} 問{n}: {stripMd(q.body).slice(0, 80)}
+      </h1>
       <PlayController
         questions={questions}
         exam={exam}
@@ -100,6 +107,21 @@ export default async function IpPlayQuestionPage({ params }: PageProps) {
         urlBase="/ip/play"
         homeHref="/ip"
         stats={stats}
+      />
+      <QuestionSeoExtras
+        examLabel={examLabel}
+        qNumber={n}
+        body={q.body}
+        choices={q.choices}
+        correctLabel={q.correct_label}
+        explanation={q.explanation}
+        examUrl={examUrl}
+      />
+      <RelatedQuestions
+        current={{ q_number: n, tags: q.tags }}
+        examQuestions={questions}
+        basePath={`/ip/play/${exam.exam_id}/q`}
+        examLabel={examLabel}
       />
     </MobileFrame>
   )

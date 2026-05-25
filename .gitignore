@@ -34,6 +34,9 @@ yarn-error.log*
 .env*
 !.env*.example
 
+# claude code local state
+.claude
+
 # vercel (legacy — migrated to Cloudflare 2026-05-25)
 .vercel
 
