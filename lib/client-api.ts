@@ -12,6 +12,13 @@ export interface AnswerLogPayload {
   is_correct: boolean
   skipped: boolean
   client_ts: string
+  /**
+   * selected_label / correct_label がどの label 空間か。
+   * - "original" : DB 固定 label (シャッフル前)。サーバが stats 集計対象にする。
+   * - "displayed": 表示ラベル。集計対象外。
+   * - 未指定     : 旧 client (= "displayed" 相当)。
+   */
+  label_space?: "original" | "displayed"
 }
 
 export interface FeedbackPayload {
@@ -42,7 +49,11 @@ async function postOrQueue(path: string, body: unknown): Promise<void> {
 }
 
 export async function recordAnswer(payload: AnswerLogPayload): Promise<void> {
-  await postOrQueue("/api/answers", payload)
+  // exam_id prefix で subject DB を判定。"ip-..." は IP DB、それ以外は FE DB へ。
+  const path = payload.exam_id.startsWith("ip-")
+    ? "/api/ip/answers"
+    : "/api/answers"
+  await postOrQueue(path, payload)
 }
 
 export async function submitFeedback(payload: FeedbackPayload): Promise<void> {

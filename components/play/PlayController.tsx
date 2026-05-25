@@ -245,15 +245,24 @@ export function PlayController({
       answered_at: answeredAt,
     });
 
+    // サーバ集計は DB 固定 label (シャッフル前) ベース。表示ラベルを
+    // shuffleMaps で元 label に逆変換してから送る。
+    const shuffleMap = shuffleMaps[current._id];
+    const originalSelected = shuffleMap?.[label] ?? label;
+    const originalCorrect = current.correct_label
+      ? shuffleMap?.[current.correct_label] ?? current.correct_label
+      : null;
+
     void recordAnswer({
       device_id: getDeviceId(),
       question_id: current._id,
       exam_id: current.exam_id,
-      selected_label: label,
-      correct_label: current.correct_label ?? null,
+      selected_label: originalSelected,
+      correct_label: originalCorrect,
       is_correct: current.correct_label === label,
       skipped: false,
       client_ts: answeredAt,
+      label_space: "original",
     });
 
     if (isExamMode && currentIndex < questions.length - 1) {
