@@ -5,6 +5,7 @@ import SearchClient from "./SearchClient";
 export const metadata: Metadata = {
   title: "検索 — 宅建",
   description: "宅建士試験 過去問の全文検索",
+  robots: { index: false, follow: true },
 };
 
 export default function SearchPage() {

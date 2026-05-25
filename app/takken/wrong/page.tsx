@@ -4,6 +4,7 @@ import WrongClient from "./WrongClient";
 export const metadata: Metadata = {
   title: "間違い直し — 宅建",
   description: "過去に誤答した問題のみで演習",
+  robots: { index: false, follow: true },
 };
 
 export default function WrongPage() {
