@@ -1,11 +1,15 @@
 import Link from "next/link";
 import { TakkenAPI } from "@/lib/takken/api";
-import type { Metadata } from "next";
+import { makeMetadata } from "@/lib/seo/metadata";
+import { webPageJsonLd } from "@/lib/seo/structured-data";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 
-export const metadata: Metadata = {
-  title: "宅建士",
-  description: "宅建士試験(宅地建物取引士)過去問演習。H16〜R7の24試験・1,200問+解説を収録。",
-};
+export const metadata = makeMetadata({
+  title: "宅建士 過去問",
+  description: "宅地建物取引士(宅建士)試験の過去問演習サイト。H16〜R7 の全試験・1,200 問以上を解説付きで掲載。関連条文・判例タップで本文ポップアップ表示。",
+  path: "/takken",
+});
 
 export default async function TakkenHome() {
   const exams = await TakkenAPI.listExams();
@@ -14,11 +18,15 @@ export default async function TakkenHome() {
   return (
     <main className="min-h-screen bg-bg">
       <div className="mx-auto max-w-3xl px-6 py-12">
-        <nav className="mb-8 text-xs tracking-widest text-ink-3">
-          <Link href="/" className="hover:text-ink-2">合格.dev</Link>
-          <span className="mx-2">／</span>
-          <span>宅建</span>
-        </nav>
+        <Breadcrumbs items={[
+          { name: "合格.dev", href: "/" },
+          { name: "宅建", href: "/takken" },
+        ]} />
+        <JsonLd data={webPageJsonLd({
+          name: "宅地建物取引士 過去問",
+          url: "https://goukaku.dev/takken",
+          description: "宅地建物取引士(宅建士)試験の過去問演習サイト。H16〜R7 の全試験を解説付きで。",
+        })} />
 
         <header className="mb-10">
           <h1 className="font-mincho text-4xl font-semibold tracking-wide text-ink">
