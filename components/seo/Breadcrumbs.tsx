@@ -1,5 +1,4 @@
 import Link from "next/link"
-import * as React from "react"
 import { absoluteUrl, breadcrumbJsonLd } from "@/lib/seo/structured-data"
 import { JsonLd } from "./JsonLd"
 
