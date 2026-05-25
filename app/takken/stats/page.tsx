@@ -5,6 +5,7 @@ import StatsClient from "./StatsClient";
 export const metadata: Metadata = {
   title: "学習統計 — 宅建",
   description: "宅建士試験 学習の正答率と進捗",
+  robots: { index: false, follow: true },
 };
 
 export default function StatsPage() {
