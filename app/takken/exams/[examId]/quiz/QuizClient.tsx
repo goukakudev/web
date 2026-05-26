@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { TakkenQuestion } from "@/lib/takken/api";
 import { recordTkLocalAttempt, postTkAttempt } from "@/lib/takken/device";
 import { LawRefChip } from "./LawRefChip";
@@ -14,13 +14,23 @@ export default function QuizClient({
   breadcrumb,
   questions,
   mode,
+  initialQuestionNumber,
 }: {
   examId: string;
   breadcrumb?: string;
   questions: TakkenQuestion[];
   mode: Mode;
+  initialQuestionNumber?: number;
 }) {
-  const [index, setIndex] = useState(0);
+  const initialIndex = useMemo(() => {
+    if (initialQuestionNumber === undefined) return 0;
+    const i = questions.findIndex(
+      (q) => q.question_number === initialQuestionNumber,
+    );
+    return i >= 0 ? i : 0;
+  }, [initialQuestionNumber, questions]);
+
+  const [index, setIndex] = useState(initialIndex);
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [revealed, setRevealed] = useState<Set<number>>(new Set());
   const [finished, setFinished] = useState(false);
@@ -28,15 +38,44 @@ export default function QuizClient({
     typeof crypto !== "undefined" ? crypto.randomUUID() : `${Date.now()}`,
   );
 
+  // URL bar follows current question without unmounting the client tree.
+  // Browser back/forward navigates between questions by syncing index from
+  // the popped URL state — preserves in-progress answers/revealed sets.
+  const navigateTo = useCallback(
+    (newIndex: number) => {
+      setIndex(newIndex);
+      if (typeof window === "undefined") return;
+      const target = questions[newIndex];
+      if (!target) return;
+      const url = new URL(window.location.href);
+      url.searchParams.set("q", String(target.question_number));
+      window.history.pushState({ qIndex: newIndex }, "", url.toString());
+    },
+    [questions],
+  );
+
+  useEffect(() => {
+    const onPopState = () => {
+      const params = new URLSearchParams(window.location.search);
+      const qStr = params.get("q");
+      const qn = qStr ? parseInt(qStr, 10) : questions[0]?.question_number;
+      if (qn === undefined || Number.isNaN(qn)) return;
+      const i = questions.findIndex((q) => q.question_number === qn);
+      if (i >= 0) setIndex(i);
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, [questions]);
+
   const current = questions[index];
   const isRevealed = revealed.has(index);
 
   if (finished) {
     return <ResultView examId={examId} questions={questions} answers={answers} onReplay={() => {
-      setIndex(0);
       setAnswers({});
       setRevealed(new Set());
       setFinished(false);
+      navigateTo(0);
     }} />;
   }
 
@@ -70,7 +109,7 @@ export default function QuizClient({
 
   const handleNext = () => {
     if (index + 1 < questions.length) {
-      setIndex(index + 1);
+      navigateTo(index + 1);
     } else {
       // exam モードで終了時、未送信の解答を一括送信
       if (mode === "exam") {
@@ -102,7 +141,7 @@ export default function QuizClient({
   };
 
   const handlePrev = () => {
-    if (index > 0) setIndex(index - 1);
+    if (index > 0) navigateTo(index - 1);
   };
 
   const choiceState = (k: string): ChoiceState => {

@@ -90,6 +90,7 @@ export default async function QuizPage({ params, searchParams }: Props) {
         examId={examId}
         questions={result.questions}
         mode={mode === "exam" ? "exam" : "instant"}
+        initialQuestionNumber={current.question_number}
       />
       <section className="sr-only" aria-label="この問題の本文・選択肢・正解・解説 (検索エンジン用)">
         <section>
