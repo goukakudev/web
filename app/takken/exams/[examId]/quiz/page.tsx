@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { TakkenAPI } from "@/lib/takken/api"
+import { generateTakkenStats } from "@/lib/takken/dummy-stats"
 import { makeMetadata } from "@/lib/seo/metadata"
 import { questionJsonLd } from "@/lib/seo/structured-data"
 import { JsonLd } from "@/components/seo/JsonLd"
@@ -91,6 +92,7 @@ export default async function QuizPage({ params, searchParams }: Props) {
         questions={result.questions}
         mode={mode === "exam" ? "exam" : "instant"}
         initialQuestionNumber={current.question_number}
+        stats={exam ? generateTakkenStats(exam, result.questions) : {}}
       />
       <section className="sr-only" aria-label="この問題の本文・選択肢・正解・解説 (検索エンジン用)">
         <section>

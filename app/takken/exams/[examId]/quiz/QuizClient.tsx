@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { TakkenQuestion } from "@/lib/takken/api";
+import type { TakkenQuestionStat } from "@/lib/takken/dummy-stats";
 import { recordTkLocalAttempt, postTkAttempt } from "@/lib/takken/device";
 import { LawRefChip } from "./LawRefChip";
 import { ActionBar, HintButton } from "./ActionBar";
@@ -15,12 +16,14 @@ export default function QuizClient({
   questions,
   mode,
   initialQuestionNumber,
+  stats,
 }: {
   examId: string;
   breadcrumb?: string;
   questions: TakkenQuestion[];
   mode: Mode;
   initialQuestionNumber?: number;
+  stats?: Record<string, TakkenQuestionStat>;
 }) {
   const initialIndex = useMemo(() => {
     if (initialQuestionNumber === undefined) return 0;
@@ -210,16 +213,35 @@ export default function QuizClient({
         <div className="space-y-2.5">
           {Object.entries(current.choices)
             .sort()
-            .map(([k, text]) => (
-              <ChoiceRow
-                key={k}
-                num={parseInt(k, 10)}
-                text={text}
-                state={choiceState(k)}
-                onClick={() => handleSelect(parseInt(k, 10))}
-              />
-            ))}
+            .map(([k, text]) => {
+              const intK = parseInt(k, 10);
+              const stat = stats?.[current._id];
+              const showMeter = isRevealed && mode === "instant" && stat !== undefined && stat.total > 0;
+              const rate = showMeter
+                ? ((stat.by_label[k] ?? 0) / stat.total) * 100
+                : 0;
+              return (
+                <div key={k}>
+                  <ChoiceRow
+                    num={intK}
+                    text={text}
+                    state={choiceState(k)}
+                    onClick={() => handleSelect(intK)}
+                  />
+                  {showMeter && (
+                    <SelectionMeter
+                      rate={rate}
+                      isCorrect={current.accepted_answers.includes(intK)}
+                    />
+                  )}
+                </div>
+              );
+            })}
         </div>
+
+        {isRevealed && mode === "instant" && stats?.[current._id] && (
+          <CorrectRateBadge stat={stats[current._id]!} />
+        )}
 
         <div className="mt-3 flex justify-end">
           <HintButton questionId={current._id} explanation={current.explanation} />
@@ -596,5 +618,62 @@ function ResultView({
         </div>
       </div>
     </main>
+  );
+}
+
+// ============================================================
+// Per-question stats display
+// ============================================================
+function SelectionMeter({
+  rate,
+  isCorrect,
+}: {
+  rate: number
+  isCorrect: boolean
+}) {
+  const [width, setWidth] = useState(0);
+  useEffect(() => {
+    const id = requestAnimationFrame(() =>
+      setWidth(Math.min(100, Math.max(0, rate))),
+    );
+    return () => cancelAnimationFrame(id);
+  }, [rate]);
+
+  const barColor = isCorrect ? "bg-tk-gold" : "bg-tk-ink-3/40";
+  const textColor = isCorrect ? "text-tk-gold" : "text-tk-ink-3";
+
+  return (
+    <div className="-mt-1 mb-1.5 flex items-center gap-2 px-3.5">
+      <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-tk-line">
+        <div
+          className={`h-full rounded-full transition-[width] duration-[800ms] ease-out ${barColor}`}
+          style={{ width: `${width}%` }}
+        />
+      </div>
+      <span
+        className={`w-14 text-right font-mincho text-[11px] font-medium tabular-nums ${textColor}`}
+      >
+        {rate.toFixed(2)}%
+      </span>
+    </div>
+  );
+}
+
+function CorrectRateBadge({ stat }: { stat: TakkenQuestionStat }) {
+  if (stat.total === 0) return null;
+  const rate = (stat.correct / stat.total) * 100;
+  const totalFormatted = stat.total.toLocaleString("en-US");
+  return (
+    <div className="mb-1 mt-3 flex items-center gap-1.5 px-1">
+      <span className="text-[11px] font-medium tracking-wide text-tk-ink-3">
+        この問の正解率:
+      </span>
+      <span className="font-mincho text-[13px] font-semibold tabular-nums text-tk-ink">
+        {rate.toFixed(2)}%
+      </span>
+      <span className="text-[11px] font-medium tabular-nums text-tk-ink-3">
+        ({totalFormatted}件)
+      </span>
+    </div>
   );
 }
