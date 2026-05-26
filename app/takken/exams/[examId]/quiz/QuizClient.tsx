@@ -216,25 +216,27 @@ export default function QuizClient({
             .map(([k, text]) => {
               const intK = parseInt(k, 10);
               const stat = stats?.[current._id];
-              const showMeter = isRevealed && mode === "instant" && stat !== undefined && stat.total > 0;
-              const rate = showMeter
-                ? ((stat.by_label[k] ?? 0) / stat.total) * 100
-                : 0;
+              const showMeter =
+                isRevealed &&
+                mode === "instant" &&
+                stat !== undefined &&
+                stat.total > 0;
               return (
-                <div key={k}>
-                  <ChoiceRow
-                    num={intK}
-                    text={text}
-                    state={choiceState(k)}
-                    onClick={() => handleSelect(intK)}
-                  />
-                  {showMeter && (
-                    <SelectionMeter
-                      rate={rate}
-                      isCorrect={current.accepted_answers.includes(intK)}
-                    />
-                  )}
-                </div>
+                <ChoiceRow
+                  key={k}
+                  num={intK}
+                  text={text}
+                  state={choiceState(k)}
+                  onClick={() => handleSelect(intK)}
+                  meter={
+                    showMeter
+                      ? {
+                          rate: ((stat.by_label[k] ?? 0) / stat.total) * 100,
+                          isCorrect: current.accepted_answers.includes(intK),
+                        }
+                      : undefined
+                  }
+                />
               );
             })}
         </div>
@@ -341,11 +343,13 @@ function ChoiceRow({
   text,
   state,
   onClick,
+  meter,
 }: {
   num: number;
   text: string;
   state: ChoiceState;
   onClick: () => void;
+  meter?: { rate: number; isCorrect: boolean };
 }) {
   const s = CHOICE_STYLES[state];
 
@@ -354,21 +358,63 @@ function ChoiceRow({
       type="button"
       onClick={onClick}
       aria-pressed={state !== "normal"}
-      className={`flex w-full items-start gap-3 rounded-xl ${s.card} p-3.5 text-left transition active:scale-[0.99]`}
+      className={`flex w-full flex-col rounded-xl ${s.card} p-3.5 text-left transition active:scale-[0.99]`}
     >
-      <span
-        className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[13px] font-semibold ${s.numBadge}`}
-      >
-        {num}
-      </span>
-      <span className="flex-1 text-[13px] leading-[1.65] tracking-wide text-tk-ink">
-        {text}
-      </span>
-      <span className="flex shrink-0 flex-col items-end justify-start">
-        <span className="flex h-6 w-6 items-center justify-center">{s.indicator}</span>
-        {s.label}
-      </span>
+      <div className="flex w-full items-start gap-3">
+        <span
+          className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[13px] font-semibold ${s.numBadge}`}
+        >
+          {num}
+        </span>
+        <span className="flex-1 text-[13px] leading-[1.65] tracking-wide text-tk-ink">
+          {text}
+        </span>
+        <span className="flex shrink-0 flex-col items-end justify-start">
+          <span className="flex h-6 w-6 items-center justify-center">{s.indicator}</span>
+          {s.label}
+        </span>
+      </div>
+      {/* Fixed-height meter slot — reserved whether or not the meter renders,
+          so the button height is the same before and after reveal. */}
+      <div className="mt-2 flex h-3 w-full items-center gap-2">
+        {meter && <InlineMeter rate={meter.rate} isCorrect={meter.isCorrect} />}
+      </div>
     </button>
+  );
+}
+
+function InlineMeter({
+  rate,
+  isCorrect,
+}: {
+  rate: number;
+  isCorrect: boolean;
+}) {
+  const [width, setWidth] = useState(0);
+  useEffect(() => {
+    const id = requestAnimationFrame(() =>
+      setWidth(Math.min(100, Math.max(0, rate))),
+    );
+    return () => cancelAnimationFrame(id);
+  }, [rate]);
+
+  const barColor = isCorrect ? "bg-tk-gold" : "bg-tk-ink-3/35";
+  const textColor = isCorrect ? "text-tk-gold" : "text-tk-ink-3";
+
+  return (
+    <>
+      <div className="h-[2px] flex-1 overflow-hidden rounded-full bg-tk-line/40">
+        <div
+          className={`h-full rounded-full transition-[width] duration-[800ms] ease-out ${barColor}`}
+          style={{ width: `${width}%` }}
+        />
+      </div>
+      <span
+        className={`min-w-[26px] text-right text-[9px] font-medium tabular-nums ${textColor}`}
+      >
+        {rate.toFixed(0)}%
+      </span>
+    </>
   );
 }
 
@@ -624,41 +670,6 @@ function ResultView({
 // ============================================================
 // Per-question stats display
 // ============================================================
-function SelectionMeter({
-  rate,
-  isCorrect,
-}: {
-  rate: number
-  isCorrect: boolean
-}) {
-  const [width, setWidth] = useState(0);
-  useEffect(() => {
-    const id = requestAnimationFrame(() =>
-      setWidth(Math.min(100, Math.max(0, rate))),
-    );
-    return () => cancelAnimationFrame(id);
-  }, [rate]);
-
-  const barColor = isCorrect ? "bg-tk-gold" : "bg-tk-ink-3/40";
-  const textColor = isCorrect ? "text-tk-gold" : "text-tk-ink-3";
-
-  return (
-    <div className="-mt-1 mb-1.5 flex items-center gap-2 px-3.5">
-      <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-tk-line">
-        <div
-          className={`h-full rounded-full transition-[width] duration-[800ms] ease-out ${barColor}`}
-          style={{ width: `${width}%` }}
-        />
-      </div>
-      <span
-        className={`w-14 text-right font-mincho text-[11px] font-medium tabular-nums ${textColor}`}
-      >
-        {rate.toFixed(2)}%
-      </span>
-    </div>
-  );
-}
-
 function CorrectRateBadge({ stat }: { stat: TakkenQuestionStat }) {
   if (stat.total === 0) return null;
   const rate = (stat.correct / stat.total) * 100;
