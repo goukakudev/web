@@ -76,17 +76,28 @@
 }
 
 html, body {
-  background: var(--color-goukaku-bg);
+  background-color: var(--color-goukaku-bg);
   color: var(--color-goukaku-ink);
   font-family: var(--font-jp);
   -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background-image: url(/goukaku-icon-bg.png);
+  background-position: center 15px;
+  background-repeat: no-repeat;
+  background-size: 100px 100px;
 }
 
 /* ============================================================
    Takken-scoped overrides — /takken/* ページ専用 (.tk-root)
    ============================================================ */
 .tk-root {
-  background: var(--color-tk-bg);
+  background-color: var(--color-tk-bg);
+  background-image: url(/goukaku-icon-bg.png);
+  background-position: center 15px;
+  background-repeat: no-repeat;
+  background-size: 100px 100px;
   color: var(--color-tk-ink);
   font-family: var(--font-tk-sans);
 }

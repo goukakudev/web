@@ -5,7 +5,6 @@ import { makeMetadata } from "@/lib/seo/metadata";
 import { itemListJsonLd, SITE_URL, webPageJsonLd } from "@/lib/seo/structured-data";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
-import { HomeMark } from "@/components/common/HomeMark";
 import { TakkenSectionNav } from "@/components/layout/TakkenSectionNav";
 
 export const metadata: Metadata = makeMetadata({
@@ -21,7 +20,6 @@ export default async function TakkenHome() {
   return (
     <main className="min-h-screen bg-bg">
       <div className="mx-auto max-w-3xl px-6 py-12">
-        <HomeMark />
         <Breadcrumbs items={[
           { name: "合格.dev", href: "/" },
           { name: "宅建", href: "/takken" },

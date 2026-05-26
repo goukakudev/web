@@ -1,7 +1,6 @@
 import type { Metadata } from "next"
 import { listIpExams } from "@/lib/api-client"
 import { MobileFrame } from "@/components/layout/MobileFrame"
-import { HomeMark } from "@/components/common/HomeMark"
 import { TopBar } from "@/components/home/TopBar"
 import { HeroQuestCard } from "@/components/home/HeroQuestCard"
 import { StatCard } from "@/components/home/StatCard"
@@ -36,7 +35,6 @@ export default async function IpHomePage() {
           })),
         )}
       />
-      <HomeMark />
       <TopBar />
       <HeroQuestCard subject="ip" />
       <ContinueSection exams={exams} subject="ip" />
