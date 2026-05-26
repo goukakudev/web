@@ -235,6 +235,46 @@ type ChoiceState =
   | "wrong-selected"
   | "correct-reveal";
 
+type ChoiceStyle = {
+  card: string;
+  numBadge: string;
+  indicator: React.ReactNode;
+  label: React.ReactNode | null;
+};
+
+const CHOICE_STYLES: Record<ChoiceState, ChoiceStyle> = {
+  normal: {
+    card: "border border-tk-line bg-tk-bg hover:border-tk-gold-line",
+    numBadge: "bg-tk-option-bg text-tk-ink-2",
+    indicator: <span className="opacity-0">·</span>,
+    label: null,
+  },
+  selected: {
+    card: "border-2 border-tk-gold bg-tk-gold-soft/70 shadow-sm",
+    numBadge: "bg-tk-gold text-white",
+    indicator: <span className="text-tk-gold text-base font-bold">●</span>,
+    label: null,
+  },
+  "correct-selected": {
+    card: "border-2 border-tk-gold bg-tk-gold-soft shadow-md ring-2 ring-tk-gold/30",
+    numBadge: "bg-tk-gold text-white",
+    indicator: <span className="text-tk-gold text-2xl font-bold leading-none">✓</span>,
+    label: <span className="mt-0.5 text-[10px] font-bold tracking-widest text-tk-gold">正解!</span>,
+  },
+  "correct-reveal": {
+    card: "border-2 border-tk-gold bg-tk-gold-soft shadow-md ring-2 ring-tk-gold/30",
+    numBadge: "bg-tk-gold text-white",
+    indicator: <span className="text-tk-gold text-2xl font-bold leading-none">✓</span>,
+    label: <span className="mt-0.5 text-[10px] font-bold tracking-widest text-tk-gold">正解</span>,
+  },
+  "wrong-selected": {
+    card: "border-2 border-tk-crimson bg-tk-crimson-soft shadow-sm",
+    numBadge: "bg-tk-crimson text-white",
+    indicator: <span className="text-tk-crimson text-2xl font-bold leading-none">✕</span>,
+    label: <span className="mt-0.5 text-[10px] font-bold tracking-widest text-tk-crimson">あなたの解答</span>,
+  },
+};
+
 function ChoiceRow({
   num,
   text,
@@ -246,48 +286,27 @@ function ChoiceRow({
   state: ChoiceState;
   onClick: () => void;
 }) {
-  const numBg =
-    state === "wrong-selected"
-      ? "bg-crimson text-white"
-      : state === "normal"
-      ? "bg-option-bg text-ink-2"
-      : "bg-gold text-white";
-  const bg =
-    state === "normal"
-      ? "bg-bg"
-      : state === "wrong-selected"
-      ? "bg-crimson-soft"
-      : "bg-gold-soft";
-  const border =
-    state === "normal"
-      ? "border-line"
-      : state === "wrong-selected"
-      ? "border-crimson-line"
-      : "border-gold-line";
-  const indicator =
-    state === "correct-selected" || state === "correct-reveal" ? (
-      <span className="text-gold">✓</span>
-    ) : state === "wrong-selected" ? (
-      <span className="text-crimson">✕</span>
-    ) : (
-      <span className="opacity-0">·</span>
-    );
+  const s = CHOICE_STYLES[state];
 
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`flex w-full items-start gap-3 rounded-xl border ${bg} ${border} p-3.5 text-left transition`}
+      aria-pressed={state !== "normal"}
+      className={`flex w-full items-start gap-3 rounded-xl ${s.card} p-3.5 text-left transition active:scale-[0.99]`}
     >
       <span
-        className={`mt-0.5 flex h-7 w-7 items-center justify-center rounded-full text-[13px] font-semibold ${numBg}`}
+        className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[13px] font-semibold ${s.numBadge}`}
       >
         {num}
       </span>
-      <span className="flex-1 text-[13px] leading-[1.65] tracking-wide text-ink">
+      <span className="flex-1 text-[13px] leading-[1.65] tracking-wide text-tk-ink">
         {text}
       </span>
-      <span className="mt-1.5 w-4 text-center text-xs font-bold">{indicator}</span>
+      <span className="flex shrink-0 flex-col items-end justify-start">
+        <span className="flex h-6 w-6 items-center justify-center">{s.indicator}</span>
+        {s.label}
+      </span>
     </button>
   );
 }
