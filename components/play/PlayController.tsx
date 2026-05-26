@@ -267,10 +267,18 @@ export function PlayController({
 
     if (isExamMode && currentIndex < questions.length - 1) {
       setTimeout(
-        () =>
-          setCurrentIndex((i) => Math.min(i + 1, questions.length - 1)),
+        () => {
+          setCurrentIndex((i) => Math.min(i + 1, questions.length - 1));
+          scrollToTop();
+        },
         200,
       );
+    }
+  }
+
+  function scrollToTop(): void {
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "instant" });
     }
   }
 
@@ -286,6 +294,7 @@ export function PlayController({
       const newIndex = currentIndex + 1;
       setCurrentIndex(newIndex);
       syncUrl(newIndex);
+      scrollToTop();
     } else if (isExamMode) {
       finishExam();
     }
@@ -295,6 +304,7 @@ export function PlayController({
       const newIndex = currentIndex - 1;
       setCurrentIndex(newIndex);
       syncUrl(newIndex);
+      scrollToTop();
     }
   }
 

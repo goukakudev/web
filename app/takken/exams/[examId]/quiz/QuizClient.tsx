@@ -53,6 +53,7 @@ export default function QuizClient({
       const url = new URL(window.location.href);
       url.searchParams.set("q", String(target.question_number));
       window.history.pushState({ qIndex: newIndex }, "", url.toString());
+      window.scrollTo({ top: 0, behavior: "instant" });
     },
     [questions],
   );
