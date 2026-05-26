@@ -91,48 +91,43 @@ export default async function QuizPage({ params, searchParams }: Props) {
         questions={result.questions}
         mode={mode === "exam" ? "exam" : "instant"}
       />
-      <details className="mx-auto max-w-3xl mt-6 rounded-2xl border border-line bg-bg px-4 py-3 text-[13px] leading-relaxed text-ink-2">
-        <summary className="cursor-pointer font-mincho font-semibold text-ink text-[13px]">
-          この問題の本文・選択肢・正解・解説(展開)
-        </summary>
-        <div className="mt-4 space-y-4">
+      <section className="sr-only" aria-label="この問題の本文・選択肢・正解・解説 (検索エンジン用)">
+        <section>
+          <h3>問題本文</h3>
+          <p>{current.question_text}</p>
+        </section>
+        <section>
+          <h3>選択肢</h3>
+          <ul>
+            {choices.map((c) => (
+              <li key={c.label}>
+                <span>{c.label}.</span>
+                {c.text}
+              </li>
+            ))}
+          </ul>
+        </section>
+        {current.correct_answer != null && (
           <section>
-            <h3 className="text-[11px] font-bold text-ink-3 mb-1">問題本文</h3>
-            <p>{current.question_text}</p>
-          </section>
-          <section>
-            <h3 className="text-[11px] font-bold text-ink-3 mb-1">選択肢</h3>
-            <ul className="space-y-1">
-              {choices.map((c) => (
-                <li key={c.label}>
-                  <span className="font-bold mr-1">{c.label}.</span>
-                  {c.text}
-                </li>
-              ))}
-            </ul>
-          </section>
-          {current.correct_answer != null && (
-            <section>
-              <h3 className="text-[11px] font-bold text-ink-3 mb-1">正解</h3>
-              <p>
-                <span className="font-bold">{current.correct_answer}.</span>{" "}
-                {String(current.choices[String(current.correct_answer)] ?? "")}
-              </p>
-            </section>
-          )}
-          {current.explanation?.commentary && (
-            <section>
-              <h3 className="text-[11px] font-bold text-ink-3 mb-1">解説</h3>
-              <p>{current.explanation.commentary}</p>
-            </section>
-          )}
-          {exam && (
-            <p className="text-[11px] text-ink-3 pt-2 border-t border-line">
-              {exam.label} の<Link className="underline" href={`/takken/exams/${exam.exam_id}`}>過去問一覧</Link>へ戻る・問{current.question_number}
+            <h3>正解</h3>
+            <p>
+              <span>{current.correct_answer}.</span>{" "}
+              {String(current.choices[String(current.correct_answer)] ?? "")}
             </p>
-          )}
-        </div>
-      </details>
+          </section>
+        )}
+        {current.explanation?.commentary && (
+          <section>
+            <h3>解説</h3>
+            <p>{current.explanation.commentary}</p>
+          </section>
+        )}
+        {exam && (
+          <p>
+            {exam.label} の<Link href={`/takken/exams/${exam.exam_id}`}>過去問一覧</Link>へ戻る・問{current.question_number}
+          </p>
+        )}
+      </section>
       {(() => {
         const cur = current
         const tags = new Set(cur.tags ?? [])
