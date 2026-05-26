@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { TakkenAPI } from "@/lib/takken/api";
@@ -46,16 +47,27 @@ export default async function TakkenHome() {
         </header>
 
         {/* Hero */}
-        <div className="mb-8 overflow-hidden rounded-2xl bg-charcoal p-6 text-white">
-          <p className="text-[10px] font-medium tracking-widest text-white/55">
-            学習の進捗
-          </p>
-          <p className="mt-2 font-mincho text-2xl font-medium">
-            {exams.length}試験・{exams.reduce((s, e) => s + e.question_count, 0)}問収録
-          </p>
-          <p className="mt-1 text-sm text-white/70">
-            H16〜{latest?.label ?? "R7"} までの全試験
-          </p>
+        <div className="relative mb-8 overflow-hidden rounded-2xl bg-charcoal p-6 text-white">
+          <Image
+            src="/goukaku-icon.png"
+            alt=""
+            width={249}
+            height={249}
+            aria-hidden
+            sizes="200px"
+            className="pointer-events-none absolute -right-6 top-1/2 size-48 -translate-y-1/2 opacity-35 z-0"
+          />
+          <div className="relative z-10">
+            <p className="text-[10px] font-medium tracking-widest text-white/55">
+              学習の進捗
+            </p>
+            <p className="mt-2 font-mincho text-2xl font-medium">
+              {exams.length}試験・{exams.reduce((s, e) => s + e.question_count, 0)}問収録
+            </p>
+            <p className="mt-1 text-sm text-white/70">
+              H16〜{latest?.label ?? "R7"} までの全試験
+            </p>
+          </div>
         </div>
 
         {/* CTA */}
