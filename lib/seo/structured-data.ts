@@ -34,7 +34,7 @@ export function organizationJsonLd() {
     name: SITE_NAME,
     url: SITE_URL,
     logo: `${SITE_URL}/icon.png`,
-    sameAs: ["https://apps.apple.com/jp/app/id6753257968"],
+    sameAs: ["https://apps.apple.com/jp/app/基本情報技術者-過去問/id6770801070"],
   }
 }
 

@@ -58,7 +58,7 @@ export default function SupportPage() {
             description="科目A の過去問・解説。令和7年度春期 から 平成25年度春期 まで・約 800 問以上収録。"
             webHref="/fe"
             webLabel="FE トップ (Web)"
-            appStoreUrl="https://apps.apple.com/jp/app/id6753257968"
+            appStoreUrl="https://apps.apple.com/jp/app/基本情報技術者-過去問/id6770801070"
             appStoreAlt="基本情報技術者試験 合格.dev を App Store でダウンロード"
           />
           <ExamCard

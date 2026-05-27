@@ -45,7 +45,7 @@ const CATEGORIES: Category[] = [
       "13 年分・各 80 問前後の過去問。順番 / ランダム / 模試で解けます",
     emoji: "💻",
     status: "available",
-    iosUrl: "https://apps.apple.com/jp/app/id6753257968",
+    iosUrl: "https://apps.apple.com/jp/app/基本情報技術者-過去問/id6770801070",
   },
   {
     slug: "takken",

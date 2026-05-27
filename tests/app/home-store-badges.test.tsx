@@ -20,7 +20,7 @@ describe("home store badges", () => {
     const feIos = screen.getByTestId("store-ios-fe")
     expect(feIos.tagName.toLowerCase()).toBe("a")
     expect(feIos.getAttribute("href")).toBe(
-      "https://apps.apple.com/jp/app/id6753257968",
+      "https://apps.apple.com/jp/app/基本情報技術者-過去問/id6770801070",
     )
     expect(feIos.getAttribute("aria-disabled")).toBeNull()
 
