@@ -122,7 +122,7 @@
 
 ## 5. GitHub README リンク
 
-新組織 `goukaku-dev` への rename 完了後、各リポジトリ README 冒頭に:
+新組織 `goukakudev` への rename 完了済み (2026-05-30)。各リポジトリ README 冒頭に:
 
 ```markdown
 # web
