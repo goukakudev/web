@@ -13,7 +13,7 @@ interface SubjectCopy {
   rangePrefix: string;
 }
 
-const COPY: Record<"fe" | "ip", SubjectCopy> = {
+const COPY: Record<"fe" | "ip" | "ap", SubjectCopy> = {
   fe: {
     fullName: "基本情報技術者試験",
     shortName: "基本情報技術者試験",
@@ -42,9 +42,23 @@ const COPY: Record<"fe" | "ip", SubjectCopy> = {
       "現在、IT パスポート試験の全分野(ストラテジ系・マネジメント系・テクノロジ系)を網羅し、公開されている年度の過去問を順次拡充しています。タグ機能により、情報セキュリティ・経営戦略・データベースなど、分野横断での演習も可能です。",
     rangePrefix: "公開過去問",
   },
+  ap: {
+    fullName: "応用情報技術者試験",
+    shortName: "応用情報技術者試験",
+    abbrev: "AP",
+    authority: "独立行政法人情報処理推進機構 (IPA)",
+    authorityShort: "IPA",
+    rangeLabel: "18 回分",
+    totalLabel: "各回 80 問、合計 1,440 問",
+    modesLine:
+      "3 つの学習モード — 順番に解く / ランダムに解く / 模試形式 (150 分・時間計測あり) — を切り替えて、苦手分野の補強から本番形式の通し演習まで一貫して対応できます。問題ごとにヒントも参照可能です。",
+    scopeLine:
+      "現在、応用情報技術者試験の午前科目について、平成 28 年度 (2016) 春期 〜 令和 7 年度 (2025) 春期の過去問を収録しています。タグ機能により、ネットワーク・データベース・セキュリティ・アルゴリズム・経営戦略など、分野横断での演習も可能です。",
+    rangePrefix: "平成 28 年度 (2016) 春期",
+  },
 };
 
-export function SiteIntro({ subject = "fe" }: { subject?: "fe" | "ip" }) {
+export function SiteIntro({ subject = "fe" }: { subject?: "fe" | "ip" | "ap" }) {
   const c = COPY[subject];
   return (
     <section className="mt-10 text-[13px] leading-[1.85] text-goukaku-ink/85">

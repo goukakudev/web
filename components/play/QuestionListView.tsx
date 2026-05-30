@@ -3,12 +3,19 @@
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import { MobileFrame } from "@/components/layout/MobileFrame"
-import { listExams, listQuestions, listIpExams, listIpQuestions } from "@/lib/api-client"
+import {
+  listExams,
+  listQuestions,
+  listIpExams,
+  listIpQuestions,
+  listApExams,
+  listApQuestions,
+} from "@/lib/api-client"
 import { getAllAnswers, getBookmarks } from "@/lib/local-store"
 import type { Question, ExamSummary } from "@/lib/types"
 
 export type ListMode = "history" | "bookmarks"
-export type SubjectKey = "fe" | "ip"
+export type SubjectKey = "fe" | "ip" | "ap"
 
 interface Row {
   questionId: string
@@ -27,9 +34,15 @@ export function QuestionListView({
   subject?: SubjectKey
 }) {
   const subjectPrefix = `/${subject}`
-  const examIdPrefix = subject === "ip" ? "ip-" : "fe-"
-  const fetchExams = subject === "ip" ? listIpExams : listExams
-  const fetchQuestions = subject === "ip" ? listIpQuestions : listQuestions
+  const examIdPrefix = `${subject}-`
+  const fetchExams =
+    subject === "ip" ? listIpExams : subject === "ap" ? listApExams : listExams
+  const fetchQuestions =
+    subject === "ip"
+      ? listIpQuestions
+      : subject === "ap"
+        ? listApQuestions
+        : listQuestions
   const [rows, setRows] = useState<Row[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

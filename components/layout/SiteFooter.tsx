@@ -20,6 +20,7 @@ const sectionLinks = [
   { href: "/", label: "TOP", match: (p: string) => p === "/" },
   { href: "/fe", label: "基本情報", match: (p: string) => p === "/fe" || p.startsWith("/fe/") },
   { href: "/ip", label: "ITパスポート", match: (p: string) => p === "/ip" || p.startsWith("/ip/") },
+  { href: "/ap", label: "応用情報", match: (p: string) => p === "/ap" || p.startsWith("/ap/") },
   { href: "/takken", label: "宅建", match: (p: string) => p === "/takken" || p.startsWith("/takken/") },
 ];
 

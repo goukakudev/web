@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "exam": "ap",
+  "lastUpdated": "2026-05-30",
+  "sourcePage": "https://www.ipa.go.jp/shiken/reports/toukei.html",
+  "notes": [
+    "数値は IPA 公表の情報処理技術者試験 統計情報(応用情報技術者試験)より、各回の応募者数・受験者数・合格者数・合格率を採用。",
+    "令和7年度春期は IPA 報道発表 (https://www.ipa.go.jp/news/2025/shiken_20250703.html) の値。",
+    "令和2年度(2020)は新型コロナの影響で春期が中止となり、10月の秋期のみ実施。",
+    "合格率は年度集計時に 合格者数 ÷ 受験者数 で算出(passRate は各回の参考値)。"
+  ],
+  "sessions": [
+    { "year": 2016, "era": "平成", "eraYear": 28, "half": "春期", "applicants": 44102, "examinees": 28229, "passers": 5801, "passRate": 0.205, "source": "IPA統計情報" },
+    { "year": 2016, "era": "平成", "eraYear": 28, "half": "秋期", "applicants": 52845, "examinees": 35064, "passers": 7511, "passRate": 0.214, "source": "IPA統計情報" },
+    { "year": 2017, "era": "平成", "eraYear": 29, "half": "春期", "applicants": 49333, "examinees": 31932, "passers": 6443, "passRate": 0.202, "source": "IPA統計情報" },
+    { "year": 2017, "era": "平成", "eraYear": 29, "half": "秋期", "applicants": 50969, "examinees": 33104, "passers": 7216, "passRate": 0.218, "source": "IPA統計情報" },
+    { "year": 2018, "era": "平成", "eraYear": 30, "half": "春期", "applicants": 49223, "examinees": 30435, "passers": 6917, "passRate": 0.227, "source": "IPA統計情報" },
+    { "year": 2018, "era": "平成", "eraYear": 30, "half": "秋期", "applicants": 52219, "examinees": 33932, "passers": 7948, "passRate": 0.234, "source": "IPA統計情報" },
+    { "year": 2019, "era": "平成", "eraYear": 31, "half": "春期", "applicants": 48804, "examinees": 30710, "passers": 6605, "passRate": 0.215, "source": "IPA統計情報" },
+    { "year": 2019, "era": "令和", "eraYear": 1, "half": "秋期", "applicants": 50643, "examinees": 32845, "passers": 7555, "passRate": 0.230, "source": "IPA統計情報" },
+    { "year": 2020, "era": "令和", "eraYear": 2, "half": "秋期", "applicants": 42393, "examinees": 29024, "passers": 6807, "passRate": 0.235, "source": "IPA統計情報", "note": "新型コロナウイルスの影響で春期は中止、10月の秋期のみ実施。" },
+    { "year": 2021, "era": "令和", "eraYear": 3, "half": "春期", "applicants": 41415, "examinees": 26185, "passers": 6287, "passRate": 0.240, "source": "IPA統計情報" },
+    { "year": 2021, "era": "令和", "eraYear": 3, "half": "秋期", "applicants": 48270, "examinees": 33513, "passers": 7719, "passRate": 0.230, "source": "IPA統計情報" },
+    { "year": 2022, "era": "令和", "eraYear": 4, "half": "春期", "applicants": 49171, "examinees": 32189, "passers": 7827, "passRate": 0.243, "source": "IPA統計情報" },
+    { "year": 2022, "era": "令和", "eraYear": 4, "half": "秋期", "applicants": 54673, "examinees": 36329, "passers": 9516, "passRate": 0.262, "source": "IPA統計情報" },
+    { "year": 2023, "era": "令和", "eraYear": 5, "half": "春期", "applicants": 49498, "examinees": 32340, "passers": 8805, "passRate": 0.272, "source": "IPA統計情報" },
+    { "year": 2023, "era": "令和", "eraYear": 5, "half": "秋期", "applicants": 56073, "examinees": 37763, "passers": 8753, "passRate": 0.232, "source": "IPA統計情報" },
+    { "year": 2024, "era": "令和", "eraYear": 6, "half": "春期", "applicants": 55569, "examinees": 36730, "passers": 8677, "passRate": 0.236, "source": "IPA統計情報" },
+    { "year": 2024, "era": "令和", "eraYear": 6, "half": "秋期", "applicants": 65667, "examinees": 44243, "passers": 12613, "passRate": 0.285, "source": "IPA統計情報" },
+    { "year": 2025, "era": "令和", "eraYear": 7, "half": "春期", "applicants": 58206, "examinees": 38663, "passers": 8527, "passRate": 0.221, "source": "IPA統計情報" }
+  ]
+}

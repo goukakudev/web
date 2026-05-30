@@ -1,6 +1,6 @@
 import type { ExamSummary } from "@/lib/types"
 
-export type YearSubject = "fe" | "ip"
+export type YearSubject = "fe" | "ip" | "ap"
 
 export interface YearSummaryData {
   yearKey: string
@@ -90,7 +90,12 @@ export function buildYearIntro({
   examCount: number
   totalQuestions: number
 }): string {
-  const full = subject === "fe" ? "基本情報技術者試験" : "ITパスポート試験"
+  const full =
+    subject === "fe"
+      ? "基本情報技術者試験"
+      : subject === "ap"
+        ? "応用情報技術者試験"
+        : "ITパスポート試験"
   return (
     `${full} ${yearDisplay} の過去問演習ページです。` +
     `${yearDisplay}に実施された ${examCount} 回の試験(全 ${totalQuestions} 問)を一覧で確認できます。` +

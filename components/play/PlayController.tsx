@@ -371,7 +371,13 @@ export function PlayController({
           tags={current.tags ?? []}
           priorGlossaryTerms={usedGlossaryTerms(current.body)}
           onGlossaryClick={handleGlossaryClick}
-          subject={urlBase.startsWith("/ip") ? "ip" : "fe"}
+          subject={
+            urlBase.startsWith("/ip")
+              ? "ip"
+              : urlBase.startsWith("/ap")
+                ? "ap"
+                : "fe"
+          }
         />
       )}
       <GlossaryModal

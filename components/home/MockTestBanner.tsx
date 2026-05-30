@@ -6,14 +6,12 @@ export function MockTestBanner({
   subject = "fe",
 }: {
   exam?: ExamSummary
-  subject?: "fe" | "ip"
+  subject?: "fe" | "ip" | "ap"
 }) {
   if (!exam) return null
-  const href =
-    subject === "ip"
-      ? `/ip/play/${exam.exam_id}?mode=exam`
-      : `/fe/play/${exam.exam_id}?mode=exam`
-  const duration = subject === "ip" ? "120 分" : "90 分"
+  const href = `/${subject}/play/${exam.exam_id}?mode=exam`
+  const duration =
+    subject === "ap" ? "150 分" : subject === "ip" ? "120 分" : "90 分"
   return (
     <Link
       href={href}

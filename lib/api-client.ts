@@ -97,3 +97,38 @@ export async function getIpExamStats(
     return new Map()
   }
 }
+
+export async function listApExams(): Promise<ExamSummary[]> {
+  const data = await get<ExamListResponse>("/v1/ap/exams", EXAMS_REVALIDATE)
+  return data.exams
+}
+
+export async function listApQuestions(examId: string): Promise<Question[]> {
+  const data = await get<QuestionListResponse>(
+    `/v1/ap/exams/${encodeURIComponent(examId)}/questions`,
+    QUESTIONS_REVALIDATE,
+  )
+  // AP データのタグは "#" 接頭辞なし(例: "セキュリティ")。FE/IP/TK は "#" 付き
+  // (例: "#セキュリティ")で、web のタグ URL・チップ・関連タグ・カテゴリ集計は
+  // すべて "#" 付きを前提とする(lib/tag-url.ts の slugToTag が "#" を補う)。
+  // ここで AP のタグを "#" 付きへ正規化し、タグまわりを他試験と同一挙動にする。
+  return data.questions.map((q) =>
+    q.tags && q.tags.length > 0
+      ? { ...q, tags: q.tags.map((t) => (t.startsWith("#") ? t : `#${t}`)) }
+      : q,
+  )
+}
+
+export async function getApExamStats(
+  examId: string,
+): Promise<Map<string, QuestionStat>> {
+  try {
+    const data = await get<ExamStatsResponse>(
+      `/v1/ap/exams/${encodeURIComponent(examId)}/stats`,
+      STATS_REVALIDATE,
+    )
+    return new Map(data.stats.map((s) => [s.question_id, s]))
+  } catch {
+    return new Map()
+  }
+}

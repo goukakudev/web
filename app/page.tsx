@@ -78,6 +78,7 @@ function slugToExamKey(slug: string): ExamKey | null {
   switch (slug) {
     case "fe": return "fe"
     case "ip": return "ip"
+    case "ap": return "ap"
     case "takken": return "tk"
     default: return null
   }
@@ -195,8 +196,9 @@ export default function CategoriesPage() {
             会員登録なし・広告控えめ・スマホ操作に最適化された UI で、通勤通学のスキマ時間からの学習を後押しします。
             現在は <Link href="/fe" className="underline">基本情報技術者試験 (FE)</Link>、
             <Link href="/ip" className="underline">ITパスポート試験 (IP)</Link>、
+            <Link href="/ap" className="underline">応用情報技術者試験 (AP)</Link>、
             <Link href="/takken" className="underline">宅地建物取引士試験 (宅建)</Link>
-            の 3 試験に対応しており、順次他の資格にも拡張予定です。
+            の 4 試験に対応しており、順次他の資格にも拡張予定です。
           </p>
         </div>
         <div>
@@ -229,6 +231,11 @@ export default function CategoriesPage() {
               <Link href="/ip" className="underline">ITパスポート試験</Link>
               {" — "}
               29 年分 ・ 全 2,900 問 ・ ストラテジ / マネジメント / テクノロジの 3 分野
+            </li>
+            <li>
+              <Link href="/ap" className="underline">応用情報技術者試験</Link>
+              {" — "}
+              平成 28 年 (2016) 〜 令和 7 年 (2025) ・ 午前 18 回分 ・ 全 1,440 問 ・ 模試 150 分
             </li>
             <li>
               <Link href="/takken" className="underline">宅地建物取引士試験</Link>

@@ -32,7 +32,7 @@ export function ContinueSection({
   subject = "fe",
 }: {
   exams: ExamSummary[]
-  subject?: "fe" | "ip"
+  subject?: "fe" | "ip" | "ap"
 }) {
   const [latest, setLatest] = useState<ExamSession | null>(null)
   const examIdPrefix = `${subject}-`
@@ -50,7 +50,7 @@ export function ContinueSection({
 
   if (!latest || !exam) return null
 
-  const examUrl = subject === "ip" ? `/ip/exam/${exam.exam_id}` : `/fe/exam/${exam.exam_id}`
+  const examUrl = `/${subject}/exam/${exam.exam_id}`
 
   return (
     <div className="mt-7">

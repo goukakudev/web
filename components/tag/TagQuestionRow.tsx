@@ -13,12 +13,10 @@ export function TagQuestionRow({
 }: {
   question: Question
   exam: ExamSummary | undefined
-  subject?: "fe" | "ip"
+  subject?: "fe" | "ip" | "ap"
 }) {
   const examLabel = exam?.title ?? question.exam_id
-  const playHref = subject === "ip"
-    ? `/ip/play/${question.exam_id}/q/${question.q_number}`
-    : `/fe/play/${question.exam_id}/q/${question.q_number}`
+  const playHref = `/${subject}/play/${question.exam_id}/q/${question.q_number}`
   return (
     <Link
       href={playHref}

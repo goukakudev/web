@@ -49,10 +49,13 @@ async function postOrQueue(path: string, body: unknown): Promise<void> {
 }
 
 export async function recordAnswer(payload: AnswerLogPayload): Promise<void> {
-  // exam_id prefix で subject DB を判定。"ip-..." は IP DB、それ以外は FE DB へ。
+  // exam_id prefix で subject DB を判定。"ip-..." は IP DB、"ap-..." は AP DB、
+  // それ以外は FE DB へ。
   const path = payload.exam_id.startsWith("ip-")
     ? "/api/ip/answers"
-    : "/api/answers"
+    : payload.exam_id.startsWith("ap-")
+      ? "/api/ap/answers"
+      : "/api/answers"
   await postOrQueue(path, payload)
 }
 

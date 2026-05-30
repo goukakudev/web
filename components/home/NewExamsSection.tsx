@@ -14,17 +14,28 @@ const NEW_EXAM_IDS_IP = new Set([
   "ip-2024r06",
 ])
 
+const NEW_EXAM_IDS_AP = new Set([
+  "ap-2025r07h-a",
+  "ap-2024r06a-a",
+  "ap-2024r06h-a",
+])
+
 export function NewExamsSection({
   exams,
   subject = "fe",
 }: {
   exams: ExamSummary[]
-  subject?: "fe" | "ip"
+  subject?: "fe" | "ip" | "ap"
 }) {
-  const newIds = subject === "ip" ? NEW_EXAM_IDS_IP : NEW_EXAM_IDS_FE
+  const newIds =
+    subject === "ip"
+      ? NEW_EXAM_IDS_IP
+      : subject === "ap"
+        ? NEW_EXAM_IDS_AP
+        : NEW_EXAM_IDS_FE
   const newExams = exams.filter((e) => newIds.has(e.exam_id))
   if (newExams.length === 0) return null
-  const examUrlBase = subject === "ip" ? "/ip/exam" : "/fe/exam"
+  const examUrlBase = `/${subject}/exam`
   return (
     <div className="mt-7">
       <div
