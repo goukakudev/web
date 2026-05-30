@@ -12,7 +12,7 @@ import { SiteIntro } from "@/components/home/SiteIntro"
 import { BookmarkCard } from "@/components/home/BookmarkCard"
 import { HistoryCard } from "@/components/home/HistoryCard"
 import { makeMetadata } from "@/lib/seo/metadata"
-import { itemListJsonLd, SITE_URL } from "@/lib/seo/structured-data"
+import { itemListJsonLd, courseJsonLd, SITE_URL } from "@/lib/seo/structured-data"
 import { JsonLd } from "@/components/seo/JsonLd"
 
 export const metadata: Metadata = makeMetadata({
@@ -34,6 +34,18 @@ export default async function IpHomePage() {
             url: `${SITE_URL}/ip/exam/${e.exam_id}`,
           })),
         )}
+      />
+      <JsonLd
+        data={courseJsonLd({
+          name: "ITパスポート試験 過去問学習コース",
+          description:
+            "ITパスポート試験 (IP) の過去問 29 年分・全 2,900 問を解説・ヒント付きで無料演習。ストラテジ / マネジメント / テクノロジの 3 分野別学習に対応。",
+          url: `${SITE_URL}/ip`,
+          aboutName: "ITパスポート試験",
+          examYears: "平成 9 年 (1997) 〜 令和 7 年 (2025)",
+          totalQuestions: exams.reduce((s, e) => s + (e.question_count ?? 0), 0),
+          credentialName: "ITパスポート",
+        })}
       />
       <TopBar />
       <HeroQuestCard subject="ip" />

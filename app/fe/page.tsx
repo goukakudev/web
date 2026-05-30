@@ -15,7 +15,7 @@ import { BookmarkCard } from "@/components/home/BookmarkCard"
 import { HistoryCard } from "@/components/home/HistoryCard"
 import { OnboardingFlow } from "@/components/home/OnboardingFlow"
 import { makeMetadata } from "@/lib/seo/metadata"
-import { itemListJsonLd, SITE_URL } from "@/lib/seo/structured-data"
+import { itemListJsonLd, courseJsonLd, SITE_URL } from "@/lib/seo/structured-data"
 import { JsonLd } from "@/components/seo/JsonLd"
 
 export const metadata: Metadata = makeMetadata({
@@ -40,6 +40,18 @@ export default async function FeHomePage() {
             url: `${SITE_URL}/fe/exam/${e.exam_id}`,
           })),
         )}
+      />
+      <JsonLd
+        data={courseJsonLd({
+          name: "基本情報技術者試験 過去問学習コース",
+          description:
+            "基本情報技術者試験 (FE) 科目A の過去問を解説付きで無料演習。13 年分・800 問以上を順番 / ランダム / 模試の 3 モードで学習。",
+          url: `${SITE_URL}/fe`,
+          aboutName: "基本情報技術者試験",
+          examYears: "平成 25 年 (2013) 〜 令和 7 年 (2025)",
+          totalQuestions: exams.reduce((s, e) => s + (e.question_count ?? 0), 0),
+          credentialName: "基本情報技術者",
+        })}
       />
       <OnboardingFlow />
       <TopBar />

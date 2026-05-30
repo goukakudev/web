@@ -40,14 +40,29 @@ export function GuideContent({
       <JsonLd
         data={{
           "@context": "https://schema.org",
-          "@type": "Article",
+          "@type": ["Article", "LearningResource"],
           headline: title,
           description,
-          author: { "@type": "Organization", name: SITE_NAME },
-          publisher: { "@type": "Organization", name: SITE_NAME },
+          author: {
+            "@type": "Organization",
+            name: SITE_NAME,
+            url: SITE_URL,
+            logo: { "@type": "ImageObject", url: `${SITE_URL}/icon.png` },
+          },
+          publisher: {
+            "@type": "Organization",
+            name: SITE_NAME,
+            url: SITE_URL,
+            logo: { "@type": "ImageObject", url: `${SITE_URL}/icon.png` },
+          },
+          mainEntityOfPage: { "@type": "WebPage", "@id": `${SITE_URL}${path}` },
           inLanguage: "ja",
           url: `${SITE_URL}${path}`,
+          image: `${SITE_URL}/opengraph-image`,
           articleSection: chapters.map((c) => c.heading),
+          learningResourceType: "Guide",
+          educationalLevel: "professional",
+          isAccessibleForFree: true,
         }}
       />
 

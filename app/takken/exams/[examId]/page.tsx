@@ -22,9 +22,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ExamDetailPage({ params }: Props) {
   const { examId } = await params;
-  const [exam, questionsResult] = await Promise.all([
+  const [exam, questionsResult, allExams] = await Promise.all([
     TakkenAPI.getExam(examId),
     TakkenAPI.listExamQuestions(examId),
+    TakkenAPI.listExams(),
   ]);
   if (!exam) notFound();
   const questions = questionsResult?.questions ?? [];
@@ -34,6 +35,16 @@ export default async function ExamDetailPage({ params }: Props) {
     categoryCounts.set(q.category, (categoryCounts.get(q.category) ?? 0) + 1);
   }
   const topCategories = [...categoryCounts.entries()].sort((a, b) => b[1] - a[1]);
+  const sortedExams = [...allExams].sort((a, b) => {
+    if (a.year !== b.year) return b.year - a.year;
+    return b.exam_month - a.exam_month;
+  });
+  const currentIdx = sortedExams.findIndex((e) => e.exam_id === exam.exam_id);
+  const newerExam = currentIdx > 0 ? sortedExams[currentIdx - 1] : null;
+  const olderExam = currentIdx >= 0 && currentIdx < sortedExams.length - 1 ? sortedExams[currentIdx + 1] : null;
+  const sameMonthExams = sortedExams
+    .filter((e) => e.exam_month === exam.exam_month && e.exam_id !== exam.exam_id)
+    .slice(0, 5);
   const intro =
     `宅地建物取引士試験 ${exam.label} の過去問演習ページです。` +
     `本ページから全 ${exam.question_count} 問を、通常演習 / 模試モード の 2 モードで解けます。` +
@@ -141,6 +152,62 @@ export default async function ExamDetailPage({ params }: Props) {
                     <span className="text-[11px] text-ink-3 tabular-nums">
                       {count} 問
                     </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {(newerExam || olderExam) && (
+          <section className="mb-8">
+            <h2 className="mb-3 font-mincho text-sm tracking-widest text-ink-3">
+              前後の試験回
+            </h2>
+            <nav className="grid grid-cols-2 gap-2">
+              {newerExam ? (
+                <Link
+                  href={`/takken/exams/${newerExam.exam_id}`}
+                  className="rounded-lg border border-line bg-bg p-3 text-[12px] hover:bg-canvas"
+                >
+                  <div className="text-[10px] tracking-widest text-ink-3">← 新しい</div>
+                  <div className="mt-1 font-mincho font-semibold text-ink">{newerExam.label}</div>
+                  <div className="text-[11px] text-ink-3">{newerExam.question_count} 問</div>
+                </Link>
+              ) : (
+                <span />
+              )}
+              {olderExam ? (
+                <Link
+                  href={`/takken/exams/${olderExam.exam_id}`}
+                  className="rounded-lg border border-line bg-bg p-3 text-right text-[12px] hover:bg-canvas"
+                >
+                  <div className="text-[10px] tracking-widest text-ink-3">古い →</div>
+                  <div className="mt-1 font-mincho font-semibold text-ink">{olderExam.label}</div>
+                  <div className="text-[11px] text-ink-3">{olderExam.question_count} 問</div>
+                </Link>
+              ) : null}
+            </nav>
+          </section>
+        )}
+
+        {sameMonthExams.length > 0 && (
+          <section className="mb-8">
+            <h2 className="mb-3 font-mincho text-sm tracking-widest text-ink-3">
+              他の年の {exam.exam_month} 月実施分
+            </h2>
+            <p className="mb-2 text-[11px] text-ink-3">
+              年度違いの同じ試験回で出題傾向を比較
+            </p>
+            <ul className="grid grid-cols-2 gap-1.5">
+              {sameMonthExams.map((e) => (
+                <li key={e.exam_id}>
+                  <Link
+                    href={`/takken/exams/${e.exam_id}`}
+                    className="flex items-center justify-between rounded-lg border border-line bg-bg px-3 py-2 text-[12px] hover:bg-canvas"
+                  >
+                    <span className="font-mincho font-semibold text-ink">{e.label}</span>
+                    <span className="text-[11px] text-ink-3 tabular-nums">{e.question_count} 問</span>
                   </Link>
                 </li>
               ))}

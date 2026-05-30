@@ -174,6 +174,76 @@ export function webPageJsonLd(i: WebPageInput) {
   }
 }
 
+export interface CourseInput {
+  name: string
+  description: string
+  url: string
+  aboutName: string
+  examYears?: string
+  totalQuestions?: number
+  credentialName?: string
+}
+
+export function courseJsonLd(i: CourseInput) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    name: i.name,
+    description: i.description,
+    url: i.url,
+    inLanguage: "ja",
+    educationalLevel: "professional",
+    about: { "@type": "Thing", name: i.aboutName },
+    isAccessibleForFree: true,
+    audience: {
+      "@type": "EducationalAudience",
+      educationalRole: "学習者",
+      audienceType: `${i.aboutName} 受験者・受験予定者`,
+    },
+    provider: {
+      "@type": "Organization",
+      name: SITE_NAME,
+      url: SITE_URL,
+      sameAs: [SITE_URL],
+    },
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "JPY",
+      category: "Free",
+      availability: "https://schema.org/InStock",
+    },
+    hasCourseInstance: {
+      "@type": "CourseInstance",
+      courseMode: "online",
+      courseWorkload: "PT100H",
+      inLanguage: "ja",
+      ...(i.examYears ? { description: `収録: ${i.examYears}` } : {}),
+    },
+    ...(i.credentialName
+      ? {
+          educationalCredentialAwarded: {
+            "@type": "EducationalOccupationalCredential",
+            name: i.credentialName,
+            credentialCategory: "professional certification",
+          },
+        }
+      : {}),
+    ...(i.totalQuestions
+      ? {
+          numberOfCredits: i.totalQuestions,
+          syllabusSections: [
+            {
+              "@type": "Syllabus",
+              name: "過去問演習",
+              description: `合計 ${i.totalQuestions} 問 (各設問に解説・選択肢別解説付き)`,
+            },
+          ],
+        }
+      : {}),
+  }
+}
+
 export interface CollectionPageInput {
   name: string
   description: string

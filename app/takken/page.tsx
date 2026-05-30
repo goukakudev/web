@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { TakkenAPI } from "@/lib/takken/api";
 import { makeMetadata } from "@/lib/seo/metadata";
-import { itemListJsonLd, SITE_URL, webPageJsonLd } from "@/lib/seo/structured-data";
+import { itemListJsonLd, courseJsonLd, SITE_URL, webPageJsonLd } from "@/lib/seo/structured-data";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 import { TakkenSectionNav } from "@/components/layout/TakkenSectionNav";
@@ -35,6 +35,15 @@ export default async function TakkenHome() {
             url: `${SITE_URL}/takken/exams/${e.exam_id}`,
           })),
         )} />
+        <JsonLd data={courseJsonLd({
+          name: "宅地建物取引士 過去問学習コース",
+          description: "宅地建物取引士 (宅建士) 試験の過去問を解説付きで無料演習。H16 (2004 年) 〜 R7 (2025 年) の全 24 試験・約 1,200 問。関連条文・判例タップでポップアップ表示。",
+          url: `${SITE_URL}/takken`,
+          aboutName: "宅地建物取引士試験",
+          examYears: "H16 (2004 年) 〜 R7 (2025 年)",
+          totalQuestions: exams.reduce((s, e) => s + e.question_count, 0),
+          credentialName: "宅地建物取引士",
+        })} />
 
         <header className="mb-10">
           <h1 className="font-mincho text-4xl font-semibold tracking-wide text-ink">

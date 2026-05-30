@@ -53,6 +53,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ja">
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://googleads.g.doubleclick.net" />
+        <link rel="dns-prefetch" href="https://tools.applemediaservices.com" />
+        <link rel="dns-prefetch" href="https://play.google.com" />
         {ADSENSE_CLIENT && (
           <Script
             id="adsense-init"
