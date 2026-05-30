@@ -14,7 +14,7 @@ describe("home store badges", () => {
     }
   })
 
-  it("links the FE and IP iOS badges to the App Store and disables the others", () => {
+  it("links FE / IP / takken iOS badges to the App Store and disables the rest", () => {
     render(<CategoriesPage />)
 
     const feIos = screen.getByTestId("store-ios-fe")
@@ -31,8 +31,14 @@ describe("home store badges", () => {
     )
     expect(ipIos.getAttribute("aria-disabled")).toBeNull()
 
+    const tkIos = screen.getByTestId("store-ios-takken")
+    expect(tkIos.tagName.toLowerCase()).toBe("a")
+    expect(tkIos.getAttribute("href")).toBe(
+      "https://apps.apple.com/jp/app/宅建過去問/id6772390931",
+    )
+    expect(tkIos.getAttribute("aria-disabled")).toBeNull()
+
     for (const id of [
-      "store-ios-takken",
       "store-android-ip",
       "store-android-fe",
       "store-android-takken",

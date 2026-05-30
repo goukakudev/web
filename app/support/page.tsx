@@ -74,7 +74,8 @@ export default function SupportPage() {
             description="4分野 (権利関係 / 宅建業法 / 法令上の制限 / 税その他) の過去問・解説。平成16年度 から 令和7年度 まで・1,200 問以上収録。"
             webHref="/takken"
             webLabel="宅建トップ (Web)"
-            comingSoonLabel="iOS アプリ近日公開予定"
+            appStoreUrl="https://apps.apple.com/jp/app/宅建過去問/id6772390931"
+            appStoreAlt="宅建 (宅地建物取引士試験) 合格.dev を App Store でダウンロード"
           />
         </div>
         <p className="mt-4 text-[12px] text-goukaku-ink/60">

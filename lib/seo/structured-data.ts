@@ -37,6 +37,7 @@ export function organizationJsonLd() {
     sameAs: [
       "https://apps.apple.com/jp/app/goukaku-itパスポート-過去問/id6774202965",
       "https://apps.apple.com/jp/app/基本情報技術者-過去問/id6770801070",
+      "https://apps.apple.com/jp/app/宅建過去問/id6772390931",
     ],
   }
 }

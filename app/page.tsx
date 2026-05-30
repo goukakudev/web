@@ -66,6 +66,7 @@ const CATEGORIES: Category[] = [
     description: "宅建の過去問。関連条文・判例タップで本文ポップアップ表示",
     emoji: "🏠",
     status: "available",
+    iosUrl: "https://apps.apple.com/jp/app/宅建過去問/id6772390931",
   },
 ]
 
