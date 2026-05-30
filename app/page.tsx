@@ -49,6 +49,16 @@ const CATEGORIES: Category[] = [
     iosUrl: "https://apps.apple.com/jp/app/基本情報技術者-過去問/id6770801070",
   },
   {
+    slug: "ap",
+    href: "/ap",
+    label: "応用情報技術者試験",
+    sub: "Applied IT Engineer",
+    description:
+      "応用情報技術者試験(AP)の午前過去問。順番 / ランダム / 模試で解けます",
+    emoji: "🖥️",
+    status: "available",
+  },
+  {
     slug: "takken",
     href: "/takken",
     label: "宅地建物取引士",
