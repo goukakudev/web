@@ -54,6 +54,14 @@ export default function SupportPage() {
         <p>現時点で 合格.dev が対応している試験は以下のとおりです。</p>
         <div className="space-y-5 mt-3">
           <ExamCard
+            title="ITパスポート試験 (IP)"
+            description="29 年分・全 2,900 問の過去問・解説・ヒント。ストラテジ / マネジメント / テクノロジの 3 分野別学習に対応。"
+            webHref="/ip"
+            webLabel="IP トップ (Web)"
+            appStoreUrl="https://apps.apple.com/jp/app/goukaku-itパスポート-過去問/id6774202965"
+            appStoreAlt="ITパスポート試験 合格.dev を App Store でダウンロード"
+          />
+          <ExamCard
             title="基本情報技術者試験 (FE)"
             description="科目A の過去問・解説。令和7年度春期 から 平成25年度春期 まで・約 800 問以上収録。"
             webHref="/fe"

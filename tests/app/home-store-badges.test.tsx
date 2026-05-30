@@ -14,7 +14,7 @@ describe("home store badges", () => {
     }
   })
 
-  it("links the FE iOS badge to the App Store and disables the others", () => {
+  it("links the FE and IP iOS badges to the App Store and disables the others", () => {
     render(<CategoriesPage />)
 
     const feIos = screen.getByTestId("store-ios-fe")
@@ -24,8 +24,14 @@ describe("home store badges", () => {
     )
     expect(feIos.getAttribute("aria-disabled")).toBeNull()
 
+    const ipIos = screen.getByTestId("store-ios-ip")
+    expect(ipIos.tagName.toLowerCase()).toBe("a")
+    expect(ipIos.getAttribute("href")).toBe(
+      "https://apps.apple.com/jp/app/goukaku-itパスポート-過去問/id6774202965",
+    )
+    expect(ipIos.getAttribute("aria-disabled")).toBeNull()
+
     for (const id of [
-      "store-ios-ip",
       "store-ios-takken",
       "store-android-ip",
       "store-android-fe",

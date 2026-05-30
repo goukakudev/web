@@ -35,6 +35,7 @@ const CATEGORIES: Category[] = [
       "29 年分・各 100 問・全 2,900 問の過去問。解説・ヒント・選択肢ごとの正誤付き",
     emoji: "📘",
     status: "available",
+    iosUrl: "https://apps.apple.com/jp/app/goukaku-itパスポート-過去問/id6774202965",
   },
   {
     slug: "fe",
