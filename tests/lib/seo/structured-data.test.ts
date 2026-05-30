@@ -37,12 +37,14 @@ describe("structured-data", () => {
       numberOfItems: 80,
       aboutName: "基本情報技術者試験",
     })
-    expect(d["@type"]).toBe("LearningResource")
+    expect(d["@type"]).toEqual(["Quiz", "LearningResource"])
     expect(d.numberOfItems).toBe(80)
     expect(d.about.name).toBe("基本情報技術者試験")
+    expect(d.assesses).toBe("基本情報技術者試験")
+    expect(d.isAccessibleForFree).toBe(true)
   })
 
-  it("questionJsonLd packs acceptedAnswer when correctLabel given", () => {
+  it("questionJsonLd wraps Question in Quiz with acceptedAnswer when correctLabel given", () => {
     const d = questionJsonLd({
       name: "FE r5h 問1",
       text: "本文",
@@ -52,10 +54,16 @@ describe("structured-data", () => {
       partOfName: "令和5年春 FE 過去問",
       partOfUrl: "https://goukaku.dev/fe/exam/r5h",
     })
-    expect(d["@type"]).toBe("Question")
+    expect(d["@type"]).toBe("Quiz")
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect((d as any).acceptedAnswer.text).toBe("ア: A")
-    expect(d.answerCount).toBe(2)
+    const q = (d as any).hasPart
+    expect(q["@type"]).toBe("Question")
+    expect(q.eduQuestionType).toBe("Multiple choice")
+    expect(q.acceptedAnswer.text).toBe("A")
+    expect(q.acceptedAnswer.position).toBe("ア")
+    expect(q.answerCount).toBe(2)
+    expect(q.suggestedAnswer).toHaveLength(1)
+    expect(q.suggestedAnswer[0].position).toBe("イ")
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect((d as any).isPartOf.url).toBe("https://goukaku.dev/fe/exam/r5h")
   })

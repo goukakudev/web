@@ -176,6 +176,74 @@ export default function CategoriesPage() {
         })}
       </section>
 
+      <section className="mt-12 space-y-6 text-[13px] leading-relaxed opacity-90">
+        <div>
+          <h2 className="text-[16px] font-extrabold mb-2">合格.dev とは</h2>
+          <p>
+            合格.dev は、国家資格・検定試験の過去問を、解説とともに無料で演習できる学習プラットフォームです。
+            会員登録なし・広告控えめ・スマホ操作に最適化された UI で、通勤通学のスキマ時間からの学習を後押しします。
+            現在は <Link href="/fe" className="underline">基本情報技術者試験 (FE)</Link>、
+            <Link href="/ip" className="underline">ITパスポート試験 (IP)</Link>、
+            <Link href="/takken" className="underline">宅地建物取引士試験 (宅建)</Link>
+            の 3 試験に対応しており、順次他の資格にも拡張予定です。
+          </p>
+        </div>
+        <div>
+          <h2 className="text-[16px] font-extrabold mb-2">3 つの特徴</h2>
+          <ul className="space-y-2 list-disc pl-5">
+            <li>
+              <strong>独自編集の解説</strong>:
+              各設問に「全体解説」と「選択肢別解説」の二段構えで、なぜ正解か・他がなぜ違うかを言語化。引っかけパターンへの対応力を養えます。
+            </li>
+            <li>
+              <strong>3 つの学習モード</strong>:
+              順番に解く / ランダムに解く / 本番形式の模試 (時間計測・採点付き) を試験ごとに切り替え可能。苦手分野の補強から仕上げまで一貫対応。
+            </li>
+            <li>
+              <strong>図表は再構築・ベクター化</strong>:
+              元 PDF の図表は SVG で再描画し、Retina ディスプレイでも文字が滲みません。
+              宅建では <Link href="/takken" className="underline">関連条文・判例タップでポップアップ表示</Link>。
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h2 className="text-[16px] font-extrabold mb-2">対応試験一覧</h2>
+          <ul className="space-y-1.5 text-[12px]">
+            <li>
+              <Link href="/fe" className="underline">基本情報技術者試験</Link>
+              {" — "}
+              平成 25 年 (2013) 〜 令和 7 年 (2025) ・ 全 800 問以上 ・ 模試 90 分
+            </li>
+            <li>
+              <Link href="/ip" className="underline">ITパスポート試験</Link>
+              {" — "}
+              29 年分 ・ 全 2,900 問 ・ ストラテジ / マネジメント / テクノロジの 3 分野
+            </li>
+            <li>
+              <Link href="/takken" className="underline">宅地建物取引士試験</Link>
+              {" — "}
+              H16 (2004) 〜 R7 (2025) ・ 全 24 試験 ・ 約 1,200 問 ・ 4 分野
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h2 className="text-[16px] font-extrabold mb-2">よくある質問</h2>
+          <dl className="space-y-3 text-[12px]">
+            <div>
+              <dt className="font-bold">完全無料ですか？</dt>
+              <dd className="opacity-80 mt-0.5">はい。会員登録もありません。広告は最小限に抑えて運営しています。</dd>
+            </div>
+            <div>
+              <dt className="font-bold">解説の信頼性は？</dt>
+              <dd className="opacity-80 mt-0.5">問題文は各実施団体の公開過去問に基づき、解説は本サイト独自の要約です。公式見解ではないため、最終的な解釈は公式資料でご確認ください。</dd>
+            </div>
+            <div>
+              <dt className="font-bold">スマホでも使えますか？</dt>
+              <dd className="opacity-80 mt-0.5">主にスマホ縦画面向けに UI 設計しています。PC でも快適に動作します。</dd>
+            </div>
+          </dl>
+        </div>
+      </section>
       <footer className="mt-12 text-[11px] opacity-50 leading-relaxed">
         <p>
           掲載している試験問題は、各実施団体が公開する過去問題を利用しています。解説文は本サイト独自の要約であり、公式見解を示すものではありません。

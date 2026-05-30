@@ -7,7 +7,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 
 export const metadata: Metadata = makeMetadata({
-  title: "宅建 年度別過去問",
+  title: "年度別過去問",
   description: "宅地建物取引士試験の過去問を年度別に。H16〜R7 までの全試験を掲載。",
   path: "/takken/exams",
 });

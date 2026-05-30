@@ -31,9 +31,10 @@ vi.mock("@/lib/takken/api", () => ({
       id === "tk-r5"
         ? {
             exam_id: id,
-            count: 1,
+            count: 2,
             questions: [
               { _id: "tq1", question_number: 1, category: "宅建業法", format: "simple", question_text: "x", choices: { 1: "a", 2: "b", 3: "c", 4: "d" }, correct_answer: 1, accepted_answers: [1] },
+              { _id: "tq2", question_number: 2, category: "宅建業法", format: "simple", question_text: "y", choices: { 1: "a", 2: "b", 3: "c", 4: "d" }, correct_answer: 1, accepted_answers: [1] },
             ],
           }
         : null,
@@ -76,7 +77,10 @@ describe("sitemap (unified)", () => {
     const urls = (await mod.default()).map((e) => e.url)
     expect(urls).toContain("https://goukaku.dev/takken")
     expect(urls).toContain("https://goukaku.dev/takken/exams/tk-r5")
-    expect(urls).toContain("https://goukaku.dev/takken/exams/tk-r5/quiz?q=1")
+    // q=1 is excluded — its canonical strips the query, so it would be
+    // submitted as duplicate of the bare quiz URL.
+    expect(urls).not.toContain("https://goukaku.dev/takken/exams/tk-r5/quiz?q=1")
+    expect(urls).toContain("https://goukaku.dev/takken/exams/tk-r5/quiz?q=2")
   })
 
   it("returns an array", async () => {

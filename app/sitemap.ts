@@ -177,6 +177,7 @@ async function takkenPartition(): Promise<MetadataRoute.Sitemap> {
     const wrapped = wrappedLists[i]
     if (wrapped) {
       for (const q of wrapped.questions) {
+        if (q.question_number === 1) continue
         out.push({
           url: `${BASE}/takken/exams/${exam.exam_id}/quiz?q=${q.question_number}`,
           lastModified: now,

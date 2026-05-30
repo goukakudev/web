@@ -29,7 +29,7 @@ export async function generateMetadata({
       ? `/takken/exams/${exam.exam_id}/quiz?q=${qn}`
       : `/takken/exams/${exam.exam_id}/quiz`
   return makeMetadata({
-    title: `${exam.label} 宅建 問${qn}`,
+    title: `${exam.label} 問${qn}`,
     description: `宅地建物取引士試験 ${exam.label} 問${qn} の本文・選択肢・正解・解説。`,
     path,
     type: "article",
@@ -94,43 +94,94 @@ export default async function QuizPage({ params, searchParams }: Props) {
         initialQuestionNumber={current.question_number}
         stats={exam ? generateTakkenStats(exam, result.questions) : {}}
       />
-      <section className="sr-only" aria-label="この問題の本文・選択肢・正解・解説 (検索エンジン用)">
-        <section>
-          <h3>問題本文</h3>
-          <p>{current.question_text}</p>
-        </section>
-        <section>
-          <h3>選択肢</h3>
-          <ul>
-            {choices.map((c) => (
-              <li key={c.label}>
-                <span>{c.label}.</span>
-                {c.text}
-              </li>
-            ))}
-          </ul>
-        </section>
-        {current.correct_answer != null && (
-          <section>
-            <h3>正解</h3>
-            <p>
-              <span>{current.correct_answer}.</span>{" "}
-              {String(current.choices[String(current.correct_answer)] ?? "")}
-            </p>
-          </section>
-        )}
-        {current.explanation?.commentary && (
-          <section>
-            <h3>解説</h3>
-            <p>{current.explanation.commentary}</p>
-          </section>
-        )}
-        {exam && (
-          <p>
-            {exam.label} の<Link href={`/takken/exams/${exam.exam_id}`}>過去問一覧</Link>へ戻る・問{current.question_number}
-          </p>
-        )}
+      <section
+        aria-label="出題情報"
+        className="mx-auto mt-6 max-w-3xl rounded-xl border border-tk-line bg-tk-card/30 px-4 py-3 text-[12px] text-tk-ink-2"
+      >
+        <h2 className="font-mincho text-[13px] font-semibold text-tk-ink mb-2">
+          📋 出題情報
+        </h2>
+        <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1.5">
+          {exam && (
+            <>
+              <dt className="text-tk-ink-3">試験回</dt>
+              <dd>
+                <Link href={`/takken/exams/${exam.exam_id}`} className="underline">
+                  {exam.label}
+                </Link>
+                {" ・ "}
+                <Link href={`/takken/year/${exam.year}`} className="underline">
+                  {exam.year} 年
+                </Link>
+              </dd>
+            </>
+          )}
+          {current.category && (
+            <>
+              <dt className="text-tk-ink-3">分野</dt>
+              <dd>
+                <Link
+                  href={`/takken/categories/${encodeURIComponent(current.category)}`}
+                  className="underline"
+                >
+                  {current.category}
+                </Link>
+                {current.sub_category && (
+                  <span className="text-tk-ink-3"> ／ {current.sub_category}</span>
+                )}
+              </dd>
+            </>
+          )}
+          {current.tags && current.tags.length > 0 && (
+            <>
+              <dt className="text-tk-ink-3">論点</dt>
+              <dd className="flex flex-wrap gap-1.5">
+                {current.tags.map((t) => (
+                  <span
+                    key={t}
+                    className="inline-block rounded-full border border-tk-line px-2 py-0.5 text-[11px]"
+                  >
+                    {t}
+                  </span>
+                ))}
+              </dd>
+            </>
+          )}
+        </dl>
+        <p className="mt-3 text-[11px] text-tk-ink-3 leading-relaxed">
+          合格.dev の解説は、本サイト独自編集による要約です。各選択肢がなぜ正解か / なぜ違うかを言語化することで、四肢択一の引っかけパターンへの対応力を養うことを目的としています。
+        </p>
       </section>
+      <details className="mx-auto mt-6 max-w-3xl rounded-xl border border-tk-line bg-tk-card/40 px-4 py-3 text-[13px] text-tk-ink-2">
+        <summary className="cursor-pointer select-none font-mincho text-[13px] font-semibold text-tk-ink">
+          📖 解答と解説を表示 (クイズの答えが見えます)
+        </summary>
+        <div className="mt-3 space-y-3 leading-relaxed">
+          {current.correct_answer != null && (
+            <section>
+              <h3 className="text-[12px] font-bold text-tk-ink-3">正解</h3>
+              <p className="mt-1">
+                <span className="font-bold">{current.correct_answer}.</span>{" "}
+                {String(current.choices[String(current.correct_answer)] ?? "")}
+              </p>
+            </section>
+          )}
+          {current.explanation?.commentary && (
+            <section>
+              <h3 className="text-[12px] font-bold text-tk-ink-3">解説</h3>
+              <p className="mt-1 whitespace-pre-line">{current.explanation.commentary}</p>
+            </section>
+          )}
+          {exam && (
+            <p className="text-[12px] text-tk-ink-3">
+              <Link href={`/takken/exams/${exam.exam_id}`} className="underline">
+                {exam.label} 過去問一覧
+              </Link>
+              に戻る ・ 問{current.question_number}
+            </p>
+          )}
+        </div>
+      </details>
       {(() => {
         const cur = current
         const tags = new Set(cur.tags ?? [])

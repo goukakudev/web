@@ -61,15 +61,18 @@ export interface LearningResourceInput {
 export function learningResourceJsonLd(i: LearningResourceInput) {
   return {
     "@context": "https://schema.org",
-    "@type": "LearningResource",
+    "@type": ["Quiz", "LearningResource"],
     name: i.name,
     description: i.description,
     inLanguage: "ja",
     educationalLevel: "professional",
-    learningResourceType: "Quiz",
+    learningResourceType: "Practice problem",
     url: i.url,
     numberOfItems: i.numberOfItems,
     about: { "@type": "Thing", name: i.aboutName },
+    assesses: i.aboutName,
+    teaches: i.aboutName,
+    isAccessibleForFree: true,
   }
 }
 
@@ -85,27 +88,52 @@ export function questionJsonLd(q: QuestionInput) {
   const accepted = q.correctLabel
     ? q.choices.find((c) => c.label === q.correctLabel)
     : undefined
-  return {
-    "@context": "https://schema.org",
+  const wrong = q.correctLabel
+    ? q.choices.filter((c) => c.label !== q.correctLabel)
+    : q.choices
+  const question = {
     "@type": "Question",
+    "@id": `${q.url}#question`,
     inLanguage: "ja",
+    eduQuestionType: "Multiple choice",
+    learningResourceType: "Practice problem",
     name: q.name,
     text: q.text,
     url: q.url,
     answerCount: q.choices.length,
-    suggestedAnswer: q.choices.map((c) => ({
+    suggestedAnswer: wrong.map((c) => ({
       "@type": "Answer",
-      text: `${c.label}: ${c.text}`,
+      position: c.label,
+      text: c.text,
     })),
     ...(accepted && q.correctLabel
       ? {
           acceptedAnswer: {
             "@type": "Answer",
-            text: `${q.correctLabel}: ${accepted.text}`,
-            ...(q.explanation ? { abstract: q.explanation } : {}),
+            position: q.correctLabel,
+            text: accepted.text,
+            ...(q.explanation
+              ? {
+                  comment: {
+                    "@type": "Comment",
+                    text: q.explanation,
+                  },
+                }
+              : {}),
           },
         }
       : {}),
+  }
+  return {
+    "@context": "https://schema.org",
+    "@type": "Quiz",
+    inLanguage: "ja",
+    name: q.name,
+    url: q.url,
+    educationalLevel: "professional",
+    learningResourceType: "Quiz",
+    assesses: q.partOfName ?? q.name,
+    hasPart: question,
     ...(q.partOfName && q.partOfUrl
       ? {
           isPartOf: {

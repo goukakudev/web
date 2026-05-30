@@ -6,7 +6,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 
 export const metadata: Metadata = makeMetadata({
-  title: "宅建 分野別過去問",
+  title: "分野別過去問",
   description: "宅地建物取引士試験の過去問を、権利関係 / 宅建業法 / 法令上の制限 / 税その他 の 4 分野別に学習。解説付き。",
   path: "/takken/categories",
 });

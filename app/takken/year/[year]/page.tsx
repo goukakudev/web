@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const yearExams = byYear.get(year)!
   const total = yearExams.reduce((s, e) => s + e.question_count, 0)
   return makeMetadata({
-    title: `${year} 年 宅建 過去問 ${total} 問`,
+    title: `${year} 年 過去問 ${total} 問`,
     description: `宅地建物取引士試験 ${year} 年実施分の過去問 ${yearExams.length} 回・全 ${total} 問。関連条文・判例タップで本文ポップアップ表示。`,
     path: `/takken/year/${yearSlug}`,
   })

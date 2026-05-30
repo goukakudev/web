@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const exam = await TakkenAPI.getExam(examId);
   if (!exam) return {};
   return makeMetadata({
-    title: `${exam.label} 宅建過去問 ${exam.question_count} 問`,
+    title: `${exam.label} 過去問 ${exam.question_count} 問`,
     description: `宅地建物取引士試験 ${exam.label} の過去問 ${exam.question_count} 問。関連条文・判例タップで本文ポップアップ表示・解説付き。`,
     path: `/takken/exams/${exam.exam_id}`,
   });

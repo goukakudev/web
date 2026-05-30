@@ -98,6 +98,26 @@ export default async function TakkenHome() {
             <strong>権利関係 / 宅建業法 / 法令上の制限 / 税その他</strong> の 4 分野で横断学習するか、年度ごとに通し演習(模試モード)するか選べます。各問題には独自編集の解説を順次整備中です。
           </p>
           <h3 className="font-mincho text-base font-semibold text-ink mt-5 mb-2">
+            学習の進め方
+          </h3>
+          <p className="mb-3">
+            初学者の方は、まず最新年度の <Link href={`/takken/exams/${latest?.exam_id ?? "R6-10"}`} className="underline">{latest?.label ?? "令和7年(2025年)10月"} 過去問</Link> を順番に解いて出題形式に慣れることをおすすめします。
+            分野ごとに弱点を補強する場合は <Link href="/takken/categories" className="underline">分野別ページ</Link> から
+            権利関係 ・ 宅建業法 ・ 法令上の制限 ・ 税その他 を選択できます。
+            本番直前の仕上げには、各年度の <strong>模試モード</strong>（50 問・2 時間）で本番形式の通し演習が可能です。
+          </p>
+          <h3 className="font-mincho text-base font-semibold text-ink mt-5 mb-2">
+            宅建試験について
+          </h3>
+          <p className="mb-3">
+            宅地建物取引士 (宅建士) は、不動産取引における重要事項説明・契約書面への記名押印など、宅地建物取引業法上の独占業務を担う国家資格です。
+            合格率は例年 15〜18% 前後で、毎年 10 月 (および一部年度は 12 月) に試験が実施されます。
+            出題は <strong>権利関係 (民法・借地借家法等 14 問)</strong>、
+            <strong>法令上の制限 (都市計画法・建築基準法等 8 問)</strong>、
+            <strong>宅建業法 (20 問)</strong>、
+            <strong>税その他 (8 問)</strong> の計 50 問・四肢択一形式です。
+          </p>
+          <h3 className="font-mincho text-base font-semibold text-ink mt-5 mb-2">
             出典について
           </h3>
           <p className="mb-3">

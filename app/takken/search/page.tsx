@@ -3,7 +3,7 @@ import Link from "next/link";
 import SearchClient from "./SearchClient";
 
 export const metadata: Metadata = {
-  title: "検索 — 宅建",
+  title: "検索",
   description: "宅建士試験 過去問の全文検索",
   robots: { index: false, follow: true },
 };

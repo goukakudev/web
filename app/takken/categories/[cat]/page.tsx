@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { cat } = await params;
   const decoded = decodeURIComponent(cat);
   return makeMetadata({
-    title: `${decoded} 宅建過去問`,
+    title: `${decoded} 過去問`,
     description: `宅地建物取引士試験 ${decoded} 分野の過去問演習。出題傾向と頻出論点を解説付きで。`,
     path: `/takken/categories/${cat}`,
   });
