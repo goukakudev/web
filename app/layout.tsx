@@ -1,5 +1,4 @@
 import type { Metadata } from "next"
-import Script from "next/script"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import { PendingFlusher } from "@/components/common/PendingFlusher"
@@ -7,8 +6,6 @@ import { CookieConsent } from "@/components/common/CookieConsent"
 import { SITE_NAME, SITE_URL, websiteJsonLd, organizationJsonLd } from "@/lib/seo/structured-data"
 import { JsonLd } from "@/components/seo/JsonLd"
 
-const ADSENSE_CLIENT =
-  process.env.NEXT_PUBLIC_ADSENSE_CLIENT ?? "ca-pub-0806107180807915"
 const DEFAULT_TITLE = "合格.dev — 資格試験の過去問学習サイト"
 const DEFAULT_DESCRIPTION =
   "基本情報技術者試験・宅地建物取引士など、各種資格の過去問を無料で。解説・選択肢別解説・模試モード付き。"
@@ -42,9 +39,6 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
-  other: {
-    ...(ADSENSE_CLIENT ? { "google-adsense-account": ADSENSE_CLIENT } : {}),
-  },
 }
 
 const themeInitScript = `(function(){try{var p=localStorage.getItem('goukaku.theme')||'auto';var d=p==='dark'||(p==='auto'&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.setAttribute('data-theme',d?'dark':'light');}catch(e){}})();`
@@ -54,19 +48,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ja">
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-        <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://googleads.g.doubleclick.net" />
         <link rel="dns-prefetch" href="https://tools.applemediaservices.com" />
         <link rel="dns-prefetch" href="https://play.google.com" />
-        {ADSENSE_CLIENT && (
-          <Script
-            id="adsense-init"
-            async
-            strategy="afterInteractive"
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
-            crossOrigin="anonymous"
-          />
-        )}
       </head>
       <body>
         <JsonLd data={websiteJsonLd()} />
