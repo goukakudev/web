@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest"
 import robots from "@/app/robots"
 
 describe("robots", () => {
-  it("blocks thin local-only pages that hurt AdSense quality", () => {
+  it("blocks thin local-only pages from search indexing", () => {
     const result = robots()
     const rule = Array.isArray(result.rules) ? result.rules[0] : result.rules
     const disallow = Array.isArray(rule?.disallow) ? rule!.disallow : [rule?.disallow]

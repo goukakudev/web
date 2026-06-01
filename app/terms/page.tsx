@@ -6,11 +6,11 @@ import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 export const metadata: Metadata = {
   title: "利用規約",
   description:
-    "合格.dev (Web / iOS アプリ) の利用規約。サービス内容、知的財産権、禁止事項、免責事項、第三者広告サービスについて明記します。",
+    "合格.dev (Web / iOS アプリ) の利用規約。サービス内容、知的財産権、禁止事項、免責事項について明記します。",
   alternates: { canonical: "/terms" },
 };
 
-const REVISED = "2026-05-19";
+const REVISED = "2026-06-01";
 
 export default function TermsPage() {
   return (
@@ -63,20 +63,7 @@ export default function TermsPage() {
         </ul>
       </Section>
 
-      <Section title="第5条 (第三者広告サービス)">
-        <p>
-          本サービスは、運営費捻出のため Google AdSense などの第三者広告配信サービスを利用することがあります。広告主・広告内容は Google 等のアルゴリズムにより自動的に決定されるものであり、運営者がその内容を保証するものではありません。広告内容に関する問題は、各広告配信事業者にお問い合わせください。
-        </p>
-        <p className="mt-2">
-          詳細は{" "}
-          <Link href="/privacy" className="underline">
-            プライバシーポリシー
-          </Link>{" "}
-          をご確認ください。
-        </p>
-      </Section>
-
-      <Section title="第6条 (免責事項)">
+      <Section title="第5条 (免責事項)">
         <ul className="list-disc pl-5 space-y-1">
           <li>
             本サービスに掲載する問題および解説は、内容の正確性・完全性・最新性を保証するものではありません。実際の試験対策は公式情報源も併せてご確認ください。
@@ -93,19 +80,19 @@ export default function TermsPage() {
         </ul>
       </Section>
 
-      <Section title="第7条 (規約の変更)">
+      <Section title="第6条 (規約の変更)">
         <p>
           運営者は、必要と判断した場合には、利用者への事前通知なく本規約を変更できるものとします。変更後の規約は、本ページに掲示した時点から効力を生じます。利用者が変更後も本サービスを継続利用する場合、変更後の規約に同意したものとみなします。
         </p>
       </Section>
 
-      <Section title="第8条 (準拠法・管轄)">
+      <Section title="第7条 (準拠法・管轄)">
         <p>
           本規約は日本法を準拠法とします。本サービスに関連して紛争が生じた場合、運営者の所在地を管轄する裁判所を第一審の専属的合意管轄裁判所とします。
         </p>
       </Section>
 
-      <Section title="第9条 (お問い合わせ)">
+      <Section title="第8条 (お問い合わせ)">
         <p>
           本規約に関するお問い合わせは{" "}
           <Link href="/contact" className="underline">

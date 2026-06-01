@@ -105,7 +105,7 @@ export default function MethodologyPage() {
       <section className="mb-7 text-[13px] leading-[1.9] text-goukaku-ink/85">
         <h2 className="text-[16px] font-extrabold mb-2">広告・利益相反の開示</h2>
         <p className="mb-3">
-          合格.dev は Google AdSense による広告掲載によって運営費を賄っています。問題の選定・解説の内容は、広告主・スポンサーからの影響を一切受けません。記事内に外部の通信教育や参考書を紹介する場合がありますが、リンク先からの収益(アフィリエイト)は受け取らない方針です(2025 年時点)。
+          合格.dev は現在、広告掲載を行っていません。問題の選定・解説の内容は、外部の広告主・スポンサーから影響を受けることはありません。記事内に外部の通信教育や参考書を紹介する場合がありますが、リンク先からの収益 (アフィリエイト) は受け取らない方針です。
         </p>
       </section>
 

@@ -35,7 +35,7 @@ export function CookieConsent() {
     >
       <div className="mx-auto max-w-[640px] rounded-2xl border border-goukaku-ink/15 bg-goukaku-surface shadow-lg pointer-events-auto p-4">
         <p className="text-[12px] leading-[1.6] text-goukaku-ink/85">
-          当サイトは、学習履歴の保存および第三者配信の広告 (Google AdSense 等) の表示のため、Cookie および localStorage を利用します。詳しくは{" "}
+          当サイトは、学習履歴の保存のため localStorage を利用します。トラッキング目的の Cookie は使用しません。詳しくは{" "}
           <Link href="/privacy" className="underline">
             プライバシーポリシー
           </Link>{" "}

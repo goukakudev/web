@@ -6,11 +6,11 @@ import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 export const metadata: Metadata = {
   title: "プライバシーポリシー",
   description:
-    "合格.dev (Web / iOS アプリ群: 合格.dev / 宅建合格.dev など) のプライバシーポリシー。Google AdSense のクッキー利用、localStorage / UserDefaults に保存する情報、サーバーへ送信される情報 (匿名 device_id / Good・Bad 評価 / 問題報告本文)、第三者サービス (Cloudflare R2 / Vercel) について明記します。",
+    "合格.dev (Web / iOS アプリ群: 合格.dev / 宅建合格.dev など) のプライバシーポリシー。localStorage / UserDefaults に保存する情報、サーバーへ送信される情報 (匿名 device_id / Good・Bad 評価 / 問題報告本文)、第三者サービス (Cloudflare R2 / Vercel) について明記します。",
   alternates: { canonical: "/privacy" },
 };
 
-const REVISED = "2026-05-22";
+const REVISED = "2026-06-01";
 const CONTACT_EMAIL = "contact@goukaku.dev";
 
 export default function PrivacyPage() {
@@ -158,62 +158,28 @@ export default function PrivacyPage() {
 
       <Section title="8. Cookie について">
         <p>
-          当サイト自体はトラッキング目的の Cookie を発行していません。ただし、後述する Google AdSense などの第三者配信サービスにより Cookie が利用される場合があります。
+          当サイトはトラッキング目的の Cookie を発行していません。学習履歴等のクライアント側保存はすべて localStorage / UserDefaults / SwiftData で行います (§3・§4)。
         </p>
       </Section>
 
-      <Section title="9. 第三者配信の広告サービスについて">
-        <p>
-          当サイトは Google AdSense などの第三者配信事業者の広告を掲載することがあります (掲載開始後)。これらの広告配信事業者は、訪問者の興味に応じた広告を表示するため、Cookie などを使用してアクセス情報を収集することがあります。なお、iOS アプリ版には現時点で広告掲載はありません。
-        </p>
-        <p className="mt-2">
-          Google による Cookie の使用を無効にする方法、第三者配信事業者の Cookie ポリシーについては以下をご確認ください。
-        </p>
-        <ul className="list-disc pl-5 space-y-1 mt-2">
-          <li>
-            <a
-              href="https://policies.google.com/technologies/ads"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline"
-            >
-              ポリシーと規約 - Google (広告)
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://adssettings.google.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline"
-            >
-              広告のカスタマイズ (Google アカウント設定)
-            </a>
-          </li>
-        </ul>
-      </Section>
-
-      <Section title="10. 利用している第三者サービス">
+      <Section title="9. 利用している第三者サービス">
         <ul className="list-disc pl-5 space-y-1">
           <li>
-            <strong>Vercel</strong> — Web サイトのホスティング、CDN、サーバーレス関数の実行。アクセスログ (IP アドレス、User-Agent 等) が運営目的で保持されます。
+            <strong>Vercel</strong> — Web サイトのホスティング、CDN、サーバーレス関数の実行。アクセスログ (IP アドレス、User-Agent 等) が運営目的で保持されます。Vercel Web Analytics による匿名のページビュー集計を利用します (Cookie を使用せず、個人特定情報は収集しません)。
           </li>
           <li>
             <strong>Cloudflare R2 / CDN</strong> — 図表画像の配信。エッジでのキャッシュ統計やアクセスログが処理されます。
           </li>
-          <li>
-            <strong>Google AdSense</strong> — 広告配信 (将来掲載予定。iOS アプリ版では使用しません)。
-          </li>
         </ul>
       </Section>
 
-      <Section title="11. アクセス解析">
+      <Section title="10. アクセス解析">
         <p>
-          現時点で Google Analytics や同等のアクセス解析ツールは導入していません。将来導入する場合は本ポリシーを更新します。
+          Google Analytics 等の第三者解析ツールは導入していません。Vercel Web Analytics (Cookie 不使用) によるページビューの匿名集計のみ行います。
         </p>
       </Section>
 
-      <Section title="12. 利用者の権利と削除請求">
+      <Section title="11. 利用者の権利と削除請求">
         <p>
           利用者は、当サイト・本アプリが保有する自身に関するデータについて以下の権利を有します。
         </p>
@@ -222,18 +188,18 @@ export default function PrivacyPage() {
             端末内に保存された情報は、ブラウザの「サイトデータを削除」操作、iOS アプリ内の「学習履歴をすべて削除」操作、またはアプリ自体の削除によって、いつでも完全に削除できます。
           </li>
           <li>
-            サーバー側に送信された情報 (解答ログ / Good・Bad 評価 / 問題報告) について、開示・訂正・削除を希望する場合は、§14 のお問い合わせ窓口までご連絡ください。本人確認のため、対象の <code>device_id</code> をお知らせいただきます。当該 <code>device_id</code> に紐付くサーバー側データを合理的な範囲で削除します。
+            サーバー側に送信された情報 (解答ログ / Good・Bad 評価 / 問題報告) について、開示・訂正・削除を希望する場合は、§13 のお問い合わせ窓口までご連絡ください。本人確認のため、対象の <code>device_id</code> をお知らせいただきます。当該 <code>device_id</code> に紐付くサーバー側データを合理的な範囲で削除します。
           </li>
         </ul>
       </Section>
 
-      <Section title="13. 免責事項">
+      <Section title="12. 免責事項">
         <p>
           当サイト・本アプリに掲載する問題および解説は、独立行政法人情報処理推進機構 (IPA) または一般財団法人不動産適正取引推進機構が公表する過去問題を元に独自に編集したものです。内容の正確性には最善を尽くしていますが、誤りや古い情報が含まれる可能性があります。本サイト・本アプリの利用により生じたいかなる損害についても、運営者は責任を負いません。
         </p>
       </Section>
 
-      <Section title="14. お問い合わせ">
+      <Section title="13. お問い合わせ">
         <p>
           本ポリシーに関するお問い合わせ、開示・削除請求等は、{" "}
           <a
@@ -256,8 +222,11 @@ export default function PrivacyPage() {
         </p>
       </Section>
 
-      <Section title="15. 改訂履歴">
+      <Section title="14. 改訂履歴">
         <ul className="list-disc pl-5 space-y-1">
+          <li>
+            2026-06-01: 広告掲載 (Google AdSense) を停止したことに伴い、第三者広告サービスに関する記載を削除し、Vercel Web Analytics の導入 (Cookie 不使用の匿名ページビュー集計) を追記。セクション番号を整理。
+          </li>
           <li>
             2026-05-22: 「宅建合格.dev」iOS アプリ公開に伴う改訂。適用範囲を当サイトの iOS アプリ群に拡張、サーバへ送信される情報 (Good / Bad 評価、問題報告本文) を明記、データ保管期間の記載 (§6) と利用者の削除請求権の記載 (§12) を追加。
           </li>
