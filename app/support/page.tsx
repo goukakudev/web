@@ -274,12 +274,12 @@ function ExamCard({
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/ja-jp?releaseDate=1746489600"
+              src="/app-store-badge-ja.svg"
               alt={appStoreAlt}
-              width={135}
+              width={109}
               height={40}
-              style={{ height: 40, width: "auto" }}
               loading="lazy"
+              decoding="async"
             />
           </a>
         ) : comingSoonLabel ? (

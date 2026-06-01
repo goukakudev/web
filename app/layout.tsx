@@ -48,8 +48,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ja">
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-        <link rel="dns-prefetch" href="https://tools.applemediaservices.com" />
-        <link rel="dns-prefetch" href="https://play.google.com" />
       </head>
       <body>
         <JsonLd data={websiteJsonLd()} />

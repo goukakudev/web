@@ -1,5 +1,4 @@
-const APP_STORE_BADGE_SRC =
-  "https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/ja-jp?releaseDate=1746489600"
+const APP_STORE_BADGE_SRC = "/app-store-badge-ja.svg"
 
 export type QuizExamKey = "fe" | "ip" | "ap" | "tk"
 
@@ -66,9 +65,10 @@ export function QuizBottomActions({ examKey, variant = "default" }: Props) {
           <img
             src={APP_STORE_BADGE_SRC}
             alt={`${examLabel} 合格.dev を App Store でダウンロード`}
-            width={120}
+            width={109}
             height={40}
             loading="lazy"
+            decoding="async"
           />
         </a>
       </div>

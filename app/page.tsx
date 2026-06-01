@@ -70,10 +70,8 @@ const CATEGORIES: Category[] = [
   },
 ]
 
-const APP_STORE_BADGE_SRC =
-  "https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/ja-jp?releaseDate=1746489600"
-const GOOGLE_PLAY_BADGE_SRC =
-  "https://play.google.com/intl/ja/badges/static/images/badges/ja_badge_web_generic.png"
+const APP_STORE_BADGE_SRC = "/app-store-badge-ja.svg"
+const GOOGLE_PLAY_BADGE_SRC = "/google-play-badge-ja.png"
 
 function slugToExamKey(slug: string): ExamKey | null {
   switch (slug) {
@@ -285,6 +283,8 @@ function StoreBadge({
   href?: string
   unavailableLabel: string
 }) {
+  const isAppStore = src.endsWith(".svg")
+  const width = isAppStore ? 109 : 103
   if (href) {
     return (
       <a
@@ -296,7 +296,7 @@ function StoreBadge({
         className={BADGE_BASE}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={src} alt={alt} height={40} style={{ height: 40, width: "auto" }} loading="lazy" />
+        <img src={src} alt={alt} width={width} height={40} loading="lazy" decoding="async" />
       </a>
     )
   }
@@ -311,7 +311,7 @@ function StoreBadge({
       className={`${BADGE_BASE} ${BADGE_DISABLED}`}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={src} alt="" height={40} style={{ height: 40, width: "auto" }} loading="lazy" />
+      <img src={src} alt="" width={width} height={40} loading="lazy" decoding="async" />
     </span>
   )
 }

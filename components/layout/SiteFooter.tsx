@@ -14,7 +14,7 @@ const sectionLinkClass =
   "inline-flex min-h-9 items-center rounded-full border border-goukaku-divider bg-goukaku-surface px-3.5 py-1.5 text-[12px] font-extrabold text-goukaku-ink/70 transition hover:text-goukaku-ink";
 
 const currentSectionLinkClass =
-  "border-goukaku-pink-script/70 bg-goukaku-pink-script/15 text-goukaku-pink-script";
+  "border-goukaku-pink-script/70 bg-goukaku-pink-script/20 text-goukaku-ink";
 
 const sectionLinks = [
   { href: "/", label: "TOP", match: (p: string) => p === "/" },
