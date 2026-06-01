@@ -10,6 +10,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 import { QuestionSeoExtras } from "@/components/seo/QuestionSeoExtras";
 import { RelatedQuestions } from "@/components/seo/RelatedQuestions";
+import { QuizBottomActions } from "@/components/play/QuizBottomActions";
 import { stripMd } from "@/lib/text-utils";
 
 interface PageProps {
@@ -138,6 +139,7 @@ export default async function FePlayQuestionPage({ params }: PageProps) {
         basePath={`/fe/play/${exam.exam_id}/q`}
         examLabel={examLabel}
       />
+      <QuizBottomActions examKey="fe" />
     </MobileFrame>
   );
 }

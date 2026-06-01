@@ -7,6 +7,7 @@ import { makeMetadata } from "@/lib/seo/metadata"
 import { questionJsonLd } from "@/lib/seo/structured-data"
 import { JsonLd } from "@/components/seo/JsonLd"
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs"
+import { QuizBottomActions } from "@/components/play/QuizBottomActions"
 import QuizClient from "./QuizClient"
 
 type Props = {
@@ -236,6 +237,7 @@ export default async function QuizPage({ params, searchParams }: Props) {
           </aside>
         )
       })()}
+      <QuizBottomActions examKey="tk" variant="takken" />
     </>
   )
 }
