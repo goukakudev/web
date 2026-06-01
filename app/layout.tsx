@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import Script from "next/script"
+import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import { PendingFlusher } from "@/components/common/PendingFlusher"
 import { CookieConsent } from "@/components/common/CookieConsent"
@@ -73,6 +74,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <PendingFlusher />
         {children}
         <CookieConsent />
+        <Analytics />
       </body>
     </html>
   )
