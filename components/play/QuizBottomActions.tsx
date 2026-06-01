@@ -1,5 +1,3 @@
-import { ThemeToggle } from "@/components/layout/ThemeToggle"
-
 const APP_STORE_BADGE_SRC =
   "https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/ja-jp?releaseDate=1746489600"
 
@@ -26,16 +24,14 @@ interface Props {
 
 export function QuizBottomActions({ examKey, variant = "default" }: Props) {
   const iosUrl = IOS_APP_URLS[examKey]
+  if (!iosUrl) return null
+
   const examLabel = EXAM_LABELS[examKey]
   const isTakken = variant === "takken"
 
   const containerCls = isTakken
     ? "mx-auto mt-8 max-w-3xl rounded-xl border border-tk-line bg-tk-card/40 px-4 py-5"
     : "mt-8 rounded-xl border border-goukaku-divider bg-goukaku-surface px-4 py-5"
-
-  const headerCls = isTakken
-    ? "text-[11px] font-bold tracking-wide text-tk-ink-3"
-    : "text-[11px] font-bold tracking-wide text-goukaku-ink/60"
 
   const titleCls = isTakken
     ? "text-[12px] font-bold text-tk-ink-2"
@@ -47,44 +43,35 @@ export function QuizBottomActions({ examKey, variant = "default" }: Props) {
 
   return (
     <section
-      aria-label="クイズ補助"
+      aria-label={`${examLabel} の iOS アプリ版`}
       className={containerCls}
       data-testid={`quiz-bottom-actions-${examKey}`}
     >
-      <div className="flex flex-col items-center text-center">
-        <p className={headerCls}>画面が眩しい時はテーマ切替</p>
-        <div className="mt-2">
-          <ThemeToggle />
-        </div>
+      <div className="flex flex-col items-center gap-2 text-center">
+        <p className={titleCls}>{examLabel} の iOS アプリ版</p>
+        <p className={subCls}>
+          アプリ版なら、よりスムーズに動作し、
+          <br />
+          スワイプで問題遷移ができます。
+        </p>
+        <a
+          href={iosUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-1 inline-block"
+          aria-label={`${examLabel} の iOS アプリを App Store で開く`}
+          data-testid={`quiz-bottom-actions-${examKey}-ios`}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={APP_STORE_BADGE_SRC}
+            alt={`${examLabel} 合格.dev を App Store でダウンロード`}
+            width={120}
+            height={40}
+            loading="lazy"
+          />
+        </a>
       </div>
-
-      {iosUrl && (
-        <div className="mt-5 flex flex-col items-center gap-2 text-center">
-          <p className={titleCls}>{examLabel} の iOS アプリ版</p>
-          <p className={subCls}>
-            アプリ版なら、よりスムーズに動作し、
-            <br />
-            スワイプで問題遷移ができます。
-          </p>
-          <a
-            href={iosUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-1 inline-block"
-            aria-label={`${examLabel} の iOS アプリを App Store で開く`}
-            data-testid={`quiz-bottom-actions-${examKey}-ios`}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={APP_STORE_BADGE_SRC}
-              alt={`${examLabel} 合格.dev を App Store でダウンロード`}
-              width={120}
-              height={40}
-              loading="lazy"
-            />
-          </a>
-        </div>
-      )}
     </section>
   )
 }
