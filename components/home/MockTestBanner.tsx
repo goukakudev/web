@@ -6,7 +6,7 @@ export function MockTestBanner({
   subject = "fe",
 }: {
   exam?: ExamSummary
-  subject?: "fe" | "ip" | "ap"
+  subject?: "fe" | "ip" | "ap" | "sg"
 }) {
   if (!exam) return null
   const href = `/${subject}/play/${exam.exam_id}?mode=exam`

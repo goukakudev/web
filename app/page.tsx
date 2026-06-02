@@ -59,6 +59,16 @@ const CATEGORIES: Category[] = [
     status: "available",
   },
   {
+    slug: "sg",
+    href: "/sg",
+    label: "情報セキュリティマネジメント試験",
+    sub: "Information Security Management",
+    description:
+      "情報セキュリティマネジメント試験(SG)の公開過去問。科目A(四択)を順番 / ランダム / 模試で解けます",
+    emoji: "🔐",
+    status: "available",
+  },
+  {
     slug: "takken",
     href: "/takken",
     label: "宅地建物取引士",
@@ -78,6 +88,7 @@ function slugToExamKey(slug: string): ExamKey | null {
     case "fe": return "fe"
     case "ip": return "ip"
     case "ap": return "ap"
+    case "sg": return "sg"
     case "takken": return "tk"
     default: return null
   }
@@ -196,8 +207,9 @@ export default function CategoriesPage() {
             現在は <Link href="/fe" className="underline">基本情報技術者試験 (FE)</Link>、
             <Link href="/ip" className="underline">ITパスポート試験 (IP)</Link>、
             <Link href="/ap" className="underline">応用情報技術者試験 (AP)</Link>、
+            <Link href="/sg" className="underline">情報セキュリティマネジメント試験 (SG)</Link>、
             <Link href="/takken" className="underline">宅地建物取引士試験 (宅建)</Link>
-            の 4 試験に対応しており、順次他の資格にも拡張予定です。
+            の 5 試験に対応しており、順次他の資格にも拡張予定です。
           </p>
         </div>
         <div>
@@ -235,6 +247,11 @@ export default function CategoriesPage() {
               <Link href="/ap" className="underline">応用情報技術者試験</Link>
               {" — "}
               平成 28 年 (2016) 〜 令和 7 年 (2025) ・ 午前 18 回分 ・ 全 1,440 問 ・ 模試 150 分
+            </li>
+            <li>
+              <Link href="/sg" className="underline">情報セキュリティマネジメント試験</Link>
+              {" — "}
+              平成 28 年 (2016) 〜 令和 7 年 (2025) ・ 科目A 公開過去問 ・ 模試 90 分
             </li>
             <li>
               <Link href="/takken" className="underline">宅地建物取引士試験</Link>

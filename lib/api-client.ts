@@ -132,3 +132,36 @@ export async function getApExamStats(
     return new Map()
   }
 }
+
+export async function listSgExams(): Promise<ExamSummary[]> {
+  const data = await get<ExamListResponse>("/v1/sg/exams", EXAMS_REVALIDATE)
+  return data.exams
+}
+
+export async function listSgQuestions(examId: string): Promise<Question[]> {
+  const data = await get<QuestionListResponse>(
+    `/v1/sg/exams/${encodeURIComponent(examId)}/questions`,
+    QUESTIONS_REVALIDATE,
+  )
+  // SG のタグも AP と同様 "#" 接頭辞なしで返るため、ここで "#" 付きへ正規化し
+  // タグ URL・チップ・関連タグ・カテゴリ集計を他試験と同一挙動にする。
+  return data.questions.map((q) =>
+    q.tags && q.tags.length > 0
+      ? { ...q, tags: q.tags.map((t) => (t.startsWith("#") ? t : `#${t}`)) }
+      : q,
+  )
+}
+
+export async function getSgExamStats(
+  examId: string,
+): Promise<Map<string, QuestionStat>> {
+  try {
+    const data = await get<ExamStatsResponse>(
+      `/v1/sg/exams/${encodeURIComponent(examId)}/stats`,
+      STATS_REVALIDATE,
+    )
+    return new Map(data.stats.map((s) => [s.question_id, s]))
+  } catch {
+    return new Map()
+  }
+}

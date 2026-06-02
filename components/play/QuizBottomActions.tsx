@@ -1,12 +1,13 @@
 const APP_STORE_BADGE_SRC = "/app-store-badge-ja.svg"
 
-export type QuizExamKey = "fe" | "ip" | "ap" | "tk"
+export type QuizExamKey = "fe" | "ip" | "ap" | "sg" | "tk"
 
 const IOS_APP_URLS: Record<QuizExamKey, string | null> = {
   fe: "https://apps.apple.com/jp/app/基本情報技術者-過去問/id6770801070",
   ip: "https://apps.apple.com/jp/app/goukaku-itパスポート-過去問/id6774202965",
   tk: "https://apps.apple.com/jp/app/宅建過去問/id6772390931",
   ap: null,
+  sg: null,
 }
 
 const EXAM_LABELS: Record<QuizExamKey, string> = {
@@ -14,6 +15,7 @@ const EXAM_LABELS: Record<QuizExamKey, string> = {
   ip: "ITパスポート試験",
   tk: "宅建 (宅地建物取引士試験)",
   ap: "応用情報技術者試験",
+  sg: "情報セキュリティマネジメント試験",
 }
 
 interface Props {

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "exam": "sg",
+  "lastUpdated": "2026-06-02",
+  "sourcePage": "https://www.ipa.go.jp/shiken/reports/toukei_sg.html",
+  "notes": [
+    "情報セキュリティマネジメント試験(SG)の各回合格率。IPA 公表の統計情報による。",
+    "平成28年度〜令和元年度は春期・秋期の回別合格率。令和4年度(2022)以降は通年実施のため年度単位。",
+    "令和4年度はサンプル問題を収録。合格率は春期61.2%・秋期52.0%の平均(参考値)。",
+    "IPA 統計が合格率をグラフ提供のため受験者数は未収録。passRate のみを表示に用いる。"
+  ],
+  "sessions": [
+    { "year": 2016, "era": "平成", "eraYear": 28, "half": "春期", "passRate": 0.880, "source": "IPA統計情報" },
+    { "year": 2016, "era": "平成", "eraYear": 28, "half": "秋期", "passRate": 0.703, "source": "IPA統計情報" },
+    { "year": 2017, "era": "平成", "eraYear": 29, "half": "春期", "passRate": 0.664, "source": "IPA統計情報" },
+    { "year": 2017, "era": "平成", "eraYear": 29, "half": "秋期", "passRate": 0.504, "source": "IPA統計情報" },
+    { "year": 2018, "era": "平成", "eraYear": 30, "half": "春期", "passRate": 0.537, "source": "IPA統計情報" },
+    { "year": 2018, "era": "平成", "eraYear": 30, "half": "秋期", "passRate": 0.463, "source": "IPA統計情報" },
+    { "year": 2019, "era": "平成", "eraYear": 31, "half": "春期", "passRate": 0.519, "source": "IPA統計情報" },
+    { "year": 2019, "era": "令和", "eraYear": 1, "half": "秋期", "passRate": 0.470, "source": "IPA統計情報" },
+    { "year": 2022, "era": "令和", "eraYear": 4, "passRate": 0.566, "source": "IPA統計情報", "note": "サンプル問題。令和4年度 春期61.2%・秋期52.0% の平均(参考値)" },
+    { "year": 2023, "era": "令和", "eraYear": 5, "passRate": 0.726, "source": "IPA統計情報" },
+    { "year": 2024, "era": "令和", "eraYear": 6, "passRate": 0.690, "source": "IPA統計情報" },
+    { "year": 2025, "era": "令和", "eraYear": 7, "passRate": 0.700, "source": "IPA統計情報" }
+  ]
+}

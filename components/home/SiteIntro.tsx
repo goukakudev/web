@@ -13,7 +13,7 @@ interface SubjectCopy {
   rangePrefix: string;
 }
 
-const COPY: Record<"fe" | "ip" | "ap", SubjectCopy> = {
+const COPY: Record<"fe" | "ip" | "ap" | "sg", SubjectCopy> = {
   fe: {
     fullName: "基本情報技術者試験",
     shortName: "基本情報技術者試験",
@@ -56,9 +56,23 @@ const COPY: Record<"fe" | "ip" | "ap", SubjectCopy> = {
       "現在、応用情報技術者試験の午前科目について、平成 28 年度 (2016) 春期 〜 令和 7 年度 (2025) 春期の過去問を収録しています。タグ機能により、ネットワーク・データベース・セキュリティ・アルゴリズム・経営戦略など、分野横断での演習も可能です。",
     rangePrefix: "平成 28 年度 (2016) 春期",
   },
+  sg: {
+    fullName: "情報セキュリティマネジメント試験",
+    shortName: "情報セキュリティマネジメント試験",
+    abbrev: "SG",
+    authority: "独立行政法人情報処理推進機構 (IPA)",
+    authorityShort: "IPA",
+    rangeLabel: "公開過去問",
+    totalLabel: "科目 A の四肢択一問題",
+    modesLine:
+      "3 つの学習モード — 順番に解く / ランダムに解く / 模試形式 (90 分・時間計測あり) — を切り替えて、苦手分野の補強から本番形式の通し演習まで一貫して対応できます。問題ごとにヒントも参照可能です。",
+    scopeLine:
+      "現在、情報セキュリティマネジメント試験の科目 A について、平成 28 年度 (2016) 〜 令和 7 年度 (2025) の公開過去問を収録しています。タグ機能により、情報セキュリティ・リスク管理・関連法規など、分野横断での演習も可能です。",
+    rangePrefix: "平成 28 年度 (2016)",
+  },
 };
 
-export function SiteIntro({ subject = "fe" }: { subject?: "fe" | "ip" | "ap" }) {
+export function SiteIntro({ subject = "fe" }: { subject?: "fe" | "ip" | "ap" | "sg" }) {
   const c = COPY[subject];
   return (
     <section className="mt-10 text-[13px] leading-[1.85] text-goukaku-ink/85">

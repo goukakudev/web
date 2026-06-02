@@ -1,6 +1,6 @@
 import Link from "next/link"
 
-export function HeroQuestCard({ subject = "fe" }: { subject?: "fe" | "ip" | "ap" } = {}) {
+export function HeroQuestCard({ subject = "fe" }: { subject?: "fe" | "ip" | "ap" | "sg" } = {}) {
   const href = `/${subject}/play/random?count=20`
   return (
     <Link

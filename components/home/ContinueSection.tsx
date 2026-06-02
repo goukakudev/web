@@ -32,7 +32,7 @@ export function ContinueSection({
   subject = "fe",
 }: {
   exams: ExamSummary[]
-  subject?: "fe" | "ip" | "ap"
+  subject?: "fe" | "ip" | "ap" | "sg"
 }) {
   const [latest, setLatest] = useState<ExamSession | null>(null)
   const examIdPrefix = `${subject}-`

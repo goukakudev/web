@@ -10,12 +10,14 @@ import {
   listIpQuestions,
   listApExams,
   listApQuestions,
+  listSgExams,
+  listSgQuestions,
 } from "@/lib/api-client"
 import { getAllAnswers, getBookmarks } from "@/lib/local-store"
 import type { Question, ExamSummary } from "@/lib/types"
 
 export type ListMode = "history" | "bookmarks"
-export type SubjectKey = "fe" | "ip" | "ap"
+export type SubjectKey = "fe" | "ip" | "ap" | "sg"
 
 interface Row {
   questionId: string
@@ -36,13 +38,21 @@ export function QuestionListView({
   const subjectPrefix = `/${subject}`
   const examIdPrefix = `${subject}-`
   const fetchExams =
-    subject === "ip" ? listIpExams : subject === "ap" ? listApExams : listExams
+    subject === "ip"
+      ? listIpExams
+      : subject === "ap"
+        ? listApExams
+        : subject === "sg"
+          ? listSgExams
+          : listExams
   const fetchQuestions =
     subject === "ip"
       ? listIpQuestions
       : subject === "ap"
         ? listApQuestions
-        : listQuestions
+        : subject === "sg"
+          ? listSgQuestions
+          : listQuestions
   const [rows, setRows] = useState<Row[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

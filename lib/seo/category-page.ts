@@ -6,10 +6,12 @@ import {
   listIpExams,
   listIpQuestions,
   listQuestions,
+  listSgExams,
+  listSgQuestions,
 } from "@/lib/api-client"
 import type { CategoryMeta } from "./category-meta/fe"
 
-export type CategorySubject = "fe" | "ip" | "ap"
+export type CategorySubject = "fe" | "ip" | "ap" | "sg"
 
 export interface CategoryPageData {
   matchedTags: PopularTag[]
@@ -24,6 +26,7 @@ const listers: Record<CategorySubject, {
   fe: { listExams: listExams, listQuestions: listQuestions },
   ip: { listExams: listIpExams, listQuestions: listIpQuestions },
   ap: { listExams: listApExams, listQuestions: listApQuestions },
+  sg: { listExams: listSgExams, listQuestions: listSgQuestions },
 }
 
 export async function fetchCategoryPageData(

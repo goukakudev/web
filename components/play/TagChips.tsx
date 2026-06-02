@@ -7,7 +7,7 @@ export function TagChips({
   subject = "fe",
 }: {
   tags: string[]
-  subject?: "fe" | "ip" | "ap"
+  subject?: "fe" | "ip" | "ap" | "sg"
 }) {
   if (!tags || tags.length === 0) return null
   const base = `/${subject}/tag`

@@ -10,7 +10,7 @@ export function BookmarkCard({
   subject = "fe",
 }: {
   exams: ExamSummary[]
-  subject?: "fe" | "ip" | "ap"
+  subject?: "fe" | "ip" | "ap" | "sg"
 }) {
   const [counts, setCounts] = useState<{ total: number; examCount: number } | null>(null)
   const examIdPrefix = `${subject}-`

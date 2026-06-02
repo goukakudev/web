@@ -1,6 +1,6 @@
 import type { ExamSummary } from "@/lib/types"
 
-export type YearSubject = "fe" | "ip" | "ap"
+export type YearSubject = "fe" | "ip" | "ap" | "sg"
 
 export interface YearSummaryData {
   yearKey: string
