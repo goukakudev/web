@@ -3,7 +3,6 @@ import Link from "next/link"
 import { makeMetadata } from "@/lib/seo/metadata"
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs"
 import { FaqAccordion } from "@/components/seo/FaqAccordion"
-import { TakkenSectionNav } from "@/components/layout/TakkenSectionNav"
 import { TAKKEN_FAQ } from "@/lib/seo/faq/takken"
 
 export const metadata: Metadata = makeMetadata({
@@ -37,11 +36,6 @@ export default function TakkenFaqPage() {
         <p className="text-[11px] opacity-60 pt-6 mt-8 border-t border-line text-ink-3">
           ← <Link href="/takken" className="underline">宅建 のトップ</Link> ・ <Link href="/contact" className="underline">問題報告・お問い合わせ</Link>
         </p>
-        <footer className="mt-12 border-t border-line pt-6 text-xs text-ink-3">
-          <div className="mb-6">
-            <TakkenSectionNav />
-          </div>
-        </footer>
       </div>
     </main>
   )

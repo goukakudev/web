@@ -46,6 +46,46 @@
 
   --font-mincho: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", "Shippori Mincho B1", serif;
   --font-tk-sans: var(--font-noto-sans), "Noto Sans JP", -apple-system, "Hiragino Sans", system-ui, sans-serif;
+
+  /* ============================================================
+     看護 (Kango) 専用デザイントークン — iOS kango アプリ styles.css を移植。
+     淡青・医療系。ライト値。ダークは [data-theme="dark"] で上書き。
+     ============================================================ */
+  /* 固定ブランドブルー (テーマ非依存) */
+  --color-kn-blue-500: #2f6bf6;
+  --color-kn-blue-600: #1f5fef;
+  --color-kn-blue-700: #1849d6;
+  /* 面・背景 */
+  --color-kn-surface: #ffffff;
+  --color-kn-surface-2: #f4f8fd;
+  --color-kn-surface-3: #eef4fc;
+  --color-kn-page-top: #e3eefb;
+  --color-kn-page-mid: #eef5fc;
+  --color-kn-page-bot: #e8f1fb;
+  /* 選択・チップ・番号 */
+  --color-kn-tint: #e9f1fe;
+  --color-kn-sel-bg: #eaf2ff;
+  --color-kn-sel-border: #2f6bf6;
+  --color-kn-num-bg: #eef3fb;
+  --color-kn-num-text: #5d7396;
+  /* テキスト */
+  --color-kn-text-1: #15233f;
+  --color-kn-text-2: #54647f;
+  --color-kn-text-3: #93a1b8;
+  /* 罫線 */
+  --color-kn-line: #e6edf7;
+  --color-kn-line-strong: #d6e1f0;
+  /* 状態色 */
+  --color-kn-primary: #1f5fef;
+  --color-kn-primary-text: #1f5fef;
+  --color-kn-primary-soft: #e9f1fe;
+  --color-kn-success: #15a86a;
+  --color-kn-success-soft: #dcf6e8;
+  --color-kn-danger: #e8434f;
+  --color-kn-danger-soft: #fde6e8;
+  --color-kn-warn: #f2a516;
+
+  --font-kn-sans: var(--font-noto-sans), "Noto Sans JP", -apple-system, "Hiragino Sans", system-ui, sans-serif;
 }
 
 [data-theme="dark"] {
@@ -73,6 +113,32 @@
   --color-tk-crimson: #d97266;
   --color-tk-crimson-soft: #4d2823;
   --color-tk-crimson-line: #8c4a40;
+
+  /* 看護 (Kango) ダーク — iOS の Color(light:dark:) のダーク値。blue-* は固定なので据え置き */
+  --color-kn-surface: #14202f;
+  --color-kn-surface-2: #1a2838;
+  --color-kn-surface-3: #142231;
+  --color-kn-page-top: #0a1422;
+  --color-kn-page-mid: #0c1726;
+  --color-kn-page-bot: #0a1320;
+  --color-kn-tint: #1b2c45;
+  --color-kn-sel-bg: #1c3052;
+  --color-kn-sel-border: #3a78ff;
+  --color-kn-num-bg: #1e2d40;
+  --color-kn-num-text: #9db0ca;
+  --color-kn-text-1: #eaf1fb;
+  --color-kn-text-2: #9db0ca;
+  --color-kn-text-3: #6a7d97;
+  --color-kn-line: #26323f;
+  --color-kn-line-strong: #33404f;
+  --color-kn-primary: #3a78ff;
+  --color-kn-primary-text: #6ea2ff;
+  --color-kn-primary-soft: #1b2c45;
+  --color-kn-success: #2ed086;
+  --color-kn-success-soft: #15321f;
+  --color-kn-danger: #ff6470;
+  --color-kn-danger-soft: #3a1620;
+  --color-kn-warn: #ffba3a;
 }
 
 html, body {
@@ -168,3 +234,92 @@ body {
   padding: 0.375rem 0.875rem;
   border-radius: 9999px;
 }
+
+/* ============================================================
+   看護 (Kango) — /kango/* ページ専用 (.kn-root)。iOS kango アプリのデザイン移植。
+   淡青グラデ背景・白カード・グラデCTA。色は --color-kn-* (data-theme 追従)。
+   ============================================================ */
+.kn-root {
+  color: var(--color-kn-text-1);
+  font-family: var(--font-kn-sans);
+  min-height: 100dvh;
+  /* iOS PageBackground: 上下グラデ + 角のブラー円(radial で代用) */
+  background:
+    radial-gradient(760px 380px at 90% -6%, color-mix(in srgb, var(--color-kn-blue-500) 16%, transparent), transparent 62%),
+    radial-gradient(720px 380px at 2% 106%, color-mix(in srgb, var(--color-kn-blue-500) 12%, transparent), transparent 62%),
+    linear-gradient(180deg, var(--color-kn-page-top), var(--color-kn-page-mid) 46%, var(--color-kn-page-bot));
+  background-attachment: fixed;
+}
+
+/* .card 相当 — 白面 + 柔らかい影 */
+.kn-card {
+  background: var(--color-kn-surface);
+  border-radius: 24px;
+  box-shadow: 0 6px 14px color-mix(in srgb, #1e4696 7%, transparent);
+}
+.kn-card-sm { border-radius: 18px; }
+
+/* チップ (淡青ピル) */
+.kn-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--color-kn-tint); color: var(--color-kn-primary-text);
+  font-size: 0.8125rem; font-weight: 700; line-height: 1;
+  padding: 0.375rem 0.75rem; border-radius: 9999px; white-space: nowrap;
+}
+
+/* 主ボタン (グラデCTA) */
+.kn-btn-primary {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.625rem;
+  width: 100%; min-height: 3.5rem; padding: 0 1.25rem;
+  color: #fff; font-weight: 700; font-size: 1.0625rem;
+  border: none; border-radius: 16px; cursor: pointer;
+  background: linear-gradient(135deg, #3a78ff, #1f5fef 55%, #1a4fe0);
+  box-shadow: 0 8px 12px color-mix(in srgb, var(--color-kn-blue-600) 30%, transparent);
+  transition: opacity .15s, transform .08s;
+}
+.kn-btn-primary:hover { opacity: .94; }
+.kn-btn-primary:active { transform: translateY(1px); }
+.kn-btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+
+/* 副ボタン (白面 + 枠) */
+.kn-btn-ghost {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  width: 100%; min-height: 3.25rem; padding: 0 1rem;
+  color: var(--color-kn-primary-text); font-weight: 700; font-size: 0.9375rem;
+  background: var(--color-kn-surface);
+  border: 1px solid var(--color-kn-line-strong); border-radius: 14px; cursor: pointer;
+  transition: background .15s;
+}
+.kn-btn-ghost:hover { background: var(--color-kn-surface-2); }
+.kn-btn-ghost:disabled { opacity: .45; cursor: not-allowed; }
+
+/* 進捗バー (.pbar) */
+.kn-pbar { height: 7px; border-radius: 9999px; background: var(--color-kn-surface-3); overflow: hidden; }
+.kn-pbar > i { display: block; height: 100%; border-radius: 9999px; background: linear-gradient(135deg, #3a78ff, #1f5fef); }
+
+/* 選択肢行 (OptionRow) — 状態は data-state 属性で切替 */
+.kn-option {
+  display: flex; align-items: center; gap: 0.875rem; width: 100%; text-align: left;
+  padding: 0.9375rem 1rem; border-radius: 16px; cursor: pointer;
+  background: var(--color-kn-surface); border: 1.5px solid var(--color-kn-line);
+  box-shadow: 0 8px 8px color-mix(in srgb, #1e4696 5%, transparent);
+  transition: background .12s, border-color .12s, opacity .12s;
+}
+.kn-option:disabled { cursor: default; }
+.kn-option .kn-option-num {
+  flex: none; width: 2.125rem; height: 2.125rem; border-radius: 9999px;
+  display: grid; place-items: center; font-weight: 800; font-size: 1rem;
+  background: var(--color-kn-num-bg); color: var(--color-kn-num-text);
+}
+.kn-option .kn-option-text { flex: 1; font-size: 1.03rem; font-weight: 600; color: var(--color-kn-text-1); }
+.kn-option[data-state="selected"] { background: var(--color-kn-sel-bg); border-color: var(--color-kn-sel-border); box-shadow: none; }
+.kn-option[data-state="selected"] .kn-option-num { background: var(--color-kn-blue-600); color: #fff; }
+.kn-option[data-state="correct"] { background: var(--color-kn-success-soft); border-color: var(--color-kn-success); box-shadow: none; }
+.kn-option[data-state="correct"] .kn-option-num,
+.kn-option[data-state="correct"] .kn-option-text { color: var(--color-kn-success); }
+.kn-option[data-state="correct"] .kn-option-num { background: var(--color-kn-success); color: #fff; }
+.kn-option[data-state="wrong"] { background: var(--color-kn-danger-soft); border-color: var(--color-kn-danger); box-shadow: none; }
+.kn-option[data-state="wrong"] .kn-option-num,
+.kn-option[data-state="wrong"] .kn-option-text { color: var(--color-kn-danger); }
+.kn-option[data-state="wrong"] .kn-option-num { background: var(--color-kn-danger); color: #fff; }
+.kn-option[data-state="dim"] { opacity: 0.55; }

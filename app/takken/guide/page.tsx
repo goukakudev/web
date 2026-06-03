@@ -2,7 +2,6 @@ import type { Metadata } from "next"
 import { makeMetadata } from "@/lib/seo/metadata"
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs"
 import { GuideContent } from "@/components/seo/GuideContent"
-import { TakkenSectionNav } from "@/components/layout/TakkenSectionNav"
 import { TAKKEN_GUIDE } from "@/lib/seo/guide/takken"
 
 const TITLE = "宅地建物取引士試験 学習ガイド — 試験概要・出題範囲・合格点・勉強法"
@@ -43,11 +42,6 @@ export default function TakkenGuidePage() {
           examTopLabel="宅建 のトップ"
           theme="takken"
         />
-        <footer className="mt-12 border-t border-line pt-6 text-xs text-ink-3">
-          <div className="mb-6">
-            <TakkenSectionNav />
-          </div>
-        </footer>
       </div>
     </main>
   )

@@ -16,6 +16,7 @@ const links = [
   { href: "/ap", label: "応用情報", match: (p: string) => p === "/ap" || p.startsWith("/ap/") },
   { href: "/sg", label: "情報セキュリティ", match: (p: string) => p === "/sg" || p.startsWith("/sg/") },
   { href: "/takken", label: "宅建", match: (p: string) => p === "/takken" || p.startsWith("/takken/") },
+  { href: "/kango", label: "看護師", match: (p: string) => p === "/kango" || p.startsWith("/kango/") },
 ];
 
 export function TakkenSectionNav() {

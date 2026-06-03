@@ -78,6 +78,16 @@ const CATEGORIES: Category[] = [
     status: "available",
     iosUrl: "https://apps.apple.com/jp/app/宅建過去問/id6772390931",
   },
+  {
+    slug: "kango",
+    href: "/kango",
+    label: "看護師国家試験",
+    sub: "National Nursing Examination",
+    description:
+      "看護師・保健師・助産師 国家試験の過去問。選択肢別解説付きで順番 / ランダムに解けます",
+    emoji: "🩺",
+    status: "available",
+  },
 ]
 
 const APP_STORE_BADGE_SRC = "/app-store-badge-ja.svg"
@@ -208,8 +218,9 @@ export default function CategoriesPage() {
             <Link href="/ip" className="underline">ITパスポート試験 (IP)</Link>、
             <Link href="/ap" className="underline">応用情報技術者試験 (AP)</Link>、
             <Link href="/sg" className="underline">情報セキュリティマネジメント試験 (SG)</Link>、
-            <Link href="/takken" className="underline">宅地建物取引士試験 (宅建)</Link>
-            の 5 試験に対応しており、順次他の資格にも拡張予定です。
+            <Link href="/takken" className="underline">宅地建物取引士試験 (宅建)</Link>、
+            <Link href="/kango" className="underline">看護師国家試験</Link>
+            の 6 試験に対応しており、順次他の資格にも拡張予定です。
           </p>
         </div>
         <div>
@@ -257,6 +268,11 @@ export default function CategoriesPage() {
               <Link href="/takken" className="underline">宅地建物取引士試験</Link>
               {" — "}
               H16 (2004) 〜 R7 (2025) ・ 全 24 試験 ・ 約 1,200 問 ・ 4 分野
+            </li>
+            <li>
+              <Link href="/kango" className="underline">看護師国家試験</Link>
+              {" — "}
+              第 115 回ほか ・ 看護師 / 保健師 / 助産師 ・ 選択肢別解説付き
             </li>
           </ul>
         </div>

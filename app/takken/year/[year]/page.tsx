@@ -10,7 +10,6 @@ import {
 } from "@/lib/seo/structured-data"
 import { JsonLd } from "@/components/seo/JsonLd"
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs"
-import { TakkenSectionNav } from "@/components/layout/TakkenSectionNav"
 
 interface PageProps {
   params: Promise<{ year: string }>
@@ -150,11 +149,6 @@ export default async function TakkenYearPage({ params }: PageProps) {
           </nav>
         )}
 
-        <footer className="mt-12 border-t border-line pt-6 text-xs text-ink-3">
-          <div className="mb-6">
-            <TakkenSectionNav />
-          </div>
-        </footer>
       </div>
     </main>
   )

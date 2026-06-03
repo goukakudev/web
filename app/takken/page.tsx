@@ -5,7 +5,6 @@ import { makeMetadata } from "@/lib/seo/metadata";
 import { itemListJsonLd, courseJsonLd, SITE_URL, webPageJsonLd } from "@/lib/seo/structured-data";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
-import { TakkenSectionNav } from "@/components/layout/TakkenSectionNav";
 
 export const metadata: Metadata = makeMetadata({
   title: "宅建士 過去問",
@@ -139,13 +138,6 @@ export default async function TakkenHome() {
             をご覧ください。
           </p>
         </section>
-
-        <footer className="mt-16 border-t border-line pt-6 text-xs text-ink-3">
-          <div className="mb-6">
-            <TakkenSectionNav />
-          </div>
-          <p className="text-center">過去問データは公式公開問題に基づく。解説は学習用参考表記。</p>
-        </footer>
       </div>
     </main>
   );

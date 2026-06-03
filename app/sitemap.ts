@@ -10,21 +10,24 @@ import {
   listSgQuestions,
 } from "@/lib/api-client"
 import { TakkenAPI } from "@/lib/takken/api"
+import { listKnExams, listAllKnQuestions } from "@/lib/kango/api"
+import { KANGO_CATEGORIES } from "@/lib/kango/categories"
 import { tagToSlug } from "@/lib/tag-url"
 
 const BASE = "https://goukaku.dev"
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [root, fe, ip, ap, sg, takken, glossary] = await Promise.all([
+  const [root, fe, ip, ap, sg, takken, kn, glossary] = await Promise.all([
     Promise.resolve(rootPartition()),
     fePartition(),
     ipPartition(),
     apPartition(),
     sgPartition(),
     takkenPartition(),
+    knPartition(),
     glossaryPartition(),
   ])
-  return [...root, ...fe, ...ip, ...ap, ...sg, ...takken, ...glossary]
+  return [...root, ...fe, ...ip, ...ap, ...sg, ...takken, ...kn, ...glossary]
 }
 
 function rootPartition(): MetadataRoute.Sitemap {
@@ -325,6 +328,46 @@ async function takkenPartition(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.6,
+    })
+  }
+  return out
+}
+
+async function knPartition(): Promise<MetadataRoute.Sitemap> {
+  const now = new Date()
+  const out: MetadataRoute.Sitemap = [
+    { url: `${BASE}/kango`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
+    { url: `${BASE}/kango/faq`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${BASE}/kango/guide`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+  ]
+  const exams = await listKnExams().catch(() => [])
+  for (const e of exams) {
+    out.push({
+      url: `${BASE}/kango/exam/${e.exam_id}`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    })
+  }
+  // カテゴリ (出題基準の19分野)
+  for (const c of KANGO_CATEGORIES) {
+    out.push({
+      url: `${BASE}/kango/category/${c.slug}`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    })
+  }
+  // タグ (全問題から集約)
+  const all = await listAllKnQuestions().catch(() => [])
+  const tagSet = new Set<string>()
+  for (const q of all) for (const t of q.tags ?? []) if (t) tagSet.add(t)
+  for (const t of [...tagSet].sort()) {
+    out.push({
+      url: `${BASE}/kango/tag/${tagToSlug(t)}`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.5,
     })
   }
   return out
