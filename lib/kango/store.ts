@@ -56,6 +56,9 @@ export function recordKangoAnswer(rec: KangoAnswerRecord): void {
         is_correct: rec.is_correct,
         skipped: rec.skipped,
         client_ts: rec.answered_at,
+        // 看護は元ラベルで送信(選択肢シャッフルは表示順のみ)。
+        // getExamStats は label_space="original" のログのみ集計するため必須。
+        label_space: "original",
       }),
     }).catch(() => {})
   }
