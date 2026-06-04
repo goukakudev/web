@@ -1,7 +1,7 @@
 "use client"
 // クイズ本体 (フォーカスモード)。iOS QuizScreen.swift を移植。
 // 数字ラベル / 単一(1タップ即解答) / 複数選択 / 計算(numeric) / 組合せ / 図 / 解説 / 採点除外。
-import { useState, useEffect, type ReactNode } from "react"
+import { useState, useEffect, useRef, type ReactNode } from "react"
 import Link from "next/link"
 import type { KangoQuestion, KangoExamSummary, KangoFigure, KangoGlossaryTerm } from "@/lib/kango/types"
 import {
@@ -139,6 +139,7 @@ export function KangoQuiz({
   const [bookmarked, setBookmarked] = useState(false)
   const [zoomFig, setZoomFig] = useState<KangoFigure | null>(null)
   const [term, setTerm] = useState<KangoGlossaryTerm | null>(null)
+  const touchStart = useRef<{ x: number; y: number } | null>(null)
 
   // ランダムはマウント後に1度だけシャッフル (SSR との hydration mismatch を避ける)。
   // 全問シャッフル→先頭 limit 件に絞り、states も作り直す。
@@ -245,7 +246,23 @@ export function KangoQuiz({
 
   return (
     <main>
-      <div style={{ maxWidth: 640, margin: "0 auto", padding: "8px 20px 40px" }}>
+      <div
+        style={{ maxWidth: 640, margin: "0 auto", padding: "8px 20px 40px" }}
+        onTouchStart={(e) => {
+          const t = e.touches[0]
+          touchStart.current = { x: t.clientX, y: t.clientY }
+        }}
+        onTouchEnd={(e) => {
+          const s = touchStart.current
+          touchStart.current = null
+          if (!s) return
+          const t = e.changedTouches[0]
+          const dx = t.clientX - s.x
+          const dy = t.clientY - s.y
+          // 横移動が縦より十分大きいときだけ遷移（左=次 / 右=前）
+          if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) go(dx < 0 ? 1 : -1)
+        }}
+      >
         {/* ヘッダ */}
         <header style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0 12px" }}>
           <Link
