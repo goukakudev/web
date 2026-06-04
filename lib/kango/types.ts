@@ -28,9 +28,20 @@ export interface KangoChoiceExplanation {
   text: string
 }
 
+export interface KangoSource {
+  title: string
+  url: string
+}
+
+export interface KangoGlossaryTerm {
+  term: string
+  definition: string
+}
+
 export interface KangoExplanation {
   overall: string
   per_choice?: KangoChoiceExplanation[]
+  sources?: KangoSource[] // 出典(統計・ガイドライン等)。解説の深掘り用に任意付与。
 }
 
 /** correct は API 上 string / string[] / number / null と多態。 */
@@ -55,6 +66,7 @@ export interface KangoQuestion {
   choices_in_figure?: boolean
   source_page?: number
   explanation?: KangoExplanation | null
+  glossary?: KangoGlossaryTerm[] // 本文の難語→定義。下線+タップで用語シート表示。
   category?: string // 出題基準の分野 slug (lib/kango/categories.ts)
   tags?: string[] // "#" 付きトピック
 }

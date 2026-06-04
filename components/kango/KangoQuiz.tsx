@@ -1,9 +1,9 @@
 "use client"
 // クイズ本体 (フォーカスモード)。iOS QuizScreen.swift を移植。
 // 数字ラベル / 単一(1タップ即解答) / 複数選択 / 計算(numeric) / 組合せ / 図 / 解説 / 採点除外。
-import { useState, useEffect } from "react"
+import { useState, useEffect, type ReactNode } from "react"
 import Link from "next/link"
-import type { KangoQuestion, KangoExamSummary, KangoFigure } from "@/lib/kango/types"
+import type { KangoQuestion, KangoExamSummary, KangoFigure, KangoGlossaryTerm } from "@/lib/kango/types"
 import {
   correctLabels,
   correctDisplay,
@@ -30,6 +30,71 @@ function shuffleArr<T>(a: T[]): T[] {
     ;[r[i], r[j]] = [r[j], r[i]]
   }
   return r
+}
+
+// 本文を glossary の用語境界で分割し、用語に点線下線+クリック(用語シート)を付ける。
+// 最長一致・前方優先。glossary が無ければ素の文字列をそのまま返す。
+function renderBody(
+  body: string,
+  glossary: KangoGlossaryTerm[] | undefined,
+  onTerm: (t: KangoGlossaryTerm) => void,
+): ReactNode {
+  if (!glossary || glossary.length === 0) return body
+  const terms = [...glossary].sort((a, b) => Array.from(b.term).length - Array.from(a.term).length)
+  const out: ReactNode[] = []
+  const chars = Array.from(body)
+  let plain = ""
+  let key = 0
+  const flush = () => {
+    if (plain) {
+      out.push(<span key={`p${key++}`}>{plain}</span>)
+      plain = ""
+    }
+  }
+  let i = 0
+  while (i < chars.length) {
+    let matched: KangoGlossaryTerm | undefined
+    for (const t of terms) {
+      const tc = Array.from(t.term)
+      if (tc.length > 0 && i + tc.length <= chars.length && chars.slice(i, i + tc.length).join("") === t.term) {
+        matched = t
+        break
+      }
+    }
+    if (matched) {
+      flush()
+      const tm = matched
+      out.push(
+        <button
+          key={`t${key++}`}
+          type="button"
+          onClick={() => onTerm(tm)}
+          style={{
+            display: "inline",
+            font: "inherit",
+            padding: 0,
+            margin: 0,
+            border: "none",
+            background: "none",
+            color: "var(--color-kn-primary)",
+            textDecoration: "underline",
+            textDecorationStyle: "dotted",
+            textUnderlineOffset: 3,
+            verticalAlign: "baseline",
+            cursor: "pointer",
+          }}
+        >
+          {tm.term}
+        </button>,
+      )
+      i += Array.from(tm.term).length
+    } else {
+      plain += chars[i]
+      i += 1
+    }
+  }
+  flush()
+  return out
 }
 
 /** 経過時間チップ。1秒ごとの再描画をこの小コンポーネントに閉じ込める (iOS ElapsedChip 相当)。 */
@@ -73,6 +138,7 @@ export function KangoQuiz({
   )
   const [bookmarked, setBookmarked] = useState(false)
   const [zoomFig, setZoomFig] = useState<KangoFigure | null>(null)
+  const [term, setTerm] = useState<KangoGlossaryTerm | null>(null)
 
   // ランダムはマウント後に1度だけシャッフル (SSR との hydration mismatch を避ける)。
   // 全問シャッフル→先頭 limit 件に絞り、states も作り直す。
@@ -92,6 +158,16 @@ export function KangoQuiz({
   useEffect(() => {
     if (q) setBookmarked(isKangoBookmarked(q._id))
   }, [q])
+
+  // 用語シートは Escape でも閉じる。
+  useEffect(() => {
+    if (!term) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setTerm(null)
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [term])
 
   if (!q || !st) {
     return (
@@ -253,7 +329,7 @@ export function KangoQuiz({
             {tag && <Chip>{tag}</Chip>}
           </div>
 
-          <p style={{ marginTop: 16, fontSize: 19, fontWeight: 700, lineHeight: 1.55, color: "var(--color-kn-text-1)" }}>{q.body}</p>
+          <p style={{ marginTop: 16, fontSize: 19, fontWeight: 700, lineHeight: 1.55, color: "var(--color-kn-text-1)" }}>{renderBody(q.body, q.glossary, setTerm)}</p>
 
           {/* 図 */}
           {q.figures && q.figures.length > 0 && (
@@ -414,6 +490,37 @@ export function KangoQuiz({
                     </div>
                   </>
                 )}
+                {q.explanation.sources && q.explanation.sources.length > 0 && (
+                  <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 6 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, fontWeight: 700, color: "var(--color-kn-text-3)" }}>
+                      <span aria-hidden>📚</span>出典・参考
+                    </div>
+                    {q.explanation.sources.map((s, i) => (
+                      <a
+                        key={i}
+                        href={s.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                          padding: "9px 12px",
+                          borderRadius: 10,
+                          background: "var(--color-kn-surface-2)",
+                          fontSize: 13,
+                          fontWeight: 600,
+                          color: "var(--color-kn-primary)",
+                          textDecoration: "none",
+                        }}
+                      >
+                        <span aria-hidden>🔗</span>
+                        <span style={{ flex: 1, textDecoration: "underline" }}>{s.title}</span>
+                        <span aria-hidden style={{ color: "var(--color-kn-text-3)", fontSize: 12 }}>↗</span>
+                      </a>
+                    ))}
+                  </div>
+                )}
               </>
             ) : (
               <div style={{ textAlign: "center", padding: "20px 0", color: "var(--color-kn-text-3)" }}>
@@ -480,6 +587,39 @@ export function KangoQuiz({
               {zoomFig.alt}
             </p>
           )}
+        </div>
+      )}
+
+      {/* 用語シート (本文の難語タップで定義表示) */}
+      {term && (
+        <div
+          onClick={() => setTerm(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-label={term.term}
+          style={{ position: "fixed", inset: 0, zIndex: 50, background: "rgba(0,0,0,.4)", backdropFilter: "blur(2px)", display: "flex", alignItems: "flex-end", justifyContent: "center" }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{ width: "100%", maxWidth: 440, maxHeight: "80vh", overflowY: "auto", background: "var(--color-kn-surface)", borderRadius: "20px 20px 0 0", padding: 20, boxShadow: "0 -8px 40px rgba(0,0,0,.18)" }}
+          >
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.5, color: "var(--color-kn-text-3)" }}>用語</div>
+                <div style={{ marginTop: 3, fontSize: 19, fontWeight: 800, color: "var(--color-kn-text-1)", lineHeight: 1.3 }}>{term.term}</div>
+              </div>
+              <button
+                onClick={() => setTerm(null)}
+                aria-label="閉じる"
+                style={{ flex: "none", width: 34, height: 34, borderRadius: 9999, border: "none", background: "var(--color-kn-surface-2)", color: "var(--color-kn-text-2)", fontSize: 16, cursor: "pointer" }}
+              >
+                ✕
+              </button>
+            </div>
+            <p style={{ margin: "12px 0 0", fontSize: 14.5, lineHeight: 1.85, color: "var(--color-kn-text-2)", whiteSpace: "pre-line" }}>
+              {term.definition}
+            </p>
+          </div>
         </div>
       )}
     </main>
