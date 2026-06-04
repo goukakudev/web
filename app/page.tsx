@@ -67,6 +67,7 @@ const CATEGORIES: Category[] = [
       "情報セキュリティマネジメント試験(SG)の公開過去問。科目A(四択)を順番 / ランダム / 模試で解けます",
     emoji: "🔐",
     status: "available",
+    iosUrl: "https://apps.apple.com/app/goukaku-情報セキュリティマネジメント-過去問/id6776073219",
   },
   {
     slug: "takken",

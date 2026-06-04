@@ -7,7 +7,7 @@ const IOS_APP_URLS: Record<QuizExamKey, string | null> = {
   ip: "https://apps.apple.com/jp/app/goukaku-itパスポート-過去問/id6774202965",
   tk: "https://apps.apple.com/jp/app/宅建過去問/id6772390931",
   ap: null,
-  sg: null,
+  sg: "https://apps.apple.com/app/goukaku-情報セキュリティマネジメント-過去問/id6776073219",
 }
 
 const EXAM_LABELS: Record<QuizExamKey, string> = {
