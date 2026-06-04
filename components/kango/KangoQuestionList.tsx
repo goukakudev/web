@@ -3,14 +3,15 @@ import type { KangoQuestion } from "@/lib/kango/types"
 import { examLabelFromId } from "@/lib/kango/exam"
 import { tagToSlug } from "@/lib/tag-url"
 
-/** カテゴリ/タグページの問題リスト。各行は本文抜粋 + 試験名 + タグ。タップでその問題から開始。 */
+/** カテゴリ/タグページの問題リスト。各行は本文抜粋 + 試験名 + タグ。
+ *  リンク先は個別問題ページ（SEO 用の静的 URL）。そこから演習へ進める。 */
 export function KangoQuestionList({ questions }: { questions: KangoQuestion[] }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
       {questions.map((q) => (
         <div key={q._id} className="kn-card" style={{ padding: 14 }}>
           <Link
-            href={`/kango/play/${q.exam_id}?qid=${encodeURIComponent(q._id)}`}
+            href={`/kango/play/${q.exam_id}/q/${q.q_number}`}
             style={{ textDecoration: "none", display: "block" }}
           >
             <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 6 }}>

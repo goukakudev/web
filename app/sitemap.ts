@@ -358,8 +358,17 @@ async function knPartition(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     })
   }
-  // タグ (全問題から集約)
   const all = await listAllKnQuestions().catch(() => [])
+  // 個別問題ページ (SEO: 1問=1URL)。fe/ip/ap/sg と同形 /kango/play/{examId}/q/{qNumber}
+  for (const q of all) {
+    out.push({
+      url: `${BASE}/kango/play/${q.exam_id}/q/${q.q_number}`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    })
+  }
+  // タグ (全問題から集約)
   const tagSet = new Set<string>()
   for (const q of all) for (const t of q.tags ?? []) if (t) tagSet.add(t)
   for (const t of [...tagSet].sort()) {

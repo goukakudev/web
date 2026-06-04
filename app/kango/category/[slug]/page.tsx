@@ -65,7 +65,7 @@ export default async function KangoCategoryPage({ params }: { params: Promise<{ 
             url,
             items: questions.slice(0, 50).map((q) => ({
               name: `${q.exam_id} 問${q.q_number}`,
-              url: `${SITE_URL}/kango/play/${q.exam_id}?qid=${encodeURIComponent(q._id)}`,
+              url: `${SITE_URL}/kango/play/${q.exam_id}/q/${q.q_number}`,
             })),
           })}
         />

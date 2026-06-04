@@ -1,9 +1,28 @@
+import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { listKnQuestions, getKnExam } from "@/lib/kango/api"
 import { displayTitle } from "@/lib/kango/exam"
 import { KangoQuiz } from "@/components/kango/KangoQuiz"
 
 export const revalidate = 86400
+
+// このページは横スワイプで全問を切り替えるインタラクティブな演習アプリ（URL は examId 固定）。
+// 個別問題の検索インデックス用 URL は /kango/play/[examId]/q/[qNumber]（SSR の静的ページ）に分離した。
+// よってこのアプリ URL は noindex,follow にして重複インデックスを避けつつ、内部リンクは辿らせる。
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ examId: string }>
+}): Promise<Metadata> {
+  const { examId } = await params
+  const exam = await getKnExam(examId).catch(() => undefined)
+  const t = exam ? displayTitle(exam) : "看護師国家試験"
+  return {
+    title: `${t} 演習`,
+    description: `${t}を1問ずつ演習します。`,
+    robots: { index: false, follow: true },
+  }
+}
 
 // クイズページ: 試験の全問を取得し、KangoQuiz(クライアント) に渡す。
 // ?mode=random&n=20 でランダム出題 (client で全問シャッフル→n件)。?start=NN で開始位置。

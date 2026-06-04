@@ -74,9 +74,9 @@ export default async function KangoExamPage({ params }: { params: Promise<{ exam
             name: `${t} 問題一覧`,
             description: `${t}の全 ${questions.length} 問。`,
             url: examUrl,
-            items: questions.map((q, i) => ({
+            items: questions.map((q) => ({
               name: `問題 ${q.q_number}`,
-              url: `${SITE_URL}/kango/play/${examId}?start=${i}`,
+              url: `${SITE_URL}/kango/play/${examId}/q/${q.q_number}`,
             })),
           })}
         />
@@ -120,10 +120,10 @@ export default async function KangoExamPage({ params }: { params: Promise<{ exam
         {/* 問題番号グリッド */}
         <h2 style={{ fontSize: 15, fontWeight: 800, color: "var(--color-kn-text-1)", marginBottom: 10 }}>問題一覧</h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(46px, 1fr))", gap: 8 }}>
-          {questions.map((q, i) => (
+          {questions.map((q) => (
             <Link
               key={q._id}
-              href={`/kango/play/${examId}?start=${i}`}
+              href={`/kango/play/${examId}/q/${q.q_number}`}
               className="kn-card kn-card-sm"
               style={{
                 minHeight: 46,
