@@ -1,6 +1,7 @@
 "use client"
 // クイズ本体 (フォーカスモード)。iOS QuizScreen.swift を移植。
 // 数字ラベル / 単一(1タップ即解答) / 複数選択 / 計算(numeric) / 組合せ / 図 / 解説 / 採点除外。
+// 横スワイプは指追従カルーセル: 隣の問題が見えながら指について動き、離すとスナップ／途中なら戻る。
 import { useState, useEffect, useRef, type ReactNode } from "react"
 import Link from "next/link"
 import type { KangoQuestion, KangoExamSummary, KangoFigure, KangoGlossaryTerm } from "@/lib/kango/types"
@@ -139,7 +140,13 @@ export function KangoQuiz({
   const [bookmarked, setBookmarked] = useState(false)
   const [zoomFig, setZoomFig] = useState<KangoFigure | null>(null)
   const [term, setTerm] = useState<KangoGlossaryTerm | null>(null)
-  const touchStart = useRef<{ x: number; y: number } | null>(null)
+
+  // 指追従カルーセル用の状態。drag=指で動かしている px、dragging 中は transition を切る。
+  const [drag, setDrag] = useState(0)
+  const [dragging, setDragging] = useState(false)
+  const gesture = useRef<{ x: number; y: number; dir: "h" | "v" | null; w: number } | null>(null)
+  const dragRef = useRef(0)
+  const viewportRef = useRef<HTMLDivElement>(null)
 
   // ランダムはマウント後に1度だけシャッフル (SSR との hydration mismatch を避ける)。
   // 全問シャッフル→先頭 limit 件に絞り、states も作り直す。
@@ -153,6 +160,7 @@ export function KangoQuiz({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  const count = questions.length
   const q = questions[idx]
   const st = states[idx]
 
@@ -178,153 +186,134 @@ export function KangoQuiz({
     )
   }
 
-  const count = questions.length
-  const unscored = isUnscored(q)
-  const answered = st.revealed
-  const correctNow = gradeAnswer(q, st.selected)
-  const labels = correctLabels(q.correct)
-  const tag = formatTag(q)
-
-  function patch(p: Partial<QState>) {
-    setStates((arr) => arr.map((s, i) => (i === idx ? { ...s, ...p } : s)))
+  // --- 各問の状態を index 指定で操作（カルーセルの各スライドが自分の i で呼ぶ） ---
+  function patch(i: number, p: Partial<QState>) {
+    setStates((arr) => arr.map((s, k) => (k === i ? { ...s, ...p } : s)))
   }
 
-  function submitWith(sel: string[]) {
-    const isCorrect = unscored ? false : gradeAnswer(q, sel)
-    setStates((arr) => arr.map((s, i) => (i === idx ? { ...s, selected: sel, revealed: true } : s)))
+  function submitWith(i: number, sel: string[]) {
+    const qq = questions[i]
+    const un = isUnscored(qq)
+    const isCorrect = un ? false : gradeAnswer(qq, sel)
+    setStates((arr) => arr.map((s, k) => (k === i ? { ...s, selected: sel, revealed: true } : s)))
     recordKangoAnswer({
-      question_id: q._id,
-      exam_id: q.exam_id,
-      q_number: q.q_number,
+      question_id: qq._id,
+      exam_id: qq.exam_id,
+      q_number: qq.q_number,
       selected_label: [...sel].sort().join(","),
-      correct_label: labels.join(","),
+      correct_label: correctLabels(qq.correct).join(","),
       is_correct: isCorrect,
-      skipped: unscored,
+      skipped: un,
       answered_at: new Date().toISOString(),
     })
   }
 
-  function tapChoice(label: string) {
-    if (answered) return
-    if (q.answer_type === "multiple") {
-      const has = st.selected.includes(label)
+  function tapChoice(i: number, label: string) {
+    const s = states[i]
+    if (s.revealed) return
+    const qq = questions[i]
+    if (qq.answer_type === "multiple") {
+      const has = s.selected.includes(label)
       const next = has
-        ? st.selected.filter((l) => l !== label)
-        : st.selected.length < requiredSelections(q)
-          ? [...st.selected, label]
-          : st.selected
-      patch({ selected: next })
+        ? s.selected.filter((l) => l !== label)
+        : s.selected.length < requiredSelections(qq)
+          ? [...s.selected, label]
+          : s.selected
+      patch(i, { selected: next })
     } else {
-      submitWith([label]) // 単一選択は1タップで即解答
+      submitWith(i, [label]) // 単一選択は1タップで即解答
     }
   }
 
-  const canSubmit =
-    q.answer_type === "numeric"
-      ? st.numericText.trim() !== "" && !Number.isNaN(Number(st.numericText))
-      : st.selected.length === requiredSelections(q)
-
-  function submit() {
-    if (!canSubmit) return
-    if (q.answer_type === "numeric") submitWith([String(Number(st.numericText))])
-    else submitWith(st.selected)
+  function canSubmitOf(i: number): boolean {
+    const qq = questions[i]
+    const s = states[i]
+    return qq.answer_type === "numeric"
+      ? s.numericText.trim() !== "" && !Number.isNaN(Number(s.numericText))
+      : s.selected.length === requiredSelections(qq)
   }
 
-  function go(d: number) {
-    const ni = idx + d
-    if (ni < 0 || ni >= count) return
-    setIdx(ni)
+  function submit(i: number) {
+    if (!canSubmitOf(i)) return
+    const qq = questions[i]
+    const s = states[i]
+    if (qq.answer_type === "numeric") submitWith(i, [String(Number(s.numericText))])
+    else submitWith(i, s.selected)
   }
 
-  function optionState(label: string): string {
-    if (!answered) return st.selected.includes(label) ? "selected" : "idle"
-    if (unscored) return st.selected.includes(label) ? "selected" : "dim"
-    if (labels.includes(label)) return "correct"
-    if (st.selected.includes(label)) return "wrong"
+  function optionState(i: number, label: string): string {
+    const qq = questions[i]
+    const s = states[i]
+    if (!s.revealed) return s.selected.includes(label) ? "selected" : "idle"
+    if (isUnscored(qq)) return s.selected.includes(label) ? "selected" : "dim"
+    if (correctLabels(qq.correct).includes(label)) return "correct"
+    if (s.selected.includes(label)) return "wrong"
     return "dim"
   }
 
-  return (
-    <main>
-      <div
-        style={{ maxWidth: 640, margin: "0 auto", padding: "8px 20px 40px" }}
-        onTouchStart={(e) => {
-          const t = e.touches[0]
-          touchStart.current = { x: t.clientX, y: t.clientY }
-        }}
-        onTouchEnd={(e) => {
-          const s = touchStart.current
-          touchStart.current = null
-          if (!s) return
-          const t = e.changedTouches[0]
-          const dx = t.clientX - s.x
-          const dy = t.clientY - s.y
-          // 横移動が縦より十分大きいときだけ遷移（左=次 / 右=前）
-          if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) go(dx < 0 ? 1 : -1)
-        }}
-      >
-        {/* ヘッダ */}
-        <header style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0 12px" }}>
-          <Link
-            href={backHref}
-            aria-label="戻る"
-            style={{
-              width: 40,
-              height: 40,
-              display: "grid",
-              placeItems: "center",
-              color: "var(--color-kn-text-2)",
-              fontSize: 20,
-              textDecoration: "none",
-            }}
-          >
-            ‹
-          </Link>
-          <h1 style={{ flex: 1, textAlign: "center", fontSize: 17, fontWeight: 800, color: "var(--color-kn-text-1)", margin: 0 }}>
-            {title}
-          </h1>
-          <button
-            onClick={() => setBookmarked(toggleKangoBookmark(q._id))}
-            aria-label="お気に入り"
-            style={{
-              width: 40,
-              height: 40,
-              display: "grid",
-              placeItems: "center",
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              fontSize: 18,
-              color: bookmarked ? "var(--color-kn-warn)" : "var(--color-kn-text-3)",
-            }}
-          >
-            {bookmarked ? "★" : "☆"}
-          </button>
-        </header>
+  // 次/前ボタン等のプログラム遷移（スワイプは下の touch ハンドラが指追従で処理）。
+  function goto(target: number) {
+    if (target < 0 || target >= count) return
+    setIdx(target)
+  }
 
-        {/* メタ: 試験名 / 進捗 / 経過 */}
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-          <Chip>
-            <span aria-hidden>📅</span>
-            {exam?.name ?? "看護師国家試験"}
-          </Chip>
-          <div style={{ flex: 1 }}>
-            <div style={{ display: "flex", gap: 6, alignItems: "baseline", fontSize: 12.5, color: "var(--color-kn-text-2)" }}>
-              <span style={{ fontWeight: 700, color: "var(--color-kn-text-1)" }}>{idx + 1}</span>
-              <span>/ {count}問</span>
-            </div>
-            <div style={{ marginTop: 5 }}>
-              <ProgressBar value={(idx + 1) / Math.max(1, count)} />
-            </div>
-          </div>
-          <ElapsedChip />
-        </div>
+  // --- 指追従スワイプ。touchAction:pan-y で縦スクロールは保持、横は JS が拾う ---
+  function onTouchStart(e: React.TouchEvent) {
+    const t = e.touches[0]
+    gesture.current = { x: t.clientX, y: t.clientY, dir: null, w: viewportRef.current?.clientWidth || 1 }
+  }
+  function onTouchMove(e: React.TouchEvent) {
+    const g = gesture.current
+    if (!g) return
+    const t = e.touches[0]
+    const dx = t.clientX - g.x
+    const dy = t.clientY - g.y
+    if (g.dir === null) {
+      if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return
+      g.dir = Math.abs(dx) > Math.abs(dy) ? "h" : "v" // 最初の動きで縦/横を確定
+      if (g.dir === "h") setDragging(true)
+    }
+    if (g.dir !== "h") return
+    let d = dx
+    // 端（先頭で右 / 末尾で左）はゴムバンドで抵抗を付ける
+    if ((idx === 0 && d > 0) || (idx === count - 1 && d < 0)) d *= 0.32
+    dragRef.current = d
+    setDrag(d)
+  }
+  function endDrag() {
+    const g = gesture.current
+    gesture.current = null
+    setDragging(false)
+    if (!g || g.dir !== "h") {
+      setDrag(0)
+      dragRef.current = 0
+      return
+    }
+    const threshold = Math.min(80, (g.w || 1) * 0.22)
+    const d = dragRef.current
+    if (d <= -threshold && idx < count - 1) setIdx(idx + 1)
+    else if (d >= threshold && idx > 0) setIdx(idx - 1)
+    setDrag(0) // 残り距離を transition でスナップ（途中なら元位置へ戻る）
+    dragRef.current = 0
+  }
 
+  // 1問分の本体（メタ行はカルーセル外に固定。idx ではなく引数 i で構築）。
+  function renderSlide(i: number) {
+    const qq = questions[i]
+    const s = states[i]
+    if (!qq || !s) return null
+    const unscored = isUnscored(qq)
+    const answered = s.revealed
+    const correctNow = gradeAnswer(qq, s.selected)
+    const labels = correctLabels(qq.correct)
+    const tag = formatTag(qq)
+    return (
+      <>
         {/* 状況設定 */}
-        {q.scenario && (
+        {qq.scenario && (
           <div className="kn-card" style={{ padding: 16, marginBottom: 14 }}>
-            <Chip>状況設定{q.scenario.range ? ` 問${q.scenario.range}` : ""}</Chip>
-            <p style={{ marginTop: 8, fontSize: 14.5, lineHeight: 1.7, color: "var(--color-kn-text-2)" }}>{q.scenario.text}</p>
+            <Chip>状況設定{qq.scenario.range ? ` 問${qq.scenario.range}` : ""}</Chip>
+            <p style={{ marginTop: 8, fontSize: 14.5, lineHeight: 1.7, color: "var(--color-kn-text-2)" }}>{qq.scenario.text}</p>
           </div>
         )}
 
@@ -341,20 +330,22 @@ export function KangoQuiz({
                 background: "linear-gradient(135deg,#3a78ff,#1f5fef)",
               }}
             >
-              問題 {q.q_number}
+              問題 {qq.q_number}
             </span>
             {tag && <Chip>{tag}</Chip>}
           </div>
 
-          <p style={{ marginTop: 16, fontSize: 19, fontWeight: 700, lineHeight: 1.55, color: "var(--color-kn-text-1)" }}>{renderBody(q.body, q.glossary, setTerm)}</p>
+          <p style={{ marginTop: 16, fontSize: 19, fontWeight: 700, lineHeight: 1.55, color: "var(--color-kn-text-1)" }}>
+            {renderBody(qq.body, qq.glossary, setTerm)}
+          </p>
 
           {/* 図 */}
-          {q.figures && q.figures.length > 0 && (
+          {qq.figures && qq.figures.length > 0 && (
             <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 14 }}>
-              {q.figures.map((f, i) =>
+              {qq.figures.map((f, fi) =>
                 f.url ? (
                   <button
-                    key={f.id ?? i}
+                    key={f.id ?? fi}
                     onClick={() => setZoomFig(f)}
                     aria-label="図を拡大"
                     style={{ flex: "1 1 200px", padding: 0, border: "none", background: "none", cursor: "zoom-in" }}
@@ -362,7 +353,7 @@ export function KangoQuiz({
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={f.url}
-                      alt={f.alt ?? `図${i + 1}`}
+                      alt={f.alt ?? `図${fi + 1}`}
                       style={{
                         width: "100%",
                         borderRadius: 16,
@@ -378,11 +369,11 @@ export function KangoQuiz({
           )}
 
           {/* 選択肢 / 計算入力 */}
-          {q.answer_type === "numeric" ? (
+          {qq.answer_type === "numeric" ? (
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 16 }}>
               <input
-                value={st.numericText}
-                onChange={(e) => patch({ numericText: e.target.value })}
+                value={s.numericText}
+                onChange={(e) => patch(i, { numericText: e.target.value })}
                 disabled={answered}
                 inputMode="numeric"
                 placeholder="数値を入力"
@@ -397,16 +388,16 @@ export function KangoQuiz({
                   color: "var(--color-kn-text-1)",
                 }}
               />
-              {q.unit && <span style={{ fontSize: 16, fontWeight: 600, color: "var(--color-kn-text-2)" }}>{q.unit}</span>}
+              {qq.unit && <span style={{ fontSize: 16, fontWeight: 600, color: "var(--color-kn-text-2)" }}>{qq.unit}</span>}
             </div>
           ) : (
-            q.choices &&
-            q.choices.length > 0 && (
+            qq.choices &&
+            qq.choices.length > 0 && (
               <div style={{ display: "flex", flexDirection: "column", gap: 11, marginTop: 14 }}>
-                {q.choices.map((ch) => {
-                  const state = optionState(ch.label)
+                {qq.choices.map((ch) => {
+                  const state = optionState(i, ch.label)
                   return (
-                    <button key={ch.label} className="kn-option" data-state={state} disabled={answered} onClick={() => tapChoice(ch.label)}>
+                    <button key={ch.label} className="kn-option" data-state={state} disabled={answered} onClick={() => tapChoice(i, ch.label)}>
                       <span className="kn-option-num">{ch.label}</span>
                       <span className="kn-option-text">{ch.text}</span>
                     </button>
@@ -417,8 +408,8 @@ export function KangoQuiz({
           )}
 
           {/* 解答ボタン (複数選択 / 計算のみ。単一は即解答) */}
-          {!answered && q.answer_type !== "single" && (
-            <button className="kn-btn-primary" style={{ marginTop: 18 }} disabled={!canSubmit} onClick={submit}>
+          {!answered && qq.answer_type !== "single" && (
+            <button className="kn-btn-primary" style={{ marginTop: 18 }} disabled={!canSubmitOf(i)} onClick={() => submit(i)}>
               解答する
             </button>
           )}
@@ -457,7 +448,7 @@ export function KangoQuiz({
                     {correctNow ? "正解です！" : "不正解"}
                   </span>
                   <span style={{ marginLeft: "auto", fontSize: 13, color: "var(--color-kn-text-2)" }}>
-                    正解は <strong style={{ color: "var(--color-kn-text-1)" }}>{correctDisplay(q.correct)}</strong>
+                    正解は <strong style={{ color: "var(--color-kn-text-1)" }}>{correctDisplay(qq.correct)}</strong>
                   </span>
                 </>
               )}
@@ -468,19 +459,19 @@ export function KangoQuiz({
         {/* 解説 */}
         {answered && (
           <div className="kn-card" style={{ padding: 16, marginTop: 14 }}>
-            {q.explanation ? (
+            {qq.explanation ? (
               <>
                 <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}>
                   <span aria-hidden>💡</span>
                   <span style={{ fontSize: 14, fontWeight: 800, color: "var(--color-kn-text-1)" }}>解説</span>
                 </div>
-                <p style={{ fontSize: 14.5, lineHeight: 1.7, color: "var(--color-kn-text-2)", margin: 0 }}>{q.explanation.overall}</p>
-                {q.explanation.per_choice && q.explanation.per_choice.length > 0 && (
+                <p style={{ fontSize: 14.5, lineHeight: 1.7, color: "var(--color-kn-text-2)", margin: 0 }}>{qq.explanation.overall}</p>
+                {qq.explanation.per_choice && qq.explanation.per_choice.length > 0 && (
                   <>
                     <hr style={{ border: "none", borderTop: "1px solid var(--color-kn-line)", margin: "14px 0" }} />
                     <p style={{ fontSize: 12.5, fontWeight: 700, color: "var(--color-kn-text-3)", margin: "0 0 8px" }}>選択肢の解説</p>
                     <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                      {q.explanation.per_choice.map((p) => {
+                      {qq.explanation.per_choice.map((p) => {
                         const ok = labels.includes(p.label)
                         return (
                           <div key={p.label} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
@@ -507,15 +498,15 @@ export function KangoQuiz({
                     </div>
                   </>
                 )}
-                {q.explanation.sources && q.explanation.sources.length > 0 && (
+                {qq.explanation.sources && qq.explanation.sources.length > 0 && (
                   <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 6 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, fontWeight: 700, color: "var(--color-kn-text-3)" }}>
                       <span aria-hidden>📚</span>出典・参考
                     </div>
-                    {q.explanation.sources.map((s, i) => (
+                    {qq.explanation.sources.map((src, si) => (
                       <a
-                        key={i}
-                        href={s.url}
+                        key={si}
+                        href={src.url}
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{
@@ -532,7 +523,7 @@ export function KangoQuiz({
                         }}
                       >
                         <span aria-hidden>🔗</span>
-                        <span style={{ flex: 1, textDecoration: "underline" }}>{s.title}</span>
+                        <span style={{ flex: 1, textDecoration: "underline" }}>{src.title}</span>
                         <span aria-hidden style={{ color: "var(--color-kn-text-3)", fontSize: 12 }}>↗</span>
                       </a>
                     ))}
@@ -549,14 +540,14 @@ export function KangoQuiz({
         )}
 
         {/* 分野・タグ (解答後にリンク表示) */}
-        {answered && (q.category || (q.tags && q.tags.length > 0)) && (
+        {answered && (qq.category || (qq.tags && qq.tags.length > 0)) && (
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 14, alignItems: "center" }}>
-            {q.category && (
-              <Link href={`/kango/category/${q.category}`} className="kn-chip" style={{ textDecoration: "none" }}>
-                {categoryBySlug(q.category)?.name ?? q.category}
+            {qq.category && (
+              <Link href={`/kango/category/${qq.category}`} className="kn-chip" style={{ textDecoration: "none" }}>
+                {categoryBySlug(qq.category)?.name ?? qq.category}
               </Link>
             )}
-            {q.tags?.map((t) => (
+            {qq.tags?.map((t) => (
               <Link
                 key={t}
                 href={`/kango/tag/${tagToSlug(t)}`}
@@ -570,15 +561,111 @@ export function KangoQuiz({
 
         {/* 前後ナビ */}
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 18 }}>
-          <button className="kn-btn-ghost" disabled={idx <= 0} onClick={() => go(-1)} style={{ flex: 1 }}>
+          <button className="kn-btn-ghost" disabled={i <= 0} onClick={() => goto(i - 1)} style={{ flex: 1 }}>
             ‹ 前の問題
           </button>
           <div style={{ textAlign: "center", fontSize: 12.5, color: "var(--color-kn-text-2)", minWidth: 56 }}>
-            {idx + 1}/{count}
+            {i + 1}/{count}
           </div>
-          <button className="kn-btn-primary" disabled={idx >= count - 1} onClick={() => go(1)} style={{ flex: 1, minHeight: 52 }}>
+          <button className="kn-btn-primary" disabled={i >= count - 1} onClick={() => goto(i + 1)} style={{ flex: 1, minHeight: 52 }}>
             次の問題 ›
           </button>
+        </div>
+      </>
+    )
+  }
+
+  return (
+    <main>
+      <div style={{ maxWidth: 640, margin: "0 auto", padding: "8px 0 0" }}>
+        {/* ヘッダ (固定: 現在問のお気に入り状態を反映) */}
+        <header style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 20px 12px" }}>
+          <Link
+            href={backHref}
+            aria-label="戻る"
+            style={{
+              width: 40,
+              height: 40,
+              display: "grid",
+              placeItems: "center",
+              color: "var(--color-kn-text-2)",
+              fontSize: 20,
+              textDecoration: "none",
+            }}
+          >
+            ‹
+          </Link>
+          <h1 style={{ flex: 1, textAlign: "center", fontSize: 17, fontWeight: 800, color: "var(--color-kn-text-1)", margin: 0 }}>
+            {title}
+          </h1>
+          <button
+            onClick={() => setBookmarked(toggleKangoBookmark(q._id))}
+            aria-label="お気に入り"
+            style={{
+              width: 40,
+              height: 40,
+              display: "grid",
+              placeItems: "center",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              fontSize: 18,
+              color: bookmarked ? "var(--color-kn-warn)" : "var(--color-kn-text-3)",
+            }}
+          >
+            {bookmarked ? "★" : "☆"}
+          </button>
+        </header>
+
+        {/* メタ: 試験名 / 進捗 / 経過 (固定。スワイプ中は現在の番号を表示しスナップ時に更新) */}
+        <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "0 20px 14px" }}>
+          <Chip>
+            <span aria-hidden>📅</span>
+            {exam?.name ?? "看護師国家試験"}
+          </Chip>
+          <div style={{ flex: 1 }}>
+            <div style={{ display: "flex", gap: 6, alignItems: "baseline", fontSize: 12.5, color: "var(--color-kn-text-2)" }}>
+              <span style={{ fontWeight: 700, color: "var(--color-kn-text-1)" }}>{idx + 1}</span>
+              <span>/ {count}問</span>
+            </div>
+            <div style={{ marginTop: 5 }}>
+              <ProgressBar value={(idx + 1) / Math.max(1, count)} />
+            </div>
+          </div>
+          <ElapsedChip />
+        </div>
+
+        {/* 指追従カルーセル。track を translateX(-idx*100% + drag) で動かし、表示中±1のみ実体描画。
+            現在ページだけが高さを決め(隣は height:0 で覗くだけ)、縦は touchAction:pan-y で温存。 */}
+        <div
+          ref={viewportRef}
+          style={{ overflow: "hidden", touchAction: "pan-y" }}
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={endDrag}
+          onTouchCancel={endDrag}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "flex-start",
+              transform: `translateX(calc(${-idx * 100}% + ${drag}px))`,
+              transition: dragging ? "none" : "transform 0.32s cubic-bezier(0.22,0.61,0.36,1)",
+              willChange: "transform",
+            }}
+          >
+            {questions.map((_, i) => {
+              const inWindow = Math.abs(i - idx) <= 1
+              const isCur = i === idx
+              return (
+                <div key={i} style={{ flex: "0 0 100%", minWidth: "100%" }}>
+                  <div style={isCur ? undefined : { height: 0 }}>
+                    {inWindow ? <div style={{ padding: "0 20px 40px" }}>{renderSlide(i)}</div> : null}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
         </div>
       </div>
 
