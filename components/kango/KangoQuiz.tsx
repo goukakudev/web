@@ -576,10 +576,10 @@ export function KangoQuiz({
   }
 
   return (
-    <main>
-      <div style={{ maxWidth: 640, margin: "0 auto", padding: "8px 0 0" }}>
+    <main style={{ height: "100dvh", display: "flex", justifyContent: "center", overflow: "hidden" }}>
+      <div style={{ width: "100%", maxWidth: 640, display: "flex", flexDirection: "column", minHeight: 0, paddingTop: 8 }}>
         {/* ヘッダ (固定: 現在問のお気に入り状態を反映) */}
-        <header style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 20px 12px" }}>
+        <header style={{ flex: "none", display: "flex", alignItems: "center", gap: 10, padding: "8px 20px 12px" }}>
           <Link
             href={backHref}
             aria-label="戻る"
@@ -618,7 +618,7 @@ export function KangoQuiz({
         </header>
 
         {/* メタ: 試験名 / 進捗 / 経過 (固定。スワイプ中は現在の番号を表示しスナップ時に更新) */}
-        <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "0 20px 14px" }}>
+        <div style={{ flex: "none", display: "flex", alignItems: "center", gap: 8, padding: "0 20px 14px" }}>
           <Chip>
             <span aria-hidden>📅</span>
             {exam?.name ?? "看護師国家試験"}
@@ -635,11 +635,11 @@ export function KangoQuiz({
           <ElapsedChip />
         </div>
 
-        {/* 指追従カルーセル。track を translateX(-idx*100% + drag) で動かし、表示中±1のみ実体描画。
-            現在ページだけが高さを決め(隣は height:0 で覗くだけ)、縦は touchAction:pan-y で温存。 */}
+        {/* 指追従カルーセル: 残り高さいっぱいの枠で全ページ同じ高さ。画面ごと左右にスライドし、
+            各ページは内部で縦スクロール。track を translateX(-idx*100% + drag) で動かす(±1のみ実体描画)。 */}
         <div
           ref={viewportRef}
-          style={{ overflow: "hidden", touchAction: "pan-y" }}
+          style={{ flex: 1, minHeight: 0, overflow: "hidden", touchAction: "pan-y" }}
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onTouchEnd={endDrag}
@@ -648,7 +648,7 @@ export function KangoQuiz({
           <div
             style={{
               display: "flex",
-              alignItems: "flex-start",
+              height: "100%",
               transform: `translateX(calc(${-idx * 100}% + ${drag}px))`,
               transition: dragging ? "none" : "transform 0.32s cubic-bezier(0.22,0.61,0.36,1)",
               willChange: "transform",
@@ -656,12 +656,12 @@ export function KangoQuiz({
           >
             {questions.map((_, i) => {
               const inWindow = Math.abs(i - idx) <= 1
-              const isCur = i === idx
               return (
-                <div key={i} style={{ flex: "0 0 100%", minWidth: "100%" }}>
-                  <div style={isCur ? undefined : { height: 0 }}>
-                    {inWindow ? <div style={{ padding: "0 20px 40px" }}>{renderSlide(i)}</div> : null}
-                  </div>
+                <div
+                  key={i}
+                  style={{ flex: "0 0 100%", minWidth: "100%", height: "100%", overflowY: "auto", WebkitOverflowScrolling: "touch" }}
+                >
+                  {inWindow ? <div style={{ padding: "2px 20px 40px" }}>{renderSlide(i)}</div> : null}
                 </div>
               )
             })}
