@@ -120,6 +120,10 @@ export default async function KangoPlayQuestionPage({ params }: PageProps) {
 
         {/* 見出し */}
         <header style={{ marginBottom: 16 }}>
+          {/* SEO 用 H1: 視覚的には下の「問N」を大見出しに使うが、H1 には問題のトピックを含める（fe/ip/ap/sg と同形） */}
+          <h1 className="sr-only">
+            {t} 問{q.q_number}：{stripMd(q.body).slice(0, 80)}
+          </h1>
           <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8, marginBottom: 8 }}>
             <Link
               href={examUrl}
@@ -147,9 +151,9 @@ export default async function KangoPlayQuestionPage({ params }: PageProps) {
               </Link>
             )}
           </div>
-          <h1 style={{ fontSize: 22, fontWeight: 800, color: "var(--color-kn-text-1)", margin: 0 }}>
+          <div style={{ fontSize: 22, fontWeight: 800, color: "var(--color-kn-text-1)" }}>
             問{q.q_number}
-          </h1>
+          </div>
         </header>
 
         {/* 状況設定 */}
