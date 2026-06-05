@@ -60,6 +60,21 @@ export default async function KangoPlayQuestionPage({ params }: PageProps) {
   const prev = idx > 0 ? questions[idx - 1] : null
   const next = idx < questions.length - 1 ? questions[idx + 1] : null
 
+  // 関連問題（同分野）: 同じタグ/カテゴリの問題への内部リンク。fe/ip/ap/sg の RelatedQuestions と
+  // 同趣旨で、クロール導線とトピッククラスタを強化する。このページは完全 SSR なので client payload には影響しない。
+  const currentTags = new Set(q.tags ?? [])
+  const related = questions
+    .filter((x) => x.q_number !== q.q_number)
+    .map((x) => {
+      const tagOverlap = (x.tags ?? []).filter((tg) => currentTags.has(tg)).length
+      const catMatch = q.category && x.category === q.category ? 1 : 0
+      return { x, score: tagOverlap * 2 + catMatch }
+    })
+    .filter((r) => r.score > 0)
+    .sort((a, b) => b.score - a.score || a.x.q_number - b.x.q_number)
+    .slice(0, 5)
+    .map((r) => r.x)
+
   const t = displayTitle(exam)
   const accent = typeColor(examId)
   const labels = correctLabels(q.correct)
@@ -316,6 +331,51 @@ export default async function KangoPlayQuestionPage({ params }: PageProps) {
             </div>
           )}
         </section>
+
+        {/* 関連問題（同分野）= 内部リンク。SEO のトピッククラスタ＆クロール導線（fe/ip/ap/sg と同形） */}
+        {related.length > 0 && (
+          <section style={{ marginTop: 18 }}>
+            <h2 style={{ fontSize: 13, fontWeight: 800, color: "var(--color-kn-text-3)", margin: "0 0 10px" }}>
+              関連問題（同分野）
+            </h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {related.map((r) => {
+                const sharedTag = (r.tags ?? []).find((tg) => currentTags.has(tg))
+                const preview = stripMd(r.body).slice(0, 50)
+                return (
+                  <Link
+                    key={r._id}
+                    href={`/kango/play/${examId}/q/${r.q_number}`}
+                    className="kn-card"
+                    style={{ padding: 12, textDecoration: "none", display: "block" }}
+                  >
+                    <div style={{ fontSize: 11.5, fontWeight: 700, color: "var(--color-kn-text-3)", marginBottom: 4 }}>
+                      問{r.q_number}
+                      {sharedTag && (
+                        <span style={{ marginLeft: 8, color: "var(--color-kn-primary-text)" }}>{sharedTag}</span>
+                      )}
+                    </div>
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize: 13,
+                        lineHeight: 1.6,
+                        color: "var(--color-kn-text-2)",
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                      }}
+                    >
+                      {preview}
+                      {preview.length >= 50 ? "…" : ""}
+                    </p>
+                  </Link>
+                )
+              })}
+            </div>
+          </section>
+        )}
 
         {/* アプリ形式（横スワイプ演習）への導線 */}
         <div style={{ marginTop: 16 }}>
