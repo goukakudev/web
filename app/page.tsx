@@ -70,6 +70,16 @@ const CATEGORIES: Category[] = [
     iosUrl: "https://apps.apple.com/app/goukaku-情報セキュリティマネジメント-過去問/id6776073219",
   },
   {
+    slug: "sc",
+    href: "/sc",
+    label: "情報処理安全確保支援士試験",
+    sub: "Registered Information Security Specialist",
+    description:
+      "情報処理安全確保支援士(SC)の試験概要・学習ガイド・FAQ を先行公開。過去問演習と iOS アプリは準備中",
+    emoji: "🛡️",
+    status: "available",
+  },
+  {
     slug: "takken",
     href: "/takken",
     label: "宅地建物取引士",
@@ -219,9 +229,10 @@ export default function CategoriesPage() {
             <Link href="/ip" className="underline">ITパスポート試験 (IP)</Link>、
             <Link href="/ap" className="underline">応用情報技術者試験 (AP)</Link>、
             <Link href="/sg" className="underline">情報セキュリティマネジメント試験 (SG)</Link>、
+            <Link href="/sc" className="underline">情報処理安全確保支援士試験 (SC)</Link>、
             <Link href="/takken" className="underline">宅地建物取引士試験 (宅建)</Link>、
             <Link href="/kango" className="underline">看護師国家試験</Link>
-            の 6 試験に対応しており、順次他の資格にも拡張予定です。
+            の 7 試験に対応しており、順次他の資格にも拡張予定です。
           </p>
         </div>
         <div>
@@ -264,6 +275,11 @@ export default function CategoriesPage() {
               <Link href="/sg" className="underline">情報セキュリティマネジメント試験</Link>
               {" — "}
               平成 28 年 (2016) 〜 令和 7 年 (2025) ・ 科目A 公開過去問 ・ 模試 90 分
+            </li>
+            <li>
+              <Link href="/sc" className="underline">情報処理安全確保支援士試験</Link>
+              {" — "}
+              レベル 4 (高度試験) ・ 国家資格『登録セキスペ』 ・ 学習ガイド / FAQ を先行公開 ・ 過去問演習は準備中
             </li>
             <li>
               <Link href="/takken" className="underline">宅地建物取引士試験</Link>
