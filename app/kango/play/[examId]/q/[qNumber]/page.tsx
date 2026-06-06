@@ -409,6 +409,43 @@ export default async function KangoPlayQuestionPage({ params }: PageProps) {
           )}
         </nav>
 
+        {/* 学習リソース (AdSense / SEO 用: 独自編集ページへの導線 + コンテンツ独自性ステートメント) */}
+        <aside
+          aria-label="看護師国家試験の学習リソース"
+          style={{
+            marginTop: 24,
+            padding: 18,
+            borderRadius: 16,
+            border: "1px solid var(--color-kn-line)",
+            background: "var(--color-kn-surface)",
+          }}
+        >
+          <h2 style={{ fontSize: 14, fontWeight: 800, color: "var(--color-kn-text-1)", margin: "0 0 6px" }}>
+            看護 の学習リソース
+          </h2>
+          <p style={{ fontSize: 12.5, lineHeight: 1.85, color: "var(--color-kn-text-2)", margin: "0 0 10px" }}>
+            この問題で扱った分野をさらに深掘りしたい方へ。看護師国家試験の出題構成 (必修・一般・状況設定)、合格基準、計算問題の対策、過去問の効果的な使い方を 1 ページに集約した<strong>独自編集の学習ガイド</strong>と FAQ を用意しています。
+          </p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            <Link href="/kango/guide" className="kn-chip" style={{ textDecoration: "none" }}>
+              📘 看護 学習ガイドを読む →
+            </Link>
+            <Link href="/kango/faq" className="kn-chip" style={{ textDecoration: "none" }}>
+              ❓ 看護 FAQ
+            </Link>
+            <Link href="/kango" className="kn-chip" style={{ textDecoration: "none" }}>
+              🏠 看護トップ
+            </Link>
+          </div>
+          <p style={{ fontSize: 11, lineHeight: 1.7, color: "var(--color-kn-text-3)", margin: "10px 0 0" }}>
+            この問題ページの解説・選択肢別解説・用語・関連問題リンクは、すべて合格.dev 編集部による独自編集です (問題文・選択肢は厚生労働省公表過去問の引用)。詳しくは{" "}
+            <Link href="/about" style={{ textDecoration: "underline", color: "var(--color-kn-primary-text)" }}>編集方針</Link>
+            {" / "}
+            <Link href="/sources" style={{ textDecoration: "underline", color: "var(--color-kn-primary-text)" }}>出典一覧</Link>
+            {" "}を参照してください。
+          </p>
+        </aside>
+
         <footer style={{ marginTop: 28, paddingTop: 20, borderTop: "1px solid var(--color-kn-line)" }}>
           <KangoNav />
         </footer>

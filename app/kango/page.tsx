@@ -157,12 +157,51 @@ export default async function KangoHome() {
           <p style={{ margin: "0 0 12px" }}>
             合格.dev の看護過去問は、看護師・保健師・助産師の国家試験を無料で演習できる学習ページです。第115回ほかの過去問を、選択肢ごとの解説付きで収録しています。数字選択・複数選択・計算・組合せ・状況設定・図表問題に対応し、本番に近い形式で解けます。
           </p>
+          <p style={{ margin: "0 0 12px" }}>
+            解答するとその場で正誤と解説が表示され、学習記録（正解率・連続正解・学習日数）は端末内に保存されます。
+          </p>
+
+          <h3 style={{ fontSize: 15, fontWeight: 800, color: "var(--color-kn-text-1)", margin: "18px 0 8px" }}>
+            この試験をはじめて受ける方へ
+          </h3>
+          <p style={{ margin: "0 0 10px" }}>
+            看護師国家試験の出題構成 (必修・一般・状況設定)、合格基準、計算問題の対策、過去問の効果的な使い方をまとめた<strong>独自編集の学習ガイド</strong>を用意しています。これから受験を検討する段階の方は、まずこちらをご覧ください。
+          </p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, margin: "8px 0 18px" }}>
+            <Link
+              href="/kango/guide"
+              className="kn-chip"
+              style={{ textDecoration: "none" }}
+            >
+              📘 看護 学習ガイドを読む →
+            </Link>
+            <Link
+              href="/kango/faq"
+              className="kn-chip"
+              style={{ textDecoration: "none" }}
+            >
+              ❓ 看護 FAQ
+            </Link>
+          </div>
+
+          <h3 style={{ fontSize: 15, fontWeight: 800, color: "var(--color-kn-text-1)", margin: "18px 0 8px" }}>
+            コンテンツの独自性について
+          </h3>
+          <p style={{ margin: "0 0 10px" }}>
+            問題文・選択肢・正解番号は、<strong>厚生労働省</strong>が公表する看護師・保健師・助産師の国家試験 過去問題に基づきます (引用)。一方で、各問題の<strong>解説・選択肢別解説・ヒント・分野タグ・関連問題リンク</strong>、および本サイト内の学習ガイド・FAQ・本ページの解説文章は、すべて合格.dev 編集部が独自に書き起こした<strong>二次著作物</strong>です。公式見解を示すものではありません。生成 AI による下書きは補助的に用いる場合がありますが、最終的な公開コンテンツはすべて人手で校正しています。
+          </p>
           <p style={{ margin: 0 }}>
-            解答するとその場で正誤と解説が表示され、学習記録（正解率・連続正解・学習日数）は端末内に保存されます。出典は厚生労働省が公表する各国家試験の過去問題に基づきます。解説は学習用の参考表記であり、公式見解を示すものではありません。詳しくは{" "}
-            <Link href="/about" style={{ textDecoration: "underline", color: "var(--color-kn-primary-text)" }}>
-              About
-            </Link>{" "}
-            をご覧ください。
+            詳しくは{" "}
+            <Link href="/about" style={{ textDecoration: "underline", color: "var(--color-kn-primary-text)" }}>About</Link>
+            {" / "}
+            <Link href="/methodology" style={{ textDecoration: "underline", color: "var(--color-kn-primary-text)" }}>編集方針 (詳細)</Link>
+            {" / "}
+            <Link href="/sources" style={{ textDecoration: "underline", color: "var(--color-kn-primary-text)" }}>出典一覧</Link>
+            {" / "}
+            <Link href="/privacy" style={{ textDecoration: "underline", color: "var(--color-kn-primary-text)" }}>プライバシーポリシー</Link>
+            {" / "}
+            <Link href="/terms" style={{ textDecoration: "underline", color: "var(--color-kn-primary-text)" }}>利用規約</Link>
+            {" "}をご覧ください。
           </p>
         </section>
 

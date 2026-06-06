@@ -14,6 +14,7 @@ import { JsonLd } from "@/components/seo/JsonLd"
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs"
 import { QuestionSeoExtras } from "@/components/seo/QuestionSeoExtras"
 import { RelatedQuestions } from "@/components/seo/RelatedQuestions"
+import { QuestionLearningResources } from "@/components/seo/QuestionLearningResources"
 import { QuizBottomActions } from "@/components/play/QuizBottomActions"
 import { stripMd } from "@/lib/text-utils"
 
@@ -139,6 +140,7 @@ export default async function IpPlayQuestionPage({ params }: PageProps) {
         basePath={`/ip/play/${exam.exam_id}/q`}
         examLabel={examLabel}
       />
+      <QuestionLearningResources examKey="ip" />
       <QuizBottomActions examKey="ip" />
     </MobileFrame>
   )

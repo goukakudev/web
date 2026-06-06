@@ -125,12 +125,38 @@ export default async function TakkenHome() {
             <strong>宅建業法 (20 問)</strong>、
             <strong>税その他 (8 問)</strong> の計 50 問・四肢択一形式です。
           </p>
+
           <h3 className="font-mincho text-base font-semibold text-ink mt-5 mb-2">
-            出典について
+            この試験をはじめて受ける方へ
           </h3>
           <p className="mb-3">
-            掲載問題は、一般財団法人不動産適正取引推進機構が公表する宅地建物取引士試験の過去問題に基づきます。解説・UI は本サイト独自の編集物であり、公式見解を示すものではありません。詳しくは{" "}
+            宅建試験の試験概要、出題範囲、合格基準、標準学習スケジュール (300〜500 時間)、分野別の攻略法までを 1 ページに集約した<strong>独自編集の学習ガイド</strong>と、よくある質問をまとめた FAQ を用意しています。これから受験を検討する段階の方は、まずこちらをご覧ください。
+          </p>
+          <div className="mt-3 mb-5 flex flex-wrap gap-2">
+            <Link
+              href="/takken/guide"
+              className="inline-flex items-center rounded-full border border-line bg-bg/60 px-3.5 py-1.5 text-[12px] font-semibold text-ink/80 transition hover:text-ink"
+            >
+              📘 宅建 学習ガイドを読む →
+            </Link>
+            <Link
+              href="/takken/faq"
+              className="inline-flex items-center rounded-full border border-line bg-bg/60 px-3.5 py-1.5 text-[12px] font-semibold text-ink/80 transition hover:text-ink"
+            >
+              ❓ 宅建 FAQ
+            </Link>
+          </div>
+
+          <h3 className="font-mincho text-base font-semibold text-ink mt-5 mb-2">
+            コンテンツの独自性について
+          </h3>
+          <p className="mb-3">
+            問題文・選択肢・正解番号は、<strong>一般財団法人不動産適正取引推進機構</strong>が公表する宅地建物取引士試験の過去問題に基づきます (引用)。一方で、各問題の<strong>解説・選択肢別解説・ヒント・分野タグ・関連条文ポップアップ・関連問題リンク</strong>、および本サイト内の学習ガイド・FAQ・本ページの解説文章は、すべて合格.dev 編集部が独自に書き起こした<strong>二次著作物</strong>であり、試験団体の公式見解ではありません。生成 AI による下書きは補助的に用いる場合がありますが、最終的な公開コンテンツはすべて人手で校正しています。詳しくは{" "}
             <Link href="/about" className="underline">About</Link>{" "}
+            ・{" "}
+            <Link href="/methodology" className="underline">編集方針 (詳細)</Link>{" "}
+            ・{" "}
+            <Link href="/sources" className="underline">出典一覧</Link>{" "}
             ・{" "}
             <Link href="/privacy" className="underline">プライバシーポリシー</Link>{" "}
             ・{" "}

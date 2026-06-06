@@ -237,6 +237,43 @@ export default async function QuizPage({ params, searchParams }: Props) {
           </aside>
         )
       })()}
+      <aside
+        aria-label="宅建士試験の学習リソース"
+        className="mx-auto max-w-3xl mt-6 rounded-2xl border border-line bg-bg/60 p-5"
+      >
+        <h2 className="text-[14px] font-mincho font-semibold text-ink mb-2">
+          宅建 の学習リソース
+        </h2>
+        <p className="text-[12px] leading-[1.85] text-ink-2 mb-3">
+          この問題で扱った分野をさらに深掘りしたい方へ。宅建士試験の試験概要・出題範囲・合格基準・標準学習スケジュール (300〜500 時間)・分野別の攻略法までを 1 ページに集約した<strong>独自編集の学習ガイド</strong>と、よくある質問をまとめた FAQ を用意しています。
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <Link
+            href="/takken/guide"
+            className="inline-flex items-center rounded-full border border-line bg-bg/60 px-3 py-1.5 text-[12px] font-semibold text-ink/80 hover:text-ink"
+          >
+            📘 宅建 学習ガイドを読む →
+          </Link>
+          <Link
+            href="/takken/faq"
+            className="inline-flex items-center rounded-full border border-line bg-bg/60 px-3 py-1.5 text-[12px] font-semibold text-ink/80 hover:text-ink"
+          >
+            ❓ 宅建 FAQ
+          </Link>
+          <Link
+            href="/takken"
+            className="inline-flex items-center rounded-full border border-line bg-bg/60 px-3 py-1.5 text-[12px] font-semibold text-ink/80 hover:text-ink"
+          >
+            🏠 宅建トップ
+          </Link>
+        </div>
+        <p className="mt-3 text-[11px] text-ink-3 leading-[1.7]">
+          この問題ページの解説・選択肢別解説・分野タグ・関連問題リンクは、すべて合格.dev 編集部による独自編集です (問題文・選択肢は不動産適正取引推進機構公表過去問の引用)。詳しくは{" "}
+          <Link href="/about" className="underline">編集方針</Link>{" / "}
+          <Link href="/sources" className="underline">出典一覧</Link>
+          {" "}を参照してください。
+        </p>
+      </aside>
       <QuizBottomActions examKey="tk" variant="takken" />
     </>
   )

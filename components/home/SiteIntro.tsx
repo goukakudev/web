@@ -74,6 +74,8 @@ const COPY: Record<"fe" | "ip" | "ap" | "sg", SubjectCopy> = {
 
 export function SiteIntro({ subject = "fe" }: { subject?: "fe" | "ip" | "ap" | "sg" }) {
   const c = COPY[subject];
+  const guideHref = `/${subject}/guide`;
+  const faqHref = `/${subject}/faq`;
   return (
     <section className="mt-10 text-[13px] leading-[1.85] text-goukaku-ink/85">
       <h2 className="text-[18px] font-extrabold mb-3">
@@ -90,26 +92,49 @@ export function SiteIntro({ subject = "fe" }: { subject?: "fe" | "ip" | "ap" | "
         独自に編集した解説
       </h3>
       <p className="mb-3">
-        各問題には <strong>「全体解説」+ 選択肢 4 つそれぞれの解説</strong> を用意しています。なぜ正解なのか、他の選択肢はなぜ違うのか、を一つずつ言語化することで、選択肢の引っかけパターンへの対応力を養えます。図表は再構築・ベクター化 (SVG) しており、Retina ディスプレイでも文字が滲みません。
+        各問題には <strong>「全体解説」+ 選択肢 4 つそれぞれの解説</strong> を用意しています。なぜ正解なのか、他の選択肢はなぜ違うのか、を一つずつ言語化することで、選択肢の引っかけパターンへの対応力を養えます。図表は再構築・ベクター化 (SVG) しており、Retina ディスプレイでも文字が滲みません。問題本文は公表過去問の引用、解説・ヒント・タグ・関連用語はすべて当サイトが独自に編集した二次著作物です (詳細は{" "}
+        <Link href="/about" className="underline">編集方針</Link>)。
       </p>
       <h3 className="text-[15px] font-extrabold mt-5 mb-2">
         対応している試験
       </h3>
       <p className="mb-3">{c.scopeLine}</p>
+
+      <h3 className="text-[15px] font-extrabold mt-5 mb-2">
+        この試験をはじめて受ける方へ
+      </h3>
+      <p className="mb-3">
+        {c.fullName}の試験概要、出題範囲、合格基準、標準学習スケジュール、分野別の攻略法までを 1 ページに集約した{" "}
+        <strong>独自編集の学習ガイド</strong>{" "}
+        と、よくある質問をまとめた FAQ を用意しています。これから受験を検討する段階の方は、まずこちらをご覧ください。
+      </p>
+      <div className="mt-3 mb-5 flex flex-wrap gap-2">
+        <Link
+          href={guideHref}
+          className="inline-flex items-center rounded-full border border-goukaku-divider bg-goukaku-surface px-3.5 py-1.5 text-[12px] font-extrabold text-goukaku-ink/80 transition hover:text-goukaku-ink"
+        >
+          📘 {c.abbrev} 学習ガイドを読む →
+        </Link>
+        <Link
+          href={faqHref}
+          className="inline-flex items-center rounded-full border border-goukaku-divider bg-goukaku-surface px-3.5 py-1.5 text-[12px] font-extrabold text-goukaku-ink/80 transition hover:text-goukaku-ink"
+        >
+          ❓ {c.abbrev} FAQ
+        </Link>
+      </div>
+
       <h3 className="text-[15px] font-extrabold mt-5 mb-2">運営について</h3>
       <p className="mb-3">
         当サイトの問題文は {c.authorityShort} 公表の過去問に基づきますが、解説・図表・UI はすべて独自に制作したオリジナルです。詳しくは{" "}
-        <Link href="/about" className="underline">
-          About
-        </Link>
+        <Link href="/about" className="underline">About</Link>
         ・
-        <Link href="/privacy" className="underline">
-          プライバシーポリシー
-        </Link>
+        <Link href="/methodology" className="underline">編集方針 (詳細)</Link>
         ・
-        <Link href="/terms" className="underline">
-          利用規約
-        </Link>{" "}
+        <Link href="/sources" className="underline">出典一覧</Link>
+        ・
+        <Link href="/privacy" className="underline">プライバシーポリシー</Link>
+        ・
+        <Link href="/terms" className="underline">利用規約</Link>{" "}
         をご覧ください。
       </p>
     </section>

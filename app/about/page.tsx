@@ -92,6 +92,64 @@ export default async function AboutPage() {
         </p>
       </Section>
 
+      <Section title="編集方針と品質基準">
+        <p>
+          {COMPANY_NAME} のすべての解説・ヒント・分野タグ・難易度区分・関連用語・関連問題リンクは、当サイトが独自に編集した二次著作物です。問題文・選択肢の本文以外は、自動生成によるそのままの出力をそのまま掲載することはなく、必ず人の目を通したうえで公開しています。
+        </p>
+        <ul className="list-disc pl-5 space-y-1 mt-3">
+          <li>
+            <strong>「全体解説」と「選択肢別解説」の二段構成</strong>{" "}
+            — 設問ごとに、なぜその答えが正解なのか・他の選択肢がなぜ違うのかを、初学者が読んでも筋を追えるように言語化しています。
+          </li>
+          <li>
+            <strong>図表の再構築</strong>{" "}
+            — 公開 PDF に含まれる図表は、可能な限り SVG で再描画し、Retina ディスプレイでも文字が滲まないようにしています。
+          </li>
+          <li>
+            <strong>分野タグ・関連用語の独自分類</strong>{" "}
+            — 試験団体の公式分類を参照しつつ、当サイト独自に再整理した分野タグと、関連用語の内部リンクで学習動線を作っています。
+          </li>
+          <li>
+            <strong>読者フィードバックの反映</strong>{" "}
+            — 各問題画面の「Good / Bad」「問題を報告」ボタンから寄せられた指摘を、編集の優先順位付けに利用しています。
+          </li>
+          <li>
+            <strong>更新サイクル</strong>{" "}
+            — 新年度の試験が公開された後、解説・ヒント・タグ付けまで一通り整備したうえで公開しています。誤りが見つかった場合は随時改稿しています。
+          </li>
+        </ul>
+      </Section>
+
+      <Section title="コンテンツの独自性について">
+        <p>
+          AdSense や検索エンジンに対する {COMPANY_NAME}{" "}
+          の立場を明確にするため、引用と独自編集の境界を以下のとおり整理しています。
+        </p>
+        <ul className="list-disc pl-5 space-y-1 mt-3">
+          <li>
+            <strong>引用部分</strong>{" "}
+            — 問題文・選択肢・正解番号は、各試験実施団体が公表している過去問題に基づきます。引用元は「
+            <Link href="/sources" className="underline">出典一覧
+            </Link>
+            」に明示しています。
+          </li>
+          <li>
+            <strong>独自編集部分</strong>{" "}
+            — 全体解説、選択肢別解説、ヒント、語句注釈、関連用語、関連問題リンク、分野タグ、難易度区分、メタディスクリプション、本ページの解説文章は、すべて {COMPANY_NAME} 編集部が独自に書き起こした二次著作物です。
+          </li>
+          <li>
+            <strong>AI 利用の範囲</strong>{" "}
+            — 解説の下書き作成や用語整理に AI を補助的に使う場合がありますが、最終的な公開コンテンツは人手で校正しています。生成物をそのまま出力するアグリゲーション運用は行っていません。
+          </li>
+          <li>
+            <strong>転載と二次利用</strong>{" "}
+            — 当サイトの解説・ヒント・分類は引用範囲を超える転載をお断りしています。詳細は{" "}
+            <Link href="/terms" className="underline">利用規約</Link>{" "}
+            をご覧ください。
+          </li>
+        </ul>
+      </Section>
+
       <Section title="取り扱っている試験">
         <ul className="space-y-3">
           {CATALOG.map((c) => (
@@ -165,11 +223,47 @@ export default async function AboutPage() {
         </p>
       </Section>
 
-      <Section title="運営">
-        <p>運営: {COMPANY_NAME}</p>
-        <p className="mt-2">
+      <Section title="運営者について">
+        <p>
+          {COMPANY_NAME}{" "}
+          は、IT 領域での実務経験を持つ個人開発者が、独学で資格に挑戦する人を増やすことを目的に運営しているプロジェクトです。組織ではなく個人運営であるからこそ、解説・編集・ユーザーサポートまで一貫した視点で品質を担保しています。
+        </p>
+        <ul className="list-disc pl-5 space-y-1 mt-3">
+          <li>
+            <strong>運営主体</strong>: {COMPANY_NAME} 編集部 (個人運営)
+          </li>
+          <li>
+            <strong>取り扱う領域</strong>: IT 系国家試験 (基本情報技術者・ITパスポート・応用情報技術者・情報セキュリティマネジメント) を中心に、宅地建物取引士・看護師国家試験など、独学比率が高い資格を順次拡張しています。
+          </li>
+          <li>
+            <strong>編集体制</strong>: 解説・ヒント・分野タグはすべて人手で校正しています。本職の IT エンジニアとしての知見を活かしつつ、IT 以外の試験 (宅建・看護) については関連書籍・公式テキスト・厚生労働省の出題基準などを参照しながら編集しています。
+          </li>
+          <li>
+            <strong>連絡先</strong>:{" "}
+            <a href="mailto:contact@goukaku.dev" className="underline">
+              contact@goukaku.dev
+            </a>{" "}
+            (返信は通常 1〜3 営業日)
+          </li>
+        </ul>
+      </Section>
+
+      <Section title="ナビゲーション">
+        <p>
           <Link href="/contact" className="underline">
             お問い合わせ
+          </Link>
+          {" / "}
+          <Link href="/support" className="underline">
+            サポート
+          </Link>
+          {" / "}
+          <Link href="/methodology" className="underline">
+            編集方針 (詳細)
+          </Link>
+          {" / "}
+          <Link href="/sources" className="underline">
+            出典一覧
           </Link>
           {" / "}
           <Link href="/privacy" className="underline">
