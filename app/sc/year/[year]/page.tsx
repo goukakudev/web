@@ -2,7 +2,6 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { listScExams } from "@/lib/api-client"
-import { MobileFrame } from "@/components/layout/MobileFrame"
 import { makeMetadata } from "@/lib/seo/metadata"
 import {
   itemListJsonLd,
@@ -10,7 +9,9 @@ import {
   SITE_URL,
 } from "@/lib/seo/structured-data"
 import { JsonLd } from "@/components/seo/JsonLd"
-import { Breadcrumbs } from "@/components/seo/Breadcrumbs"
+import { ScPageFrame } from "@/components/sc/ScPageFrame"
+import { ScBreadcrumbs } from "@/components/sc/ScBreadcrumbs"
+import { ScSectionHead, ScHairline } from "@/components/sc/ScChrome"
 import {
   buildYearIntro,
   buildYearSummary,
@@ -62,8 +63,8 @@ export default async function ScYearPage({ params }: PageProps) {
   })
 
   return (
-    <MobileFrame>
-      <Breadcrumbs items={[
+    <ScPageFrame title={summary.yearDisplay}>
+      <ScBreadcrumbs items={[
         { name: "合格.dev", href: "/" },
         { name: "情報処理安全確保支援士試験", href: "/sc" },
         { name: summary.yearDisplay, href: `/sc/year/${yearSlug}` },
@@ -88,61 +89,47 @@ export default async function ScYearPage({ params }: PageProps) {
         )}
       />
 
-      <h1 className="text-[20px] font-extrabold mb-3">
-        {summary.yearDisplay} 情報処理安全確保支援士試験 過去問
-      </h1>
-      <p className="text-[13px] leading-[1.85] text-goukaku-ink/80 mb-6">{intro}</p>
+      <p className="sc-page-subtitle">SC EXAMS</p>
+      <h1 className="sc-page-title">{summary.yearDisplay} 過去問</h1>
+      <p className="sc-page-lead">{intro}</p>
 
-      <section className="mb-7">
-        <h2 className="text-[15px] font-extrabold mb-3 text-goukaku-ink/85">
-          {summary.yearDisplay} の試験回
-        </h2>
-        <ul className="space-y-2">
-          {yearExams.map((e) => (
-            <li key={e.exam_id}>
-              <Link
-                href={`/sc/exam/${e.exam_id}`}
-                className="block rounded-2xl border border-goukaku-divider bg-goukaku-surface/40 p-3.5 hover:bg-goukaku-surface"
-              >
-                <div className="text-[10px] tracking-[1.2px] font-bold text-goukaku-ink/50 uppercase">
-                  {e.exam_id}
-                </div>
-                <div className="text-[15px] font-extrabold mt-1">
-                  {e.title ?? `${e.year} ${e.section}`}
-                </div>
-                <div className="text-[11px] opacity-60 mt-1">
-                  全 {e.question_count} 問
-                </div>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </section>
+      <ScSectionHead title={`${summary.yearDisplay} の試験回`} />
+      <div className="sc-mode-list">
+        {yearExams.map((e) => (
+          <Link key={e.exam_id} href={`/sc/exam/${e.exam_id}`} className="sc-mode-btn">
+            <span className="sc-mode-btn-icon">📄</span>
+            <span className="sc-mode-btn-text">
+              <span className="sc-mode-btn-title">{e.title ?? `${e.year} ${e.section}`}</span>
+              <span className="sc-mode-btn-sub">{e.exam_id}・全 {e.question_count} 問</span>
+            </span>
+            <span className="sc-mode-btn-arrow">›</span>
+          </Link>
+        ))}
+      </div>
 
       {(summary.prevYear || summary.nextYear) && (
-        <nav aria-label="前後の年度" className="flex gap-2 text-[12px] mb-7">
-          {summary.prevYear && (
-            <Link
-              href={`/sc/year/${encodeURIComponent(summary.prevYear)}`}
-              className="flex-1 rounded-lg border border-goukaku-divider px-3 py-2 hover:bg-goukaku-surface"
-            >
+        <nav aria-label="前後の年度" className="sc-pager">
+          {summary.prevYear ? (
+            <Link href={`/sc/year/${encodeURIComponent(summary.prevYear)}`} data-side="prev">
               ← {prettyYear(summary.prevYear)}
             </Link>
+          ) : (
+            <span />
           )}
-          {summary.nextYear && (
-            <Link
-              href={`/sc/year/${encodeURIComponent(summary.nextYear)}`}
-              className="flex-1 rounded-lg border border-goukaku-divider px-3 py-2 text-right hover:bg-goukaku-surface"
-            >
+          {summary.nextYear ? (
+            <Link href={`/sc/year/${encodeURIComponent(summary.nextYear)}`} data-side="next">
               {prettyYear(summary.nextYear)} →
             </Link>
+          ) : (
+            <span />
           )}
         </nav>
       )}
 
-      <p className="text-[11px] opacity-60 pt-3 border-t border-goukaku-divider">
-        ← <Link href="/sc" className="underline">情報処理安全確保支援士試験 のトップ</Link>へ
+      <p className="sc-footnote">
+        ← <Link href="/sc">情報処理安全確保支援士試験 のトップ</Link>へ
       </p>
-    </MobileFrame>
+      <ScHairline />
+    </ScPageFrame>
   )
 }
