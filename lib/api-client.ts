@@ -166,6 +166,22 @@ export async function getSgExamStats(
   }
 }
 
+export async function listScPopularTags(limit = 12): Promise<PopularTag[]> {
+  try {
+    const data = await get<PopularTagListResponse>(
+      `/v1/sc/tags/popular?limit=${limit}`,
+      EXAMS_REVALIDATE,
+    )
+    // SC のタグは API から "#" 接頭辞なしで返る場合があるため、表示・URL 生成に
+    // 使う前に "#" 付きへ正規化しておく (他試験と整合)。
+    return data.tags.map((t) =>
+      t.tag.startsWith("#") ? t : { ...t, tag: `#${t.tag}` },
+    )
+  } catch {
+    return []
+  }
+}
+
 export async function listScExams(): Promise<ExamSummary[]> {
   try {
     const data = await get<ExamListResponse>("/v1/sc/exams", EXAMS_REVALIDATE)
