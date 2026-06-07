@@ -36,7 +36,7 @@ export default async function ScHomePage() {
     <main className="sc-page">
       <ScTopBar
         title="情報処理安全確保支援士"
-        leading={<MenuButton />}
+        leading={<BackButton />}
         trailing={
           <Link href="/sc/bookmarks" className="sc-icon-btn" aria-label="ブックマーク">
             <BookmarkIcon />
@@ -123,7 +123,7 @@ export default async function ScHomePage() {
 function ScPreparingHome() {
   return (
     <main className="sc-page">
-      <ScTopBar title="情報処理安全確保支援士" leading={<MenuButton />} />
+      <ScTopBar title="情報処理安全確保支援士" leading={<BackButton />} />
       <JsonLd
         data={webPageJsonLd({
           name: "情報処理安全確保支援士試験 (SC) 学習ガイド・FAQ",
@@ -203,13 +203,11 @@ function ScPreparingHome() {
   )
 }
 
-function MenuButton() {
+function BackButton() {
   return (
-    <Link href="/" className="sc-icon-btn" aria-label="合格.dev トップ">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
-        <path d="M3 12h18" />
-        <path d="M3 6h18" />
-        <path d="M3 18h18" />
+    <Link href="/" className="sc-icon-btn" aria-label="合格.dev トップへ戻る">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <path d="M15 18l-6-6 6-6" />
       </svg>
     </Link>
   )

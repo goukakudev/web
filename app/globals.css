@@ -92,11 +92,11 @@
      iOS sc アプリ SCColor.swift を移植。紫 (#7c5ce6) を主役に、罫線・
      大きな等幅数字で構成。.sc-root スコープでのみ有効。
      ============================================================ */
-  /* 面・背景 */
-  --color-sc-bg-app: #f6f5fb;
-  --color-sc-bg-app-2: #fbfaff;
-  --color-sc-bg-app-3: #f3f1f9;
-  --color-sc-page: #e7e4f0;
+  /* 面・背景 — 白統一 (ライト) */
+  --color-sc-bg-app: #ffffff;
+  --color-sc-bg-app-2: #ffffff;
+  --color-sc-bg-app-3: #ffffff;
+  --color-sc-page: #f7f6fb;
   /* テキスト */
   --color-sc-ink: #100f16;
   --color-sc-t1: #16151d;
@@ -390,9 +390,7 @@ body {
   color: var(--color-sc-t1);
   font-family: var(--font-sc-sans);
   min-height: 100dvh;
-  background:
-    linear-gradient(180deg, var(--color-sc-bg-app-2) 0%, var(--color-sc-bg-app) 40%, var(--color-sc-bg-app-3) 100%);
-  background-attachment: fixed;
+  background: #ffffff;
 }
 /* SC では body のデフォルト watermark (合 + 桜) を非表示にする。
  * .sc-root 自体には適用しない — `.sc-root { background-image: none }` を
@@ -431,11 +429,9 @@ body:has(.sc-root) { background-image: none; }
   position: sticky; top: 0; z-index: 30;
   display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
   padding: 0.5rem 0.875rem 0.875rem;
-  background:
-    linear-gradient(180deg,
-      color-mix(in srgb, var(--color-sc-bg-app) 88%, transparent) 0%,
-      color-mix(in srgb, var(--color-sc-bg-app) 72%, transparent) 100%);
+  background: rgba(255, 255, 255, 0.88);
   -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--color-sc-line);
 }
 .sc-topbar-title {
   text-align: center;
@@ -927,3 +923,151 @@ body:has(.sc-root) { background-image: none; }
   margin-top: 2rem;
 }
 .sc-footnote a { color: var(--color-sc-primary-ink); text-decoration: underline; text-underline-offset: 2px; }
+
+/* ============================================================
+   SC 試験詳細ページ — BOXLESS 編集レイアウト
+   iOS sc アプリ「年別 過去問」の編集テイストを試験単体ページに展開。
+   余計な角丸・カードを廃し、罫線・大きな等幅数字・章番号で構成する。
+   ============================================================ */
+.sc-exam-hero {
+  padding: 1.5rem 1.375rem 1.5rem;
+  border-bottom: 1px solid var(--color-sc-line);
+}
+.sc-exam-hero-meta {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-family: var(--font-sc-mono);
+  font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.16em;
+  color: var(--color-sc-t3); text-transform: uppercase;
+}
+.sc-exam-hero-meta-dot { display: inline-block; width: 4px; height: 4px; background: var(--color-sc-primary); }
+.sc-exam-hero-title {
+  margin-top: 0.5rem;
+  font-size: 1.625rem; font-weight: 800; line-height: 1.25; color: var(--color-sc-ink);
+  letter-spacing: 0.01em;
+}
+.sc-exam-hero-lead {
+  margin-top: 0.875rem;
+  font-size: 0.8125rem; line-height: 1.85; color: var(--color-sc-t2);
+}
+
+/* 試験スペック (出題数・制限時間・合格点・選択肢) を 2×2 統計グリッドに */
+.sc-exam-stats {
+  display: grid; grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid var(--color-sc-line);
+}
+.sc-exam-stat {
+  padding: 1.25rem 1.375rem 1.125rem;
+  position: relative;
+}
+.sc-exam-stat:not(:nth-child(2n))::after {
+  content: ""; position: absolute; top: 1.125rem; bottom: 1.125rem; right: 0;
+  width: 1px; background: var(--color-sc-line);
+}
+.sc-exam-stat:nth-child(-n+2) { border-bottom: 1px solid var(--color-sc-line); }
+.sc-exam-stat-value { display: flex; align-items: baseline; gap: 0.25rem; }
+.sc-exam-stat-num {
+  font-family: var(--font-sc-mono);
+  font-size: 1.875rem; font-weight: 700; color: var(--color-sc-ink);
+  line-height: 1;
+}
+.sc-exam-stat-unit { font-size: 0.875rem; font-weight: 600; color: var(--color-sc-t2); }
+.sc-exam-stat-label {
+  margin-top: 0.5rem;
+  font-family: var(--font-sc-mono);
+  font-size: 0.625rem; font-weight: 700; letter-spacing: 0.14em;
+  color: var(--color-sc-t3); text-transform: uppercase;
+}
+
+/* 演習モード — 編集レイアウト風: 番号 + タイトル + サブ + 矢印 */
+.sc-exam-modes { padding: 0 1.375rem; }
+.sc-exam-mode {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 1.125rem 0;
+  border-bottom: 1px solid var(--color-sc-line);
+  color: inherit; text-decoration: none;
+}
+.sc-exam-mode:hover { background: var(--color-sc-primary-soft-2); margin: 0 -1.375rem; padding-left: 1.375rem; padding-right: 1.375rem; }
+.sc-exam-mode-num {
+  flex: none; width: 32px;
+  font-family: var(--font-sc-mono);
+  font-size: 1.4375rem; font-weight: 700; color: var(--color-sc-t3);
+  line-height: 1;
+}
+.sc-exam-mode[data-emphasis="true"] .sc-exam-mode-num { color: var(--color-sc-primary); }
+.sc-exam-mode-text { flex: 1; min-width: 0; }
+.sc-exam-mode-title {
+  font-size: 0.9375rem; font-weight: 700; color: var(--color-sc-ink);
+}
+.sc-exam-mode-sub {
+  margin-top: 0.25rem;
+  font-size: 0.6875rem; font-weight: 600; color: var(--color-sc-t3);
+}
+.sc-exam-mode-arrow {
+  font-family: var(--font-sc-mono);
+  font-size: 1.0625rem; color: var(--color-sc-t3);
+}
+.sc-exam-mode:hover .sc-exam-mode-arrow { color: var(--color-sc-primary); }
+
+/* 試験概要セクション — タグカウントランキング */
+.sc-exam-topics { padding: 0 1.375rem; }
+.sc-exam-topic {
+  display: flex; align-items: center; gap: 0.875rem;
+  padding: 0.875rem 0;
+  border-bottom: 1px solid var(--color-sc-line);
+  color: inherit; text-decoration: none;
+}
+.sc-exam-topic:hover .sc-exam-topic-name { color: var(--color-sc-ink); }
+.sc-exam-topic-rank {
+  flex: none; width: 24px;
+  font-family: var(--font-sc-mono);
+  font-size: 0.6875rem; font-weight: 700; color: var(--color-sc-t3);
+}
+.sc-exam-topic-name {
+  flex: 1; min-width: 0;
+  font-size: 0.875rem; font-weight: 700; color: var(--color-sc-t1);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.sc-exam-topic-bar {
+  flex: none; width: 64px; height: 2px; background: var(--color-sc-track); overflow: hidden;
+}
+.sc-exam-topic-bar > i { display: block; height: 100%; background: var(--color-sc-primary); }
+.sc-exam-topic-count {
+  flex: none; width: 36px; text-align: right;
+  font-family: var(--font-sc-mono);
+  font-size: 0.8125rem; font-weight: 700; color: var(--color-sc-primary-ink);
+}
+
+/* 全問リスト */
+.sc-exam-qs { padding: 0 1.375rem; }
+.sc-exam-q {
+  display: flex; align-items: baseline; gap: 0.875rem;
+  padding: 0.6875rem 0;
+  border-bottom: 1px solid var(--color-sc-line);
+  color: inherit; text-decoration: none;
+}
+.sc-exam-q:hover { background: var(--color-sc-primary-soft-2); margin: 0 -1.375rem; padding-left: 1.375rem; padding-right: 1.375rem; }
+.sc-exam-q-num {
+  flex: none; width: 2.5rem;
+  font-family: var(--font-sc-mono);
+  font-size: 0.6875rem; font-weight: 700; color: var(--color-sc-primary-ink); letter-spacing: 0.02em;
+}
+.sc-exam-q-text {
+  flex: 1; min-width: 0;
+  font-size: 0.78125rem; color: var(--color-sc-t1);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* 関連ページ (gd / faq / その他カテゴリ) */
+.sc-exam-related { padding: 0 1.375rem; }
+.sc-exam-related-row {
+  display: flex; align-items: center; gap: 0.875rem;
+  padding: 0.9375rem 0;
+  border-bottom: 1px solid var(--color-sc-line);
+  color: inherit; text-decoration: none;
+}
+.sc-exam-related-row:hover .sc-exam-related-title { color: var(--color-sc-ink); }
+.sc-exam-related-icon { flex: none; width: 32px; font-size: 1.125rem; }
+.sc-exam-related-text { flex: 1; min-width: 0; }
+.sc-exam-related-title { font-size: 0.875rem; font-weight: 700; color: var(--color-sc-t1); }
+.sc-exam-related-sub { margin-top: 0.125rem; font-size: 0.6875rem; color: var(--color-sc-t3); }
+.sc-exam-related-arrow { color: var(--color-sc-t3); font-size: 0.9375rem; }
