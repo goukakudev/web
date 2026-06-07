@@ -1,9 +1,10 @@
 import Link from "next/link"
 import type { ReactNode } from "react"
 import { ScTopBar } from "./ScChrome"
+import { ScThemeToggle } from "./ScThemeToggle"
 
 /** /sc/* サブページ共通の iOS 風フレーム。
- *  TopBar (戻る + タイトル) + 上下のスクロールエリアを提供する。
+ *  TopBar (戻る + タイトル) + 本文 + テーマ切替 (AUTO/LIGHT/DARK)。
  *  MobileFrame は使わず、SiteFooter も自前で出さない (層が違うので親 layout が出す)。 */
 export function ScPageFrame({
   title,
@@ -30,6 +31,7 @@ export function ScPageFrame({
         trailing={trailing}
       />
       <div className="sc-page-body">{children}</div>
+      <ScThemeToggle />
     </main>
   )
 }

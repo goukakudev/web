@@ -14,6 +14,7 @@ import { ScHero } from "@/components/sc/ScHero"
 import { ScTodayCTA } from "@/components/sc/ScTodayCTA"
 import { ScPopularTags } from "@/components/sc/ScPopularTags"
 import { ScYearLedger } from "@/components/sc/ScYearLedger"
+import { ScThemeToggle } from "@/components/sc/ScThemeToggle"
 
 export const metadata: Metadata = makeMetadata({
   title: "情報処理安全確保支援士試験 過去問 + 解説 (SC・登録セキスペ)",
@@ -116,6 +117,7 @@ export default async function ScHomePage() {
           </Link>
         </div>
       </section>
+      <ScThemeToggle />
     </main>
   )
 }
@@ -199,6 +201,7 @@ function ScPreparingHome() {
           <Link href="/terms">利用規約</Link> をご覧ください。
         </p>
       </section>
+      <ScThemeToggle />
     </main>
   )
 }
