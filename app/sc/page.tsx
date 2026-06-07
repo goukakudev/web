@@ -1,19 +1,96 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import { listScExams } from "@/lib/api-client"
 import { MobileFrame } from "@/components/layout/MobileFrame"
+import { TopBar } from "@/components/home/TopBar"
+import { HeroQuestCard } from "@/components/home/HeroQuestCard"
+import { StatCard } from "@/components/home/StatCard"
+import { SubjectTile } from "@/components/home/SubjectTile"
+import { ContinueSection } from "@/components/home/ContinueSection"
+import { NewExamsSection } from "@/components/home/NewExamsSection"
+import { MockTestBanner } from "@/components/home/MockTestBanner"
+import { SiteIntro } from "@/components/home/SiteIntro"
+import { BookmarkCard } from "@/components/home/BookmarkCard"
+import { HistoryCard } from "@/components/home/HistoryCard"
 import { makeMetadata } from "@/lib/seo/metadata"
-import { courseJsonLd, webPageJsonLd, SITE_URL } from "@/lib/seo/structured-data"
+import {
+  itemListJsonLd,
+  courseJsonLd,
+  webPageJsonLd,
+  SITE_URL,
+} from "@/lib/seo/structured-data"
 import { JsonLd } from "@/components/seo/JsonLd"
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs"
 
 export const metadata: Metadata = makeMetadata({
-  title: "情報処理安全確保支援士試験 (SC) 学習ガイド・FAQ",
+  title: "情報処理安全確保支援士試験 過去問 + 解説 (SC・登録セキスペ)",
   description:
-    "情報処理安全確保支援士試験 (SC、登録セキスペ) の試験概要・出題範囲・合格基準・午前 I 免除制度・登録制度・標準学習スケジュール・分野別攻略をまとめた独自編集の学習ガイドと FAQ を公開中。過去問演習と iOS アプリは現在準備中。",
+    "情報処理安全確保支援士試験 (SC、登録セキスペ) の午前 II 過去問を無料で。順番に / ランダムに / 模試形式 (40 分) で解け、全問解説・選択肢ごとの解説・ヒント付き。試験概要・午前 I 免除・登録制度の解説も独自編集で公開中。",
   path: "/sc",
 })
 
-export default function ScHomePage() {
+export default async function ScHomePage() {
+  const exams = await listScExams()
+
+  // SC データの整備が完了するまで、API は空配列を返すことがある。
+  // データ無しのときは「準備中」表示にフォールバックし、整備後は自動的に
+  // ホーム画面型 UI に切り替わる。
+  if (exams.length === 0) {
+    return <ScPreparingHome />
+  }
+
+  return (
+    <MobileFrame>
+      <h1 className="sr-only">情報処理安全確保支援士試験 過去問</h1>
+      <JsonLd
+        data={itemListJsonLd(
+          exams.map((e) => ({
+            name: `${e.title ?? e.exam_id} 過去問`,
+            url: `${SITE_URL}/sc/exam/${e.exam_id}`,
+          })),
+        )}
+      />
+      <JsonLd
+        data={courseJsonLd({
+          name: "情報処理安全確保支援士試験 過去問学習コース",
+          description:
+            "情報処理安全確保支援士試験 (SC) 午前 II の公開過去問を解説・ヒント付きで無料演習。情報セキュリティ技術・管理・関連法規の分野別学習に対応。",
+          url: `${SITE_URL}/sc`,
+          aboutName: "情報処理安全確保支援士試験",
+          examYears: "公開過去問",
+          totalQuestions: exams.reduce((s, e) => s + (e.question_count ?? 0), 0),
+          credentialName: "情報処理安全確保支援士",
+        })}
+      />
+      <TopBar />
+      <HeroQuestCard subject="sc" />
+      <ContinueSection exams={exams} subject="sc" />
+      <BookmarkCard exams={exams} subject="sc" />
+      <HistoryCard subject="sc" />
+      <div className="grid grid-cols-2 gap-3 mb-7">
+        <StatCard label="答えた" value={0} unit="問" icon="🔥" />
+        <StatCard label="正答率" value={0} unit="%" icon="🎯" />
+      </div>
+      <NewExamsSection exams={exams} subject="sc" />
+      <div
+        className="mt-7 text-[22px] text-goukaku-pink-script"
+        style={{ fontFamily: "var(--font-script)" }}
+      >
+        Subjects
+      </div>
+      <div className="text-[18px] font-extrabold mb-3.5">学習カテゴリ</div>
+      <div className="grid grid-cols-2 gap-3">
+        {exams.map((exam, i) => (
+          <SubjectTile key={exam.exam_id} exam={exam} index={i} subject="sc" />
+        ))}
+      </div>
+      <MockTestBanner exam={exams[0]} subject="sc" />
+      <SiteIntro subject="sc" />
+    </MobileFrame>
+  )
+}
+
+function ScPreparingHome() {
   return (
     <MobileFrame>
       <Breadcrumbs items={[
@@ -25,7 +102,7 @@ export default function ScHomePage() {
           name: "情報処理安全確保支援士試験 (SC) 学習ガイド・FAQ",
           url: `${SITE_URL}/sc`,
           description:
-            "情報処理安全確保支援士試験 (SC) の試験概要・出題範囲・合格基準・午前 I 免除・登録制度を独自編集で解説。過去問演習と iOS アプリは準備中。",
+            "情報処理安全確保支援士試験 (SC) の試験概要・出題範囲・合格基準・午前 I 免除・登録制度を独自編集で解説。過去問演習は準備中。",
         })}
       />
       <JsonLd
@@ -52,10 +129,10 @@ export default function ScHomePage() {
           STATUS
         </p>
         <p className="mt-2 text-[16px] font-extrabold leading-[1.45]">
-          過去問演習・iOS アプリは現在準備中
+          過去問演習は準備中
         </p>
         <p className="mt-3 text-[12.5px] leading-[1.85] text-goukaku-ink/75">
-          合格.dev では、情報処理安全確保支援士試験 (SC) の<strong>学習ガイドと FAQ を先行公開</strong>しています。午前 II の公開過去問演習と iOS アプリは現在編集部で準備を進めており、整備が完了次第このページからアクセスできるようになります。
+          合格.dev では、情報処理安全確保支援士試験 (SC) の<strong>学習ガイドと FAQ を先行公開</strong>しています。午前 II の公開過去問演習は現在編集部で準備を進めており、整備が完了次第このページから 3 モード (順番 / ランダム / 40 分模試) で演習できるようになります。
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
           <Link
@@ -109,7 +186,7 @@ export default function ScHomePage() {
 
         <h3 className="text-[15px] font-extrabold mt-5 mb-2">関連する試験</h3>
         <p className="mb-3">
-          SC の前段として、情報セキュリティ管理の入門である <Link href="/sg" className="underline">情報セキュリティマネジメント試験 (SG)</Link> や、午前 I の免除を取れる <Link href="/ap" className="underline">応用情報技術者試験 (AP)</Link>、テクノロジ系の基礎を固める <Link href="/fe" className="underline">基本情報技術者試験 (FE)</Link> の演習が役立ちます。現在演習が準備中の SC に対し、これら関連区分は合格.dev で過去問演習が可能です。
+          SC の前段として、情報セキュリティ管理の入門である <Link href="/sg" className="underline">情報セキュリティマネジメント試験 (SG)</Link> や、午前 I の免除を取れる <Link href="/ap" className="underline">応用情報技術者試験 (AP)</Link>、テクノロジ系の基礎を固める <Link href="/fe" className="underline">基本情報技術者試験 (FE)</Link> の演習が役立ちます。
         </p>
 
         <h3 className="text-[15px] font-extrabold mt-5 mb-2">コンテンツの独自性について</h3>

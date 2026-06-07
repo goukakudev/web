@@ -1,6 +1,6 @@
 import Link from "next/link"
 
-type ExamKey = "fe" | "ip" | "ap" | "sg" | "kango" | "takken"
+type ExamKey = "fe" | "ip" | "ap" | "sg" | "sc" | "kango" | "takken"
 
 const COPY: Record<ExamKey, { full: string; abbrev: string; guide: string; faq: string; top: string; topLabel: string }> = {
   fe: {
@@ -34,6 +34,14 @@ const COPY: Record<ExamKey, { full: string; abbrev: string; guide: string; faq: 
     faq: "/sg/faq",
     top: "/sg",
     topLabel: "SG トップ",
+  },
+  sc: {
+    full: "情報処理安全確保支援士試験",
+    abbrev: "SC",
+    guide: "/sc/guide",
+    faq: "/sc/faq",
+    top: "/sc",
+    topLabel: "SC トップ",
   },
   kango: {
     full: "看護師国家試験",

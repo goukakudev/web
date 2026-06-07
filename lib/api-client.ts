@@ -165,3 +165,43 @@ export async function getSgExamStats(
     return new Map()
   }
 }
+
+export async function listScExams(): Promise<ExamSummary[]> {
+  try {
+    const data = await get<ExamListResponse>("/v1/sc/exams", EXAMS_REVALIDATE)
+    return data.exams
+  } catch {
+    // SC データはまだ pipeline 側の DB 配備待ち。API が 404/未配備のときは
+    // 空配列を返し、SC の各ページが「準備中」表示にフォールバックできるよう
+    // にする。データ配備後は自動的にホーム画面型 UI に切り替わる。
+    return []
+  }
+}
+
+export async function listScQuestions(examId: string): Promise<Question[]> {
+  const data = await get<QuestionListResponse>(
+    `/v1/sc/exams/${encodeURIComponent(examId)}/questions`,
+    QUESTIONS_REVALIDATE,
+  )
+  // SC のタグも SG/AP と同じく "#" 接頭辞なしで返るため、ここで "#" 付きへ
+  // 正規化してタグ URL・チップ・関連タグ・カテゴリ集計を他試験と同一挙動にする。
+  return data.questions.map((q) =>
+    q.tags && q.tags.length > 0
+      ? { ...q, tags: q.tags.map((t) => (t.startsWith("#") ? t : `#${t}`)) }
+      : q,
+  )
+}
+
+export async function getScExamStats(
+  examId: string,
+): Promise<Map<string, QuestionStat>> {
+  try {
+    const data = await get<ExamStatsResponse>(
+      `/v1/sc/exams/${encodeURIComponent(examId)}/stats`,
+      STATS_REVALIDATE,
+    )
+    return new Map(data.stats.map((s) => [s.question_id, s]))
+  } catch {
+    return new Map()
+  }
+}

@@ -13,7 +13,7 @@ interface SubjectCopy {
   rangePrefix: string;
 }
 
-const COPY: Record<"fe" | "ip" | "ap" | "sg", SubjectCopy> = {
+const COPY: Record<"fe" | "ip" | "ap" | "sg" | "sc", SubjectCopy> = {
   fe: {
     fullName: "基本情報技術者試験",
     shortName: "基本情報技術者試験",
@@ -70,9 +70,23 @@ const COPY: Record<"fe" | "ip" | "ap" | "sg", SubjectCopy> = {
       "現在、情報セキュリティマネジメント試験の科目 A について、平成 28 年度 (2016) 〜 令和 7 年度 (2025) の公開過去問を収録しています。タグ機能により、情報セキュリティ・リスク管理・関連法規など、分野横断での演習も可能です。",
     rangePrefix: "平成 28 年度 (2016)",
   },
+  sc: {
+    fullName: "情報処理安全確保支援士試験",
+    shortName: "情報処理安全確保支援士試験",
+    abbrev: "SC",
+    authority: "独立行政法人情報処理推進機構 (IPA)",
+    authorityShort: "IPA",
+    rangeLabel: "公開過去問",
+    totalLabel: "午前 II の多肢選択問題",
+    modesLine:
+      "3 つの学習モード — 順番に解く / ランダムに解く / 模試形式 (40 分・時間計測あり) — を切り替えて、苦手分野の補強から本番形式の通し演習まで一貫して対応できます。問題ごとにヒントも参照可能です。",
+    scopeLine:
+      "現在、情報処理安全確保支援士試験の午前 II について、公開過去問を順次収録しています。午前 I (高度共通) の演習は応用情報技術者試験 (AP) ページをご利用ください。タグ機能により、暗号・認証・ネットワークセキュリティ・マルウェア対策・セキュリティマネジメントなど、分野横断での演習も可能です。",
+    rangePrefix: "令和年度",
+  },
 };
 
-export function SiteIntro({ subject = "fe" }: { subject?: "fe" | "ip" | "ap" | "sg" }) {
+export function SiteIntro({ subject = "fe" }: { subject?: "fe" | "ip" | "ap" | "sg" | "sc" }) {
   const c = COPY[subject];
   const guideHref = `/${subject}/guide`;
   const faqHref = `/${subject}/faq`;

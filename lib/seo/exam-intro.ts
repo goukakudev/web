@@ -2,7 +2,7 @@ import type { ExamSummary } from "@/lib/types"
 
 export interface ExamIntroInput {
   exam: ExamSummary
-  subject: "fe" | "ip" | "ap" | "sg"
+  subject: "fe" | "ip" | "ap" | "sg" | "sc"
 }
 
 const SUBJECT_META = {
@@ -28,6 +28,12 @@ const SUBJECT_META = {
     fullName: "情報セキュリティマネジメント試験",
     sessionLabel: "科目A",
     modes: "順番に解く / ランダム出題 / 90 分模試",
+    features: "全問の解説、選択肢ごとの正誤判定、ヒント、分野タグ",
+  },
+  sc: {
+    fullName: "情報処理安全確保支援士試験",
+    sessionLabel: "午前II",
+    modes: "順番に解く / ランダム出題 / 40 分模試",
     features: "全問の解説、選択肢ごとの正誤判定、ヒント、分野タグ",
   },
 } as const

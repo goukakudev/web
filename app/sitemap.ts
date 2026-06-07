@@ -8,6 +8,8 @@ import {
   listApQuestions,
   listSgExams,
   listSgQuestions,
+  listScExams,
+  listScQuestions,
 } from "@/lib/api-client"
 import { TakkenAPI } from "@/lib/takken/api"
 import { listKnExams, listAllKnQuestions } from "@/lib/kango/api"
@@ -17,17 +19,18 @@ import { tagToSlug } from "@/lib/tag-url"
 const BASE = "https://goukaku.dev"
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [root, fe, ip, ap, sg, takken, kn, glossary] = await Promise.all([
+  const [root, fe, ip, ap, sg, sc, takken, kn, glossary] = await Promise.all([
     Promise.resolve(rootPartition()),
     fePartition(),
     ipPartition(),
     apPartition(),
     sgPartition(),
+    scPartition(),
     takkenPartition(),
     knPartition(),
     glossaryPartition(),
   ])
-  return [...root, ...fe, ...ip, ...ap, ...sg, ...takken, ...kn, ...glossary]
+  return [...root, ...fe, ...ip, ...ap, ...sg, ...sc, ...takken, ...kn, ...glossary]
 }
 
 function rootPartition(): MetadataRoute.Sitemap {
@@ -38,16 +41,19 @@ function rootPartition(): MetadataRoute.Sitemap {
     { url: `${BASE}/ip`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
     { url: `${BASE}/ap`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
     { url: `${BASE}/sg`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${BASE}/sc`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
     { url: `${BASE}/takken`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
     { url: `${BASE}/fe/faq`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE}/ip/faq`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE}/ap/faq`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE}/sg/faq`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${BASE}/sc/faq`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE}/takken/faq`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE}/fe/guide`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/ip/guide`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/ap/guide`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/sg/guide`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE}/sc/guide`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/takken/guide`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/methodology`, lastModified: now, changeFrequency: "yearly", priority: 0.4 },
     { url: `${BASE}/sources`, lastModified: now, changeFrequency: "yearly", priority: 0.4 },
@@ -272,6 +278,61 @@ async function sgPartition(): Promise<MetadataRoute.Sitemap> {
   for (const slug of ["technology", "management", "strategy"]) {
     out.push({
       url: `${BASE}/sg/category/${slug}`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    })
+  }
+  return out
+}
+
+async function scPartition(): Promise<MetadataRoute.Sitemap> {
+  const now = new Date()
+  const out: MetadataRoute.Sitemap = []
+  const exams = await listScExams().catch(() => [])
+  const tagSet = new Set<string>()
+  const questionLists = await Promise.all(
+    exams.map((e) => listScQuestions(e.exam_id).catch(() => [])),
+  )
+  for (let i = 0; i < exams.length; i++) {
+    const exam = exams[i]
+    out.push({
+      url: `${BASE}/sc/exam/${exam.exam_id}`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    })
+    for (const q of questionLists[i]) {
+      out.push({
+        url: `${BASE}/sc/play/${exam.exam_id}/q/${q.q_number}`,
+        lastModified: now,
+        changeFrequency: "monthly",
+        priority: 0.6,
+      })
+      for (const t of q.tags ?? []) if (t) tagSet.add(t)
+    }
+  }
+  for (const tag of [...tagSet].sort()) {
+    out.push({
+      url: `${BASE}/sc/tag/${tagToSlug(tag)}`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.5,
+    })
+  }
+  const yearSet = new Set<string>()
+  for (const e of exams) if (e.year) yearSet.add(e.year)
+  for (const y of [...yearSet].sort()) {
+    out.push({
+      url: `${BASE}/sc/year/${encodeURIComponent(y)}`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    })
+  }
+  for (const slug of ["security-tech", "security-management", "law-related"]) {
+    out.push({
+      url: `${BASE}/sc/category/${slug}`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.7,

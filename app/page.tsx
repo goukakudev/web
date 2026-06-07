@@ -75,7 +75,7 @@ const CATEGORIES: Category[] = [
     label: "情報処理安全確保支援士試験",
     sub: "Registered Information Security Specialist",
     description:
-      "情報処理安全確保支援士(SC)の試験概要・学習ガイド・FAQ を先行公開。過去問演習と iOS アプリは準備中",
+      "情報処理安全確保支援士(SC・登録セキスペ)の午前 II 過去問を順次収録。順番 / ランダム / 模試 (40 分) で解け、午前 I 免除制度・登録制度の解説も独自編集で公開",
     emoji: "🛡️",
     status: "available",
   },
@@ -110,6 +110,7 @@ function slugToExamKey(slug: string): ExamKey | null {
     case "ip": return "ip"
     case "ap": return "ap"
     case "sg": return "sg"
+    case "sc": return "sc"
     case "takken": return "tk"
     default: return null
   }
@@ -279,7 +280,7 @@ export default function CategoriesPage() {
             <li>
               <Link href="/sc" className="underline">情報処理安全確保支援士試験</Link>
               {" — "}
-              レベル 4 (高度試験) ・ 国家資格『登録セキスペ』 ・ 学習ガイド / FAQ を先行公開 ・ 過去問演習は準備中
+              レベル 4 (高度試験) ・ 国家資格『登録セキスペ』 ・ 午前 II 公開過去問を収録 ・ 模試 40 分
             </li>
             <li>
               <Link href="/takken" className="underline">宅地建物取引士試験</Link>

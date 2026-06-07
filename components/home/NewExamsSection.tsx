@@ -25,7 +25,7 @@ export function NewExamsSection({
   subject = "fe",
 }: {
   exams: ExamSummary[]
-  subject?: "fe" | "ip" | "ap" | "sg"
+  subject?: "fe" | "ip" | "ap" | "sg" | "sc"
 }) {
   const newIds =
     subject === "ip"

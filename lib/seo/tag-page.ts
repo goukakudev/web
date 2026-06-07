@@ -11,11 +11,13 @@ import {
   listIpExams,
   listIpQuestions,
   listQuestions,
+  listScExams,
+  listScQuestions,
   listSgExams,
   listSgQuestions,
 } from "@/lib/api-client"
 
-export type TagSubject = "fe" | "ip" | "ap" | "sg"
+export type TagSubject = "fe" | "ip" | "ap" | "sg" | "sc"
 
 export interface TagPageData {
   questions: Question[]
@@ -35,6 +37,7 @@ const listers: Record<
   ip: { listExams: listIpExams, listQuestions: listIpQuestions },
   ap: { listExams: listApExams, listQuestions: listApQuestions },
   sg: { listExams: listSgExams, listQuestions: listSgQuestions },
+  sc: { listExams: listScExams, listQuestions: listScQuestions },
 }
 
 export async function fetchTagPageData(
@@ -95,7 +98,9 @@ export function buildTagIntro({
         ? "応用情報技術者試験"
         : subject === "sg"
           ? "情報セキュリティマネジメント試験"
-          : "ITパスポート試験"
+          : subject === "sc"
+            ? "情報処理安全確保支援士試験"
+            : "ITパスポート試験"
   return (
     `${full}の過去問のうち、「${display}」のタグが付いた問題 ${count} 問の一覧です。` +
     `年度をまたいで「${display}」関連の出題傾向を俯瞰でき、苦手分野の集中演習に使えます。` +

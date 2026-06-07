@@ -15,8 +15,8 @@ export interface TagPageContentProps {
   questions: Question[]
   examsById: Map<string, ExamSummary>
   relatedTags: PopularTag[]
-  /** "fe" | "ip" | "ap" | "sg" — passed to TagQuestionRow so it routes to the correct play page. */
-  subject: "fe" | "ip" | "ap" | "sg"
+  /** "fe" | "ip" | "ap" | "sg" | "sc" — passed to TagQuestionRow so it routes to the correct play page. */
+  subject: "fe" | "ip" | "ap" | "sg" | "sc"
   /** Base path for tag pages, e.g. "/fe/tag" — used for related-tag links. */
   tagBase: string
   /** Base path for play pages, e.g. "/fe/play" — used for question links. */

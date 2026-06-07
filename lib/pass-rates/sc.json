@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "exam": "sc",
+  "lastUpdated": "2026-06-07",
+  "sourcePage": "https://www.ipa.go.jp/shiken/reports/toukei_sc.html",
+  "notes": [
+    "情報処理安全確保支援士試験 (SC) の各回合格率。IPA 公表の統計情報による。",
+    "高度試験のため春期 (4 月) と秋期 (10 月) の年 2 回実施。",
+    "申込者数・受験者数・合格者数は IPA 公表値を採用。",
+    "令和 6 年度春期からは午前 I / 午前 II / 午後 (記述式) の 3 区分構成。"
+  ],
+  "sessions": [
+    { "year": 2021, "era": "令和", "eraYear": 3, "half": "春期", "applicants": 14979, "examinees": 11173, "passers": 2306, "passRate": 0.206, "source": "IPA統計情報" },
+    { "year": 2021, "era": "令和", "eraYear": 3, "half": "秋期", "applicants": 19759, "examinees": 14640, "passers": 2867, "passRate": 0.196, "source": "IPA統計情報" },
+    { "year": 2022, "era": "令和", "eraYear": 4, "half": "春期", "applicants": 18377, "examinees": 13161, "passers": 2519, "passRate": 0.191, "source": "IPA統計情報" },
+    { "year": 2022, "era": "令和", "eraYear": 4, "half": "秋期", "applicants": 24222, "examinees": 17968, "passers": 3650, "passRate": 0.203, "source": "IPA統計情報" },
+    { "year": 2023, "era": "令和", "eraYear": 5, "half": "春期", "applicants": 17265, "examinees": 12146, "passers": 2394, "passRate": 0.197, "source": "IPA統計情報" },
+    { "year": 2023, "era": "令和", "eraYear": 5, "half": "秋期", "applicants": 23703, "examinees": 17284, "passers": 3565, "passRate": 0.206, "source": "IPA統計情報" },
+    { "year": 2024, "era": "令和", "eraYear": 6, "half": "春期", "applicants": 18908, "examinees": 13278, "passers": 2521, "passRate": 0.190, "source": "IPA統計情報" },
+    { "year": 2024, "era": "令和", "eraYear": 6, "half": "秋期", "applicants": 24900, "examinees": 18156, "passers": 3776, "passRate": 0.208, "source": "IPA統計情報" },
+    { "year": 2025, "era": "令和", "eraYear": 7, "half": "春期", "applicants": 19720, "examinees": 13862, "passers": 2731, "passRate": 0.197, "source": "IPA統計情報" }
+  ]
+}

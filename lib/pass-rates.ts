@@ -3,8 +3,9 @@ import ipData from "./pass-rates/ip.json"
 import tkData from "./pass-rates/tk.json"
 import apData from "./pass-rates/ap.json"
 import sgData from "./pass-rates/sg.json"
+import scData from "./pass-rates/sc.json"
 
-export type ExamKey = "fe" | "ip" | "tk" | "ap" | "sg"
+export type ExamKey = "fe" | "ip" | "tk" | "ap" | "sg" | "sc"
 
 type Session = {
   year: number
@@ -34,6 +35,7 @@ const FILES: Record<ExamKey, PassRatesFile> = {
   tk: tkData as PassRatesFile,
   ap: apData as PassRatesFile,
   sg: sgData as PassRatesFile,
+  sc: scData as PassRatesFile,
 }
 
 export type YearAggregate = {
@@ -49,6 +51,7 @@ const yearCache: Record<ExamKey, YearAggregate[] | undefined> = {
   tk: undefined,
   ap: undefined,
   sg: undefined,
+  sc: undefined,
 }
 
 function aggregateByYear(file: PassRatesFile): YearAggregate[] {

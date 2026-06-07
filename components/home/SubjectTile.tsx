@@ -17,7 +17,7 @@ export function SubjectTile({
 }: {
   exam: ExamSummary
   index: number
-  subject?: "fe" | "ip" | "ap" | "sg"
+  subject?: "fe" | "ip" | "ap" | "sg" | "sc"
 }) {
   const color = TILE_COLORS[index % TILE_COLORS.length]
   const href = `/${subject}/exam/${exam.exam_id}`

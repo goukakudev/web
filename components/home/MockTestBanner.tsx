@@ -6,12 +6,17 @@ export function MockTestBanner({
   subject = "fe",
 }: {
   exam?: ExamSummary
-  subject?: "fe" | "ip" | "ap" | "sg"
+  subject?: "fe" | "ip" | "ap" | "sg" | "sc"
 }) {
   if (!exam) return null
   const href = `/${subject}/play/${exam.exam_id}?mode=exam`
+  // SC は午前 II (40 分・25 問) を web の演習対象とするため、模試表記も 40 分。
+  // 午前 I 免除ありを前提にしている。
   const duration =
-    subject === "ap" ? "150 分" : subject === "ip" ? "120 分" : "90 分"
+    subject === "ap" ? "150 分"
+    : subject === "ip" ? "120 分"
+    : subject === "sc" ? "40 分"
+    : "90 分"
   return (
     <Link
       href={href}

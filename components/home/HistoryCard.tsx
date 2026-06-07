@@ -4,7 +4,7 @@ import Link from "next/link"
 import { useEffect, useState } from "react"
 import { getAllAnswers } from "@/lib/local-store"
 
-export function HistoryCard({ subject = "fe" }: { subject?: "fe" | "ip" | "ap" | "sg" } = {}) {
+export function HistoryCard({ subject = "fe" }: { subject?: "fe" | "ip" | "ap" | "sg" | "sc" } = {}) {
   const [stats, setStats] = useState<{ total: number; examCount: number } | null>(null)
   const examIdPrefix = `${subject}-`
 
