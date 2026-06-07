@@ -33,7 +33,7 @@ export default async function ScHomePage() {
   const firstExam = sortedExams[0]
 
   return (
-    <main>
+    <main className="sc-page">
       <ScTopBar
         title="情報処理安全確保支援士"
         leading={<MenuButton />}
@@ -122,7 +122,7 @@ export default async function ScHomePage() {
 
 function ScPreparingHome() {
   return (
-    <main>
+    <main className="sc-page">
       <ScTopBar title="情報処理安全確保支援士" leading={<MenuButton />} />
       <JsonLd
         data={webPageJsonLd({
