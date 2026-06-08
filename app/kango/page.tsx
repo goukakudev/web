@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import Link from "next/link"
 import { listKnExams } from "@/lib/kango/api"
 import { groupExams, shortLabel, typeColor, roundNumber, displayTitle } from "@/lib/kango/exam"
@@ -7,6 +8,14 @@ import { KangoNav } from "@/components/kango/KangoNav"
 import { JsonLd } from "@/components/seo/JsonLd"
 import { courseJsonLd, webPageJsonLd, itemListJsonLd, SITE_URL } from "@/lib/seo/structured-data"
 import { KANGO_CATEGORIES } from "@/lib/kango/categories"
+import { makeMetadata } from "@/lib/seo/metadata"
+
+export const metadata: Metadata = makeMetadata({
+  title: "看護師国家試験 過去問演習",
+  description:
+    "看護師・保健師・助産師 国家試験の過去問を、選択肢別解説つきで無料演習。第115回ほか、必修・一般・状況設定・計算問題に対応。",
+  path: "/kango",
+})
 
 export const revalidate = 3600
 
