@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const title = `#${display} の過去問 (応用情報技術者)`
   const description = `応用情報技術者試験の過去問のうち「${display}」タグが付いた問題の一覧。解説・ヒント付き。`
   const canonical = `/ap/tag/${slug}`
-  return makeMetadata({ title, description, path: canonical })
+  return makeMetadata({ title, description, path: canonical, noindex: true })
 }
 
 export default async function ApTagPage({ params }: PageProps) {

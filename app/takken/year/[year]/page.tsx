@@ -47,6 +47,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title: `${year} 年 過去問 ${total} 問`,
     description: `宅地建物取引士試験 ${year} 年実施分の過去問 ${yearExams.length} 回・全 ${total} 問。関連条文・判例タップで本文ポップアップ表示。`,
     path: `/takken/year/${yearSlug}`,
+    noindex: true,
   })
 }
 

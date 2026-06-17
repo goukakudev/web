@@ -42,6 +42,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title: `${display} 基本情報技術者試験 過去問 ${total} 問`,
     description: `基本情報技術者試験 ${display} の過去問 ${yearExams.length} 回・全 ${total} 問の一覧。試験回ごとの出題内訳と解説リンク。`,
     path: `/fe/year/${yearSlug}`,
+    noindex: true,
   })
 }
 

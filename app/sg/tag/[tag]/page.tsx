@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const title = `#${display} の過去問 (情報セキュリティマネジメント)`
   const description = `情報セキュリティマネジメント試験の過去問のうち「${display}」タグが付いた問題の一覧。解説・ヒント付き。`
   const canonical = `/sg/tag/${slug}`
-  return makeMetadata({ title, description, path: canonical })
+  return makeMetadata({ title, description, path: canonical, noindex: true })
 }
 
 export default async function SgTagPage({ params }: PageProps) {

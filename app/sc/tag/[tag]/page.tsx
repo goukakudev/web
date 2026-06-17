@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const title = `#${display} の過去問 (情報処理安全確保支援士試験)`
   const description = `情報処理安全確保支援士試験の過去問のうち「${display}」タグが付いた問題の一覧。解説・ヒント付き。`
   const canonical = `/sc/tag/${slug}`
-  return makeMetadata({ title, description, path: canonical })
+  return makeMetadata({ title, description, path: canonical, noindex: true })
 }
 
 function stripPlain(text: string): string {

@@ -22,6 +22,7 @@ export async function generateMetadata({
     title: `${tag} の看護過去問`,
     description: `看護師・保健師・助産師 国家試験で「${tag}」に関する過去問を、選択肢別解説つきで無料演習。`,
     path: `/kango/tag/${slug}`,
+    noindex: true,
   })
 }
 

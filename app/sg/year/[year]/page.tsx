@@ -42,6 +42,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title: `${display} 情報セキュリティマネジメント試験 過去問 ${total} 問`,
     description: `情報セキュリティマネジメント試験 ${display} の過去問 ${yearExams.length} 回・全 ${total} 問の一覧。試験回ごとの出題内訳・解説・ヒント付き。`,
     path: `/sg/year/${yearSlug}`,
+    noindex: true,
   })
 }
 
