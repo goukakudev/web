@@ -44,7 +44,14 @@ export default async function ScHomePage() {
           </Link>
         }
       />
-      <h1 className="sr-only">情報処理安全確保支援士試験 過去問</h1>
+      <header style={{ padding: "0.75rem 1.375rem 0.25rem" }}>
+        <h1 style={{ fontSize: "1.3rem", fontWeight: 800, lineHeight: 1.3, letterSpacing: "0.01em", color: "var(--color-sc-ink)" }}>
+          情報処理安全確保支援士試験 過去問
+        </h1>
+        <p style={{ marginTop: "0.45rem", fontSize: "0.8rem", lineHeight: 1.7, color: "var(--color-sc-t2)" }}>
+          午前 II の公開過去問を無料で。全問に解説付き、順番／ランダム／模試 (40 分) で演習でき、登録セキスペ (RISS) 対策に使えます。
+        </p>
+      </header>
       <JsonLd
         data={itemListJsonLd(
           sortedExams.map((e) => ({

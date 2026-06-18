@@ -3,6 +3,7 @@ import { listApExams } from "@/lib/api-client"
 import { MobileFrame } from "@/components/layout/MobileFrame"
 import { TopBar } from "@/components/home/TopBar"
 import { HeroQuestCard } from "@/components/home/HeroQuestCard"
+import { SubjectPageHeading } from "@/components/home/SubjectPageHeading"
 import { StatCard } from "@/components/home/StatCard"
 import { SubjectTile } from "@/components/home/SubjectTile"
 import { ContinueSection } from "@/components/home/ContinueSection"
@@ -26,7 +27,6 @@ export default async function ApHomePage() {
   const exams = await listApExams()
   return (
     <MobileFrame>
-      <h1 className="sr-only">応用情報技術者試験 過去問</h1>
       <JsonLd
         data={itemListJsonLd(
           exams.map((e) => ({
@@ -48,6 +48,7 @@ export default async function ApHomePage() {
         })}
       />
       <TopBar />
+      <SubjectPageHeading subject="ap" />
       <HeroQuestCard subject="ap" />
       <ContinueSection exams={exams} subject="ap" />
       <BookmarkCard exams={exams} subject="ap" />

@@ -3,6 +3,7 @@ import { listExams, listPopularTags } from "@/lib/api-client"
 import { MobileFrame } from "@/components/layout/MobileFrame"
 import { TopBar } from "@/components/home/TopBar"
 import { HeroQuestCard } from "@/components/home/HeroQuestCard"
+import { SubjectPageHeading } from "@/components/home/SubjectPageHeading"
 import { StatCard } from "@/components/home/StatCard"
 import { SubjectTile } from "@/components/home/SubjectTile"
 import { PopularTags } from "@/components/home/PopularTags"
@@ -32,7 +33,6 @@ export default async function FeHomePage() {
   ])
   return (
     <MobileFrame>
-      <h1 className="sr-only">基本情報技術者試験 過去問</h1>
       <JsonLd
         data={itemListJsonLd(
           exams.map((e) => ({
@@ -55,6 +55,7 @@ export default async function FeHomePage() {
       />
       <OnboardingFlow />
       <TopBar />
+      <SubjectPageHeading subject="fe" />
       <HeroQuestCard />
       <ContinueSection exams={exams} />
       <BookmarkCard exams={exams} />

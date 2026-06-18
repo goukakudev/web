@@ -3,6 +3,7 @@ import { listSgExams } from "@/lib/api-client"
 import { MobileFrame } from "@/components/layout/MobileFrame"
 import { TopBar } from "@/components/home/TopBar"
 import { HeroQuestCard } from "@/components/home/HeroQuestCard"
+import { SubjectPageHeading } from "@/components/home/SubjectPageHeading"
 import { StatCard } from "@/components/home/StatCard"
 import { SubjectTile } from "@/components/home/SubjectTile"
 import { ContinueSection } from "@/components/home/ContinueSection"
@@ -26,7 +27,6 @@ export default async function SgHomePage() {
   const exams = await listSgExams()
   return (
     <MobileFrame>
-      <h1 className="sr-only">情報セキュリティマネジメント試験 過去問</h1>
       <JsonLd
         data={itemListJsonLd(
           exams.map((e) => ({
@@ -48,6 +48,7 @@ export default async function SgHomePage() {
         })}
       />
       <TopBar />
+      <SubjectPageHeading subject="sg" />
       <HeroQuestCard subject="sg" />
       <ContinueSection exams={exams} subject="sg" />
       <BookmarkCard exams={exams} subject="sg" />
