@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { notFound } from "next/navigation"
+import { notFound, permanentRedirect } from "next/navigation"
 import { MobileFrame } from "@/components/layout/MobileFrame"
 import { makeMetadata } from "@/lib/seo/metadata"
 import { SITE_URL, SITE_NAME } from "@/lib/seo/structured-data"
@@ -41,8 +41,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function GlossaryTermPage({ params }: PageProps) {
   const { term: slug } = await params
-  const entry = findByTerm(slugToTerm(slug))
-  if (!entry) notFound()
+  const decoded = slugToTerm(slug)
+  const entry = findByTerm(decoded)
+  if (!entry) {
+    // 外部被リンク/過去URL由来の連番サフィックス (例 PAN-2, CSIRT-2) は、素の用語が
+    // 実在する場合のみ正規 URL へ 308 永久リダイレクト。SHA-256 等の正規用語は上の
+    // findByTerm で既にヒットするため、ここには来ず誤って壊さない。
+    const stripped = decoded.replace(/-\d+$/, "")
+    if (stripped !== decoded) {
+      const base = findByTerm(stripped)
+      if (base) permanentRedirect(`/glossary/${termToSlug(base.term)}`)
+    }
+    notFound()
+  }
   const canonicalSlug = termToSlug(entry.term)
   const related = findRelated(entry, 6)
 
