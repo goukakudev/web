@@ -4,6 +4,7 @@ import { MobileFrame } from "@/components/layout/MobileFrame"
 import { TopBar } from "@/components/home/TopBar"
 import { HeroQuestCard } from "@/components/home/HeroQuestCard"
 import { SubjectPageHeading } from "@/components/home/SubjectPageHeading"
+import { SubjectCategoryLinks } from "@/components/home/SubjectCategoryLinks"
 import { StatCard } from "@/components/home/StatCard"
 import { SubjectTile } from "@/components/home/SubjectTile"
 import { PopularTags } from "@/components/home/PopularTags"
@@ -79,6 +80,7 @@ export default async function FeHomePage() {
       </div>
       <WeakTagsSection />
       <PopularTags tags={popularTags} />
+      <SubjectCategoryLinks subject="fe" />
       <MockTestBanner exam={exams[0]} />
       <SiteIntro />
     </MobileFrame>

@@ -120,7 +120,13 @@ export default async function ScHomePage() {
             ❓ SC FAQ
           </Link>
           <Link href="/sc/category/security-tech" className="sc-pill">
-            分野別 過去問
+            情報セキュリティ技術
+          </Link>
+          <Link href="/sc/category/security-management" className="sc-pill">
+            情報セキュリティ管理
+          </Link>
+          <Link href="/sc/category/law-related" className="sc-pill">
+            セキュリティ関連法規
           </Link>
         </div>
       </section>

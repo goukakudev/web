@@ -4,6 +4,7 @@ import { MobileFrame } from "@/components/layout/MobileFrame"
 import { TopBar } from "@/components/home/TopBar"
 import { HeroQuestCard } from "@/components/home/HeroQuestCard"
 import { SubjectPageHeading } from "@/components/home/SubjectPageHeading"
+import { SubjectCategoryLinks } from "@/components/home/SubjectCategoryLinks"
 import { StatCard } from "@/components/home/StatCard"
 import { SubjectTile } from "@/components/home/SubjectTile"
 import { ContinueSection } from "@/components/home/ContinueSection"
@@ -70,6 +71,7 @@ export default async function IpHomePage() {
           <SubjectTile key={exam.exam_id} exam={exam} index={i} subject="ip" />
         ))}
       </div>
+      <SubjectCategoryLinks subject="ip" />
       <MockTestBanner exam={exams[0]} subject="ip" />
       <SiteIntro subject="ip" />
     </MobileFrame>
