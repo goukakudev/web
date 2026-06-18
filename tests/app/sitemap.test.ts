@@ -20,6 +20,14 @@ vi.mock("@/lib/api-client", () => ({
       ? [{ _id: "iq1", kind: "q", exam_id: id, q_number: 1, body: "x", choices: [] }]
       : [],
   ),
+  // AP / SG / SC: sitemap.ts はこれらも import するため、モックに含めないと
+  // "No <fn> export is defined on the mock" で全テストが落ちる(以前の失敗原因)。
+  listApExams: vi.fn(async () => []),
+  listApQuestions: vi.fn(async () => []),
+  listSgExams: vi.fn(async () => []),
+  listSgQuestions: vi.fn(async () => []),
+  listScExams: vi.fn(async () => []),
+  listScQuestions: vi.fn(async () => []),
 }))
 
 vi.mock("@/lib/takken/api", () => ({
@@ -46,9 +54,13 @@ describe("sitemap (unified)", () => {
   beforeEach(() => vi.resetModules())
   afterEach(() => vi.clearAllMocks())
 
-  it("contains site root, section landings, and policy pages", async () => {
+  const load = async () => {
     const mod = await import("@/app/sitemap")
-    const urls = (await mod.default()).map((e) => e.url)
+    return (await mod.default()).map((e) => e.url)
+  }
+
+  it("contains site root, section landings, and policy pages", async () => {
+    const urls = await load()
     expect(urls).toContain("https://goukaku.dev/")
     expect(urls).toContain("https://goukaku.dev/fe")
     expect(urls).toContain("https://goukaku.dev/ip")
@@ -56,31 +68,64 @@ describe("sitemap (unified)", () => {
     expect(urls).toContain("https://goukaku.dev/about")
   })
 
-  it("contains FE exam, question, and tag URLs", async () => {
-    const mod = await import("@/app/sitemap")
-    const urls = (await mod.default()).map((e) => e.url)
+  it("contains FE exam, question, and category URLs", async () => {
+    const urls = await load()
     expect(urls).toContain("https://goukaku.dev/fe/exam/fe-2023h")
     expect(urls).toContain("https://goukaku.dev/fe/play/fe-2023h/q/1")
     expect(urls).toContain("https://goukaku.dev/fe/play/fe-2023h/q/2")
-    expect(urls.some((u) => u.startsWith("https://goukaku.dev/fe/tag/"))).toBe(true)
+    // 分野(category)ハブは indexable なので残す
+    expect(urls).toContain("https://goukaku.dev/fe/category/technology")
   })
 
   it("contains IP URLs", async () => {
-    const mod = await import("@/app/sitemap")
-    const urls = (await mod.default()).map((e) => e.url)
+    const urls = await load()
     expect(urls).toContain("https://goukaku.dev/ip/exam/ip-r5")
     expect(urls).toContain("https://goukaku.dev/ip/play/ip-r5/q/1")
   })
 
   it("contains takken URLs", async () => {
-    const mod = await import("@/app/sitemap")
-    const urls = (await mod.default()).map((e) => e.url)
+    const urls = await load()
     expect(urls).toContain("https://goukaku.dev/takken")
     expect(urls).toContain("https://goukaku.dev/takken/exams/tk-r5")
     // q=1 is excluded — its canonical strips the query, so it would be
     // submitted as duplicate of the bare quiz URL.
     expect(urls).not.toContain("https://goukaku.dev/takken/exams/tk-r5/quiz?q=1")
     expect(urls).toContain("https://goukaku.dev/takken/exams/tk-r5/quiz?q=2")
+  })
+
+  it("contains glossary term URLs", async () => {
+    const urls = await load()
+    expect(urls.some((u) => u.startsWith("https://goukaku.dev/glossary/"))).toBe(true)
+  })
+
+  // 「sitemap に載る URL = indexable な正規 URL」を保証する不変条件
+  it("excludes all non-indexable / noindex / robots-disallowed URLs", async () => {
+    const urls = await load()
+    const banned = [
+      "/tag/",
+      "/year/",
+      "/play/random",
+      "/bookmarks",
+      "/history",
+      "/records",
+      "/wrong",
+      "/stats",
+      "/search",
+      "/diagnosis",
+      "/api/",
+    ]
+    for (const frag of banned) {
+      const hit = urls.find((u) => u.includes(frag))
+      expect(hit, `non-indexable URL leaked into sitemap: ${hit}`).toBeUndefined()
+    }
+  })
+
+  it("emits only absolute https URLs under the site origin, with no duplicates", async () => {
+    const urls = await load()
+    for (const u of urls) {
+      expect(u.startsWith("https://goukaku.dev/"), `not an absolute site URL: ${u}`).toBe(true)
+    }
+    expect(new Set(urls).size, "sitemap contains duplicate URLs").toBe(urls.length)
   })
 
   it("returns an array", async () => {

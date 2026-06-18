@@ -21,6 +21,27 @@ const BASE = "https://goukaku.dev"
 // 純粋なリンク集約で独自テキストが薄く、各ページ側で robots noindex を付与している
 // (AdSense「有用性の低いコンテンツ」対策)。category ページは独自の分野解説があるため残す。
 
+// robots.ts の disallow / 各ページの noindex と整合する最終ガード。partition 側の
+// 取りこぼしや将来の追加ミスがあっても、非 indexable な URL を sitemap から確実に除外する。
+// 「sitemap に載る URL = 200 を返す indexable な正規 URL」を保証する単一の関所。
+const NON_INDEXABLE = [
+  "/api/",
+  "/play/random",
+  "/bookmarks",
+  "/history",
+  "/records",
+  "/wrong",
+  "/stats",
+  "/search",
+  "/diagnosis",
+  "/tag/",
+  "/year/",
+]
+
+export function isIndexableSitemapUrl(url: string): boolean {
+  return !NON_INDEXABLE.some((p) => url.includes(p))
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [root, fe, ip, ap, sg, sc, takken, kn, glossary] = await Promise.all([
     Promise.resolve(rootPartition()),
@@ -33,7 +54,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     knPartition(),
     glossaryPartition(),
   ])
-  return [...root, ...fe, ...ip, ...ap, ...sg, ...sc, ...takken, ...kn, ...glossary]
+  // indexable な正規 URL だけを残し、重複も除去する。
+  const seen = new Set<string>()
+  const out: MetadataRoute.Sitemap = []
+  for (const entry of [...root, ...fe, ...ip, ...ap, ...sg, ...sc, ...takken, ...kn, ...glossary]) {
+    if (!isIndexableSitemapUrl(entry.url)) continue
+    if (seen.has(entry.url)) continue
+    seen.add(entry.url)
+    out.push(entry)
+  }
+  return out
 }
 
 function rootPartition(): MetadataRoute.Sitemap {
