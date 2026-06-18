@@ -9,7 +9,6 @@ import { Breadcrumbs } from "@/components/seo/Breadcrumbs"
 import {
   findByTerm,
   findRelated,
-  listAllTerms,
   slugToTerm,
   termToSlug,
 } from "@/lib/seo/glossary"
@@ -18,29 +17,33 @@ interface PageProps {
   params: Promise<{ term: string }>
 }
 
-export async function generateStaticParams() {
-  return listAllTerms().map((e) => ({ term: termToSlug(e.term) }))
-}
+// 用語データはローカル JSON だが、generateStaticParams による静的 prerender は
+// 使わない。Next.js 16 では非 ASCII の動的セグメントを prerender すると、ビルド時に
+// 渡る params とランタイムのリクエストが一致せず全件 404 になる不具合がある
+// (encodeURIComponent して返しても raw で返しても 404)。動的ルート(takken の
+// 分野別ページと同方式)にすれば日本語 URL も正しく解決できる。データは外部 API を
+// 叩かないため、revalidate でレスポンスをキャッシュすればコストも無視できる。
+export const revalidate = 86400
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  // 動的セグメントの params はエンコード済みで渡るため decode してから引く。
   const { term: slug } = await params
-  const term = slugToTerm(slug)
-  const entry = findByTerm(term)
+  const entry = findByTerm(slugToTerm(slug))
   if (!entry) return {}
   const preview = entry.description.slice(0, 90)
   return makeMetadata({
     title: `${entry.term}とは — IT用語集`,
     description: `${entry.term}(${entry.reading})の意味と解説。${preview}…`,
-    path: `/glossary/${slug}`,
+    path: `/glossary/${termToSlug(entry.term)}`,
     type: "article",
   })
 }
 
 export default async function GlossaryTermPage({ params }: PageProps) {
   const { term: slug } = await params
-  const term = slugToTerm(slug)
-  const entry = findByTerm(term)
+  const entry = findByTerm(slugToTerm(slug))
   if (!entry) notFound()
+  const canonicalSlug = termToSlug(entry.term)
   const related = findRelated(entry, 6)
 
   return (
@@ -48,7 +51,7 @@ export default async function GlossaryTermPage({ params }: PageProps) {
       <Breadcrumbs items={[
         { name: "合格.dev", href: "/" },
         { name: "用語集", href: "/glossary" },
-        { name: entry.term, href: `/glossary/${slug}` },
+        { name: entry.term, href: `/glossary/${canonicalSlug}` },
       ]} />
       <JsonLd
         data={{
@@ -62,7 +65,7 @@ export default async function GlossaryTermPage({ params }: PageProps) {
             name: `${SITE_NAME} 用語集`,
             url: `${SITE_URL}/glossary`,
           },
-          url: `${SITE_URL}/glossary/${slug}`,
+          url: `${SITE_URL}/glossary/${canonicalSlug}`,
           inLanguage: "ja",
         }}
       />
