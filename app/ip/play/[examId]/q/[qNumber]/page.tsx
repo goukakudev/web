@@ -126,6 +126,7 @@ export default async function IpPlayQuestionPage({ params }: PageProps) {
         stats={stats}
       />
       <QuestionSeoExtras
+        subjectName="ITパスポート試験"
         examLabel={examLabel}
         qNumber={n}
         body={q.body}
@@ -133,6 +134,8 @@ export default async function IpPlayQuestionPage({ params }: PageProps) {
         correctLabel={q.correct_label}
         explanation={q.explanation}
         examUrl={examUrl}
+        stat={stats[q._id]}
+        tags={q.tags}
       />
       <RelatedQuestions
         current={{ q_number: n, tags: q.tags }}

@@ -126,6 +126,7 @@ export default async function FePlayQuestionPage({ params }: PageProps) {
         stats={stats}
       />
       <QuestionSeoExtras
+        subjectName="基本情報技術者試験"
         examLabel={examLabel}
         qNumber={n}
         body={q.body}
@@ -133,6 +134,8 @@ export default async function FePlayQuestionPage({ params }: PageProps) {
         correctLabel={q.correct_label}
         explanation={q.explanation}
         examUrl={examUrl}
+        stat={stats[q._id]}
+        tags={q.tags}
       />
       <RelatedQuestions
         current={{ q_number: n, tags: q.tags }}

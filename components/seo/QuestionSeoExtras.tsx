@@ -1,7 +1,10 @@
-import type { Choice, ChoiceLabel, Explanation } from "@/lib/types"
+import Link from "next/link"
+import type { Choice, ChoiceLabel, Explanation, QuestionStat } from "@/lib/types"
 import { GlossaryInline } from "@/components/seo/GlossaryInline"
 
 export interface QuestionSeoExtrasProps {
+  /** 例: "ITパスポート試験"。固有の導入文に使う。 */
+  subjectName: string
   examLabel: string
   qNumber: number
   body: string
@@ -9,6 +12,9 @@ export interface QuestionSeoExtrasProps {
   correctLabel?: ChoiceLabel
   explanation?: Explanation
   examUrl: string
+  /** この設問の解答統計 (正答率)。無ければ正答率は出さない。 */
+  stat?: QuestionStat
+  tags?: string[]
 }
 
 function stripPlain(text: string): string {
@@ -20,7 +26,17 @@ function stripPlain(text: string): string {
     .trim()
 }
 
+/**
+ * 設問ページの「解説」セクション (サーバー描画・可視)。
+ *
+ * 問題本文・選択肢はインタラクティブな出題 UI (PlayController) 側で既に可視
+ * 描画されているため、ここでは重複させない。代わりに 正解 / 正答率 / 解説 /
+ * 選択肢ごとの解説 と、設問ごとに内容が変わる導入文を可視テキストとして出し、
+ * クロール時に「固有の価値を持つ実コンテンツページ」と判定されるようにする。
+ * (以前はこの内容を sr-only で隠していたため、薄いページと見なされやすかった)
+ */
 export function QuestionSeoExtras({
+  subjectName,
   examLabel,
   qNumber,
   body,
@@ -28,66 +44,94 @@ export function QuestionSeoExtras({
   correctLabel,
   explanation,
   examUrl,
+  stat,
+  tags,
 }: QuestionSeoExtrasProps) {
   const acceptedChoice = correctLabel
     ? choices.find((c) => c.label === correctLabel)
     : undefined
+  const primaryTag = (tags ?? [])
+    .map((t) => t.replace(/^#/, ""))
+    .find((t) => t.length > 0)
+  const rate =
+    stat && stat.total > 0 ? (stat.correct / stat.total) * 100 : undefined
+  const bodyPreview = stripPlain(body).slice(0, 40)
+
+  const intro =
+    `${examLabel} 問${qNumber}` +
+    (bodyPreview ? `「${bodyPreview}…」` : "") +
+    `の正解と解説です。${subjectName}` +
+    (primaryTag ? `の「${primaryTag}」分野` : "") +
+    `の過去問で、` +
+    (rate !== undefined
+      ? `これまでの受験者の正答率は約${Math.round(rate)}%です。`
+      : `各選択肢の正誤も解説付きで確認できます。`)
 
   return (
-    <section className="sr-only" aria-label="この問題の本文・選択肢・正解・解説 (検索エンジン用)">
-      <section>
-        <h3>問題本文</h3>
-        <p>
-          <GlossaryInline text={stripPlain(body)} />
-        </p>
-      </section>
-
-      <section>
-        <h3>選択肢</h3>
-        <ul>
-          {choices.map((c) => (
-            <li key={c.label}>
-              <span>{c.label}.</span>
-              {stripPlain(c.text)}
-            </li>
-          ))}
-        </ul>
-      </section>
+    <section
+      className="mt-8 border-t border-goukaku-divider pt-6 text-[13px] leading-[1.85]"
+      aria-label="この問題の正解と解説"
+    >
+      <h2 className="text-[15px] font-extrabold mb-2.5 text-goukaku-ink/85">
+        解説
+      </h2>
+      <p className="text-goukaku-ink/75 mb-5">{intro}</p>
 
       {acceptedChoice && correctLabel && (
-        <section>
-          <h3>正解</h3>
-          <p>
-            <span>{correctLabel}.</span> {stripPlain(acceptedChoice.text)}
+        <div className="mb-5">
+          <h3 className="text-[13px] font-bold text-goukaku-ink/55 mb-1.5">
+            正解
+          </h3>
+          <p className="text-goukaku-ink/85">
+            <span className="font-black">{correctLabel}.</span>{" "}
+            {stripPlain(acceptedChoice.text)}
           </p>
-        </section>
+          {rate !== undefined && stat && (
+            <p className="text-[12px] text-goukaku-ink/55 mt-1.5 tabular-nums">
+              正答率 {rate.toFixed(1)}%（
+              {stat.total.toLocaleString("en-US")}人中{" "}
+              {stat.correct.toLocaleString("en-US")}人が正解）
+            </p>
+          )}
+        </div>
       )}
 
       {explanation?.overall && (
-        <section>
-          <h3>解説</h3>
-          <p>
+        <div className="mb-5">
+          <h3 className="text-[13px] font-bold text-goukaku-ink/55 mb-1.5">
+            問題の解説
+          </h3>
+          <p className="text-goukaku-ink/85">
             <GlossaryInline text={stripPlain(explanation.overall)} />
           </p>
-        </section>
+        </div>
       )}
 
       {explanation?.per_choice && explanation.per_choice.length > 0 && (
-        <section>
-          <h3>選択肢ごとの解説</h3>
-          <ul>
+        <div className="mb-5">
+          <h3 className="text-[13px] font-bold text-goukaku-ink/55 mb-2">
+            選択肢ごとの解説
+          </h3>
+          <ul className="space-y-2">
             {explanation.per_choice.map((pc) => (
-              <li key={pc.label}>
-                <span>{pc.label}.</span>
-                {stripPlain(pc.text)}
+              <li key={pc.label} className="flex gap-2.5">
+                <span className="w-[18px] shrink-0 font-extrabold text-goukaku-ink/50">
+                  {pc.label}
+                </span>
+                <span className="text-goukaku-ink/75">
+                  <GlossaryInline text={stripPlain(pc.text)} />
+                </span>
               </li>
             ))}
           </ul>
-        </section>
+        </div>
       )}
 
-      <p>
-        {examLabel} の<a href={examUrl}>過去問一覧</a>へ戻る・問{qNumber}
+      <p className="text-[11px] opacity-60 pt-3 border-t border-goukaku-divider">
+        <Link href={examUrl} className="underline">
+          {examLabel} の過去問一覧
+        </Link>
+        に戻る・問{qNumber}
       </p>
     </section>
   )
