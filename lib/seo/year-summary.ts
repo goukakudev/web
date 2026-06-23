@@ -1,6 +1,6 @@
 import type { ExamSummary } from "@/lib/types"
 
-export type YearSubject = "fe" | "ip" | "ap" | "sg" | "sc"
+export type YearSubject = "fe" | "ip" | "ap" | "sg" | "sc" | "dk"
 
 export interface YearSummaryData {
   yearKey: string
@@ -99,7 +99,9 @@ export function buildYearIntro({
           ? "情報セキュリティマネジメント試験"
           : subject === "sc"
             ? "情報処理安全確保支援士試験"
-            : "ITパスポート試験"
+            : subject === "dk"
+              ? "第二種電気工事士 学科試験"
+              : "ITパスポート試験"
   return (
     `${full} ${yearDisplay} の過去問演習ページです。` +
     `${yearDisplay}に実施された ${examCount} 回の試験(全 ${totalQuestions} 問)を一覧で確認できます。` +

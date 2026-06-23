@@ -1,4 +1,4 @@
-export type SubjectKey = "fe" | "ip" | "ap" | "sg" | "sc"
+export type SubjectKey = "fe" | "ip" | "ap" | "sg" | "sc" | "dk"
 
 interface HeadingCopy {
   /** 可視 h1。本命キーワード「<試験名> 過去問」を含める。 */
@@ -27,6 +27,10 @@ const COPY: Record<SubjectKey, HeadingCopy> = {
   sc: {
     title: "情報処理安全確保支援士試験 過去問",
     lead: "午前 II の公開過去問を無料で。全問に解説付き。順番／ランダム／模試（40 分）で演習でき、登録セキスペ（RISS）対策に使えます。",
+  },
+  dk: {
+    title: "第二種電気工事士 学科試験 過去問",
+    lead: "第二種電気工事士の学科試験 39 回分・1,950 問を無料で。図入り問題も含めて、順番／ランダム／模試（120 分）で演習できます。",
   },
 }
 

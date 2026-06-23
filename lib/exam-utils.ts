@@ -1,5 +1,11 @@
 import type { ExamSummary } from "./types"
 
+export type QuizSubject = "fe" | "ip" | "ap" | "sg" | "sc" | "dk"
+
+export function examIdPrefixForSubject(subject: QuizSubject): string {
+  return subject === "dk" ? "ee2-" : `${subject}-`
+}
+
 const TITLE_PREFIXES = [
   "基本情報技術者試験 ",
   "ITパスポート試験 ",

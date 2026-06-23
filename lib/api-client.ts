@@ -36,6 +36,14 @@ async function get<T>(path: string, revalidate: number): Promise<T> {
   return (await res.json()) as T
 }
 
+function normalizeQuestionTags(questions: Question[]): Question[] {
+  return questions.map((q) =>
+    q.tags && q.tags.length > 0
+      ? { ...q, tags: q.tags.map((t) => (t.startsWith("#") ? t : `#${t}`)) }
+      : q,
+  )
+}
+
 export async function listExams(): Promise<ExamSummary[]> {
   const data = await get<ExamListResponse>("/v1/exams", EXAMS_REVALIDATE)
   return data.exams
@@ -112,11 +120,7 @@ export async function listApQuestions(examId: string): Promise<Question[]> {
   // (例: "#セキュリティ")で、web のタグ URL・チップ・関連タグ・カテゴリ集計は
   // すべて "#" 付きを前提とする(lib/tag-url.ts の slugToTag が "#" を補う)。
   // ここで AP のタグを "#" 付きへ正規化し、タグまわりを他試験と同一挙動にする。
-  return data.questions.map((q) =>
-    q.tags && q.tags.length > 0
-      ? { ...q, tags: q.tags.map((t) => (t.startsWith("#") ? t : `#${t}`)) }
-      : q,
-  )
+  return normalizeQuestionTags(data.questions)
 }
 
 export async function getApExamStats(
@@ -145,11 +149,7 @@ export async function listSgQuestions(examId: string): Promise<Question[]> {
   )
   // SG のタグも AP と同様 "#" 接頭辞なしで返るため、ここで "#" 付きへ正規化し
   // タグ URL・チップ・関連タグ・カテゴリ集計を他試験と同一挙動にする。
-  return data.questions.map((q) =>
-    q.tags && q.tags.length > 0
-      ? { ...q, tags: q.tags.map((t) => (t.startsWith("#") ? t : `#${t}`)) }
-      : q,
-  )
+  return normalizeQuestionTags(data.questions)
 }
 
 export async function getSgExamStats(
@@ -201,11 +201,7 @@ export async function listScQuestions(examId: string): Promise<Question[]> {
   )
   // SC のタグも SG/AP と同じく "#" 接頭辞なしで返るため、ここで "#" 付きへ
   // 正規化してタグ URL・チップ・関連タグ・カテゴリ集計を他試験と同一挙動にする。
-  return data.questions.map((q) =>
-    q.tags && q.tags.length > 0
-      ? { ...q, tags: q.tags.map((t) => (t.startsWith("#") ? t : `#${t}`)) }
-      : q,
-  )
+  return normalizeQuestionTags(data.questions)
 }
 
 export async function getScExamStats(
@@ -214,6 +210,47 @@ export async function getScExamStats(
   try {
     const data = await get<ExamStatsResponse>(
       `/v1/sc/exams/${encodeURIComponent(examId)}/stats`,
+      STATS_REVALIDATE,
+    )
+    return new Map(data.stats.map((s) => [s.question_id, s]))
+  } catch {
+    return new Map()
+  }
+}
+
+export async function listDkPopularTags(limit = 12): Promise<PopularTag[]> {
+  try {
+    const data = await get<PopularTagListResponse>(
+      `/v1/dk/tags/popular?limit=${limit}`,
+      EXAMS_REVALIDATE,
+    )
+    return data.tags.map((t) =>
+      t.tag.startsWith("#") ? t : { ...t, tag: `#${t.tag}` },
+    )
+  } catch {
+    return []
+  }
+}
+
+export async function listDkExams(): Promise<ExamSummary[]> {
+  const data = await get<ExamListResponse>("/v1/dk/exams", EXAMS_REVALIDATE)
+  return data.exams
+}
+
+export async function listDkQuestions(examId: string): Promise<Question[]> {
+  const data = await get<QuestionListResponse>(
+    `/v1/dk/exams/${encodeURIComponent(examId)}/questions`,
+    QUESTIONS_REVALIDATE,
+  )
+  return normalizeQuestionTags(data.questions)
+}
+
+export async function getDkExamStats(
+  examId: string,
+): Promise<Map<string, QuestionStat>> {
+  try {
+    const data = await get<ExamStatsResponse>(
+      `/v1/dk/exams/${encodeURIComponent(examId)}/stats`,
       STATS_REVALIDATE,
     )
     return new Map(data.stats.map((s) => [s.question_id, s]))

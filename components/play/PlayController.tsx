@@ -47,6 +47,23 @@ function shuffle(qs: Question[]): Question[] {
   return out;
 }
 
+function examDurationSeconds(examId: string): number {
+  if (examId.startsWith("ap-")) return 150 * 60;
+  if (examId.startsWith("ip-")) return 120 * 60;
+  if (examId.startsWith("ee2-")) return 120 * 60;
+  if (examId.startsWith("sc-")) return 40 * 60;
+  return 90 * 60;
+}
+
+function subjectFromUrlBase(urlBase: string): "fe" | "ip" | "ap" | "sg" | "sc" | "dk" {
+  if (urlBase.startsWith("/ip")) return "ip";
+  if (urlBase.startsWith("/ap")) return "ap";
+  if (urlBase.startsWith("/sg")) return "sg";
+  if (urlBase.startsWith("/sc")) return "sc";
+  if (urlBase.startsWith("/dk")) return "dk";
+  return "fe";
+}
+
 export function PlayController({
   questions: initialQuestions,
   exam,
@@ -320,7 +337,11 @@ export function PlayController({
       />
       {isExamMode && examStartedAt !== null && (
         <div className="flex items-center justify-end mb-3">
-          <ExamTimer startedAt={examStartedAt} onTimeout={finishExam} />
+          <ExamTimer
+            startedAt={examStartedAt}
+            onTimeout={finishExam}
+            durationSeconds={examDurationSeconds(exam.exam_id)}
+          />
         </div>
       )}
       <QuestionBody
@@ -371,13 +392,7 @@ export function PlayController({
           tags={current.tags ?? []}
           priorGlossaryTerms={usedGlossaryTerms(current.body)}
           onGlossaryClick={handleGlossaryClick}
-          subject={
-            urlBase.startsWith("/ip")
-              ? "ip"
-              : urlBase.startsWith("/ap")
-                ? "ap"
-                : "fe"
-          }
+          subject={subjectFromUrlBase(urlBase)}
         />
       )}
       <GlossaryModal

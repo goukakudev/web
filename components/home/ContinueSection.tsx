@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import type { ExamSummary } from "@/lib/types"
-import { shortTitle } from "@/lib/exam-utils"
+import { examIdPrefixForSubject, shortTitle, type QuizSubject } from "@/lib/exam-utils"
 import { loadExamSessions, type ExamSession } from "@/lib/exam-session"
 
 function relativeTime(iso: string): string {
@@ -32,10 +32,10 @@ export function ContinueSection({
   subject = "fe",
 }: {
   exams: ExamSummary[]
-  subject?: "fe" | "ip" | "ap" | "sg" | "sc"
+  subject?: QuizSubject
 }) {
   const [latest, setLatest] = useState<ExamSession | null>(null)
-  const examIdPrefix = `${subject}-`
+  const examIdPrefix = examIdPrefixForSubject(subject)
 
   useEffect(() => {
     const sessions = loadExamSessions()

@@ -31,7 +31,11 @@ export type ShuffleResult = {
  * remapped to align with the shuffled display order.
  */
 export function withShuffledChoicesAndMap(q: Question): ShuffleResult {
-  if (q.choices.length < 2) {
+  if (
+    q.choices.length < 2 ||
+    q.shuffle_choices === false ||
+    q.figures?.some((f) => f.role === "choices")
+  ) {
     const identity: Record<string, string> = {}
     for (const c of q.choices) identity[c.label] = c.label
     return { question: q, displayedToOriginal: identity }

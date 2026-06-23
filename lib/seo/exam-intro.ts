@@ -2,7 +2,7 @@ import type { ExamSummary } from "@/lib/types"
 
 export interface ExamIntroInput {
   exam: ExamSummary
-  subject: "fe" | "ip" | "ap" | "sg" | "sc"
+  subject: "fe" | "ip" | "ap" | "sg" | "sc" | "dk"
 }
 
 const SUBJECT_META = {
@@ -35,6 +35,12 @@ const SUBJECT_META = {
     sessionLabel: "午前II",
     modes: "順番に解く / ランダム出題 / 40 分模試",
     features: "全問の解説、選択肢ごとの正誤判定、ヒント、分野タグ",
+  },
+  dk: {
+    fullName: "第二種電気工事士 学科試験",
+    sessionLabel: "",
+    modes: "順番に解く / ランダム出題 / 120 分模試",
+    features: "全問の解説、選択肢ごとの正誤判定、ヒント、分野タグ、図版表示",
   },
 } as const
 

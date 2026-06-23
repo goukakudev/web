@@ -49,18 +49,22 @@ async function postOrQueue(path: string, body: unknown): Promise<void> {
 }
 
 export async function recordAnswer(payload: AnswerLogPayload): Promise<void> {
-  // exam_id prefix で subject DB を判定。"ip-..." は IP DB、"ap-..." は AP DB、
-  // それ以外は FE DB へ。
+  // exam_id prefix で subject DB を判定。"ee2-..." は DK DB。
   const path = payload.exam_id.startsWith("ip-")
     ? "/api/ip/answers"
     : payload.exam_id.startsWith("ap-")
       ? "/api/ap/answers"
-      : "/api/answers"
+      : payload.exam_id.startsWith("ee2-")
+        ? "/api/dk/answers"
+        : "/api/answers"
   await postOrQueue(path, payload)
 }
 
 export async function submitFeedback(payload: FeedbackPayload): Promise<void> {
-  await postOrQueue("/api/feedback", payload)
+  const path = payload.exam_id.startsWith("ee2-")
+    ? "/api/dk/feedback"
+    : "/api/feedback"
+  await postOrQueue(path, payload)
 }
 
 export async function fetchWeakTags(

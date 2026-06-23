@@ -1,6 +1,7 @@
 import Link from "next/link"
 import type { ExamSummary } from "@/lib/types"
 import { shortTitle } from "@/lib/exam-utils"
+import type { QuizSubject } from "@/lib/exam-utils"
 
 const NEW_EXAM_IDS_FE = new Set([
   "fe-2020r02t-a",
@@ -20,19 +21,27 @@ const NEW_EXAM_IDS_AP = new Set([
   "ap-2024r06h-a",
 ])
 
+const NEW_EXAM_IDS_DK = new Set([
+  "ee2-20260524",
+  "ee2-20251026",
+  "ee2-20250525",
+])
+
 export function NewExamsSection({
   exams,
   subject = "fe",
 }: {
   exams: ExamSummary[]
-  subject?: "fe" | "ip" | "ap" | "sg" | "sc"
+  subject?: QuizSubject
 }) {
   const newIds =
     subject === "ip"
       ? NEW_EXAM_IDS_IP
       : subject === "ap"
         ? NEW_EXAM_IDS_AP
-        : NEW_EXAM_IDS_FE
+        : subject === "dk"
+          ? NEW_EXAM_IDS_DK
+          : NEW_EXAM_IDS_FE
   const newExams = exams.filter((e) => newIds.has(e.exam_id))
   if (newExams.length === 0) return null
   const examUrlBase = `/${subject}/exam`

@@ -1,6 +1,6 @@
 import Link from "next/link"
 import type { ExamSummary } from "@/lib/types"
-import { shortTitle } from "@/lib/exam-utils"
+import { shortTitle, type QuizSubject } from "@/lib/exam-utils"
 import { TileProgress } from "./TileProgress"
 
 const TILE_COLORS = [
@@ -17,7 +17,7 @@ export function SubjectTile({
 }: {
   exam: ExamSummary
   index: number
-  subject?: "fe" | "ip" | "ap" | "sg" | "sc"
+  subject?: QuizSubject
 }) {
   const color = TILE_COLORS[index % TILE_COLORS.length]
   const href = `/${subject}/exam/${exam.exam_id}`

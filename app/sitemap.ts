@@ -10,6 +10,8 @@ import {
   listSgQuestions,
   listScExams,
   listScQuestions,
+  listDkExams,
+  listDkQuestions,
 } from "@/lib/api-client"
 import { TakkenAPI } from "@/lib/takken/api"
 import { listKnExams, listAllKnQuestions } from "@/lib/kango/api"
@@ -43,13 +45,14 @@ export function isIndexableSitemapUrl(url: string): boolean {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [root, fe, ip, ap, sg, sc, takken, kn, glossary] = await Promise.all([
+  const [root, fe, ip, ap, sg, sc, dk, takken, kn, glossary] = await Promise.all([
     Promise.resolve(rootPartition()),
     fePartition(),
     ipPartition(),
     apPartition(),
     sgPartition(),
     scPartition(),
+    dkPartition(),
     takkenPartition(),
     knPartition(),
     glossaryPartition(),
@@ -57,7 +60,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // indexable な正規 URL だけを残し、重複も除去する。
   const seen = new Set<string>()
   const out: MetadataRoute.Sitemap = []
-  for (const entry of [...root, ...fe, ...ip, ...ap, ...sg, ...sc, ...takken, ...kn, ...glossary]) {
+  for (const entry of [...root, ...fe, ...ip, ...ap, ...sg, ...sc, ...dk, ...takken, ...kn, ...glossary]) {
     if (!isIndexableSitemapUrl(entry.url)) continue
     if (seen.has(entry.url)) continue
     seen.add(entry.url)
@@ -75,18 +78,21 @@ function rootPartition(): MetadataRoute.Sitemap {
     { url: `${BASE}/ap`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
     { url: `${BASE}/sg`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
     { url: `${BASE}/sc`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${BASE}/dk`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
     { url: `${BASE}/takken`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
     { url: `${BASE}/fe/faq`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE}/ip/faq`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE}/ap/faq`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE}/sg/faq`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE}/sc/faq`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${BASE}/dk/faq`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE}/takken/faq`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE}/fe/guide`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/ip/guide`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/ap/guide`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/sg/guide`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/sc/guide`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE}/dk/guide`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/takken/guide`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/methodology`, lastModified: now, changeFrequency: "yearly", priority: 0.4 },
     { url: `${BASE}/sources`, lastModified: now, changeFrequency: "yearly", priority: 0.4 },
@@ -270,6 +276,33 @@ async function scPartition(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.7,
     })
+  }
+  return out
+}
+
+async function dkPartition(): Promise<MetadataRoute.Sitemap> {
+  const now = new Date()
+  const out: MetadataRoute.Sitemap = []
+  const exams = await listDkExams().catch(() => [])
+  const questionLists = await Promise.all(
+    exams.map((e) => listDkQuestions(e.exam_id).catch(() => [])),
+  )
+  for (let i = 0; i < exams.length; i++) {
+    const exam = exams[i]
+    out.push({
+      url: `${BASE}/dk/exam/${exam.exam_id}`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    })
+    for (const q of questionLists[i]) {
+      out.push({
+        url: `${BASE}/dk/play/${exam.exam_id}/q/${q.q_number}`,
+        lastModified: now,
+        changeFrequency: "monthly",
+        priority: 0.6,
+      })
+    }
   }
   return out
 }

@@ -4,16 +4,17 @@ import Link from "next/link"
 import { useEffect, useState } from "react"
 import { getBookmarks } from "@/lib/local-store"
 import type { ExamSummary } from "@/lib/types"
+import { examIdPrefixForSubject, type QuizSubject } from "@/lib/exam-utils"
 
 export function BookmarkCard({
   exams,
   subject = "fe",
 }: {
   exams: ExamSummary[]
-  subject?: "fe" | "ip" | "ap" | "sg" | "sc"
+  subject?: QuizSubject
 }) {
   const [counts, setCounts] = useState<{ total: number; examCount: number } | null>(null)
-  const examIdPrefix = `${subject}-`
+  const examIdPrefix = examIdPrefixForSubject(subject)
 
   useEffect(() => {
     const all = getBookmarks()

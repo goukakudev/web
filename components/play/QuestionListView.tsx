@@ -14,12 +14,15 @@ import {
   listSgQuestions,
   listScExams,
   listScQuestions,
+  listDkExams,
+  listDkQuestions,
 } from "@/lib/api-client"
 import { getAllAnswers, getBookmarks } from "@/lib/local-store"
 import type { Question, ExamSummary } from "@/lib/types"
+import { examIdPrefixForSubject, type QuizSubject } from "@/lib/exam-utils"
 
 export type ListMode = "history" | "bookmarks"
-export type SubjectKey = "fe" | "ip" | "ap" | "sg" | "sc"
+export type SubjectKey = QuizSubject
 
 interface Row {
   questionId: string
@@ -38,7 +41,7 @@ export function QuestionListView({
   subject?: SubjectKey
 }) {
   const subjectPrefix = `/${subject}`
-  const examIdPrefix = `${subject}-`
+  const examIdPrefix = examIdPrefixForSubject(subject)
   const fetchExams =
     subject === "ip"
       ? listIpExams
@@ -48,7 +51,9 @@ export function QuestionListView({
           ? listSgExams
           : subject === "sc"
             ? listScExams
-            : listExams
+            : subject === "dk"
+              ? listDkExams
+              : listExams
   const fetchQuestions =
     subject === "ip"
       ? listIpQuestions
@@ -58,7 +63,9 @@ export function QuestionListView({
           ? listSgQuestions
           : subject === "sc"
             ? listScQuestions
-            : listQuestions
+            : subject === "dk"
+              ? listDkQuestions
+              : listQuestions
   const [rows, setRows] = useState<Row[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

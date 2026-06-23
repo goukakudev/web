@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { QuizSubject } from "@/lib/exam-utils";
 
 interface SubjectCopy {
   fullName: string;
@@ -13,7 +14,7 @@ interface SubjectCopy {
   rangePrefix: string;
 }
 
-const COPY: Record<"fe" | "ip" | "ap" | "sg" | "sc", SubjectCopy> = {
+const COPY: Record<QuizSubject, SubjectCopy> = {
   fe: {
     fullName: "基本情報技術者試験",
     shortName: "基本情報技術者試験",
@@ -84,9 +85,23 @@ const COPY: Record<"fe" | "ip" | "ap" | "sg" | "sc", SubjectCopy> = {
       "現在、情報処理安全確保支援士試験の午前 II について、公開過去問を順次収録しています。午前 I (高度共通) の演習は応用情報技術者試験 (AP) ページをご利用ください。タグ機能により、暗号・認証・ネットワークセキュリティ・マルウェア対策・セキュリティマネジメントなど、分野横断での演習も可能です。",
     rangePrefix: "令和年度",
   },
+  dk: {
+    fullName: "第二種電気工事士 学科試験",
+    shortName: "第二種電気工事士",
+    abbrev: "DK",
+    authority: "一般財団法人電気技術者試験センター",
+    authorityShort: "電気技術者試験センター",
+    rangeLabel: "39 回分",
+    totalLabel: "各回 50 問、合計 1,950 問",
+    modesLine:
+      "3 つの学習モード — 順番に解く / ランダムに解く / 模試形式 (120 分・時間計測あり) — を切り替えて、計算問題・配線図・器具鑑別・法令を横断的に演習できます。図入り問題にも対応しています。",
+    scopeLine:
+      "現在、第二種電気工事士の学科試験について、平成 21 年 (2009) 〜 令和 8 年 (2026) の公開過去問を収録しています。タグ機能により、電気理論・配電設計・配線図・工具・施工方法・検査・法令など、分野横断での演習も可能です。",
+    rangePrefix: "平成 21 年 (2009)",
+  },
 };
 
-export function SiteIntro({ subject = "fe" }: { subject?: "fe" | "ip" | "ap" | "sg" | "sc" }) {
+export function SiteIntro({ subject = "fe" }: { subject?: QuizSubject }) {
   const c = COPY[subject];
   const guideHref = `/${subject}/guide`;
   const faqHref = `/${subject}/faq`;

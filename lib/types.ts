@@ -11,6 +11,7 @@ export interface FigureRef {
   url: string
   alt?: string
   source_page: number
+  role?: "body" | "choices" | "shared"
 }
 
 export interface ChoiceExplanation {
@@ -32,6 +33,7 @@ export interface Question {
   body: string
   choices: Choice[]
   correct_label?: ChoiceLabel
+  shuffle_choices?: boolean
   figures?: FigureRef[]
   explanation?: Explanation
   tags?: string[]

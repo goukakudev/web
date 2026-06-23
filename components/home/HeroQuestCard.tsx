@@ -1,6 +1,8 @@
 import Link from "next/link"
 
-export function HeroQuestCard({ subject = "fe" }: { subject?: "fe" | "ip" | "ap" | "sg" | "sc" } = {}) {
+import type { QuizSubject } from "@/lib/exam-utils"
+
+export function HeroQuestCard({ subject = "fe" }: { subject?: QuizSubject } = {}) {
   const href = `/${subject}/play/random?count=20`
   return (
     <Link

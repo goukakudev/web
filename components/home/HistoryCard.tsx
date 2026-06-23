@@ -3,10 +3,11 @@
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import { getAllAnswers } from "@/lib/local-store"
+import { examIdPrefixForSubject, type QuizSubject } from "@/lib/exam-utils"
 
-export function HistoryCard({ subject = "fe" }: { subject?: "fe" | "ip" | "ap" | "sg" | "sc" } = {}) {
+export function HistoryCard({ subject = "fe" }: { subject?: QuizSubject } = {}) {
   const [stats, setStats] = useState<{ total: number; examCount: number } | null>(null)
-  const examIdPrefix = `${subject}-`
+  const examIdPrefix = examIdPrefixForSubject(subject)
 
   useEffect(() => {
     const map = getAllAnswers()

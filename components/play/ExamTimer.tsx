@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-const DURATION = 90 * 60;
+const DEFAULT_DURATION_SECONDS = 90 * 60;
 
 function format(s: number): string {
   const h = Math.floor(s / 3600);
@@ -16,9 +16,11 @@ function format(s: number): string {
 export function ExamTimer({
   startedAt,
   onTimeout,
+  durationSeconds = DEFAULT_DURATION_SECONDS,
 }: {
   startedAt: number;
   onTimeout: () => void;
+  durationSeconds?: number;
 }) {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
@@ -27,7 +29,7 @@ export function ExamTimer({
   }, []);
 
   const elapsed = Math.floor((now - startedAt) / 1000);
-  const remaining = Math.max(0, DURATION - elapsed);
+  const remaining = Math.max(0, durationSeconds - elapsed);
 
   useEffect(() => {
     if (remaining === 0) onTimeout();

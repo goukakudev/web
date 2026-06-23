@@ -10,7 +10,7 @@ export interface ExplanationCardProps {
   tags: string[]
   priorGlossaryTerms?: ReadonlySet<string>
   onGlossaryClick?: (term: string) => void
-  subject?: "fe" | "ip" | "ap" | "sg"
+  subject?: "fe" | "ip" | "ap" | "sg" | "sc" | "dk"
 }
 
 export function ExplanationCard({

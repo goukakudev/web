@@ -1,12 +1,13 @@
 import Link from "next/link"
 import type { ExamSummary } from "@/lib/types"
+import type { QuizSubject } from "@/lib/exam-utils"
 
 export function MockTestBanner({
   exam,
   subject = "fe",
 }: {
   exam?: ExamSummary
-  subject?: "fe" | "ip" | "ap" | "sg" | "sc"
+  subject?: QuizSubject
 }) {
   if (!exam) return null
   const href = `/${subject}/play/${exam.exam_id}?mode=exam`
@@ -15,6 +16,7 @@ export function MockTestBanner({
   const duration =
     subject === "ap" ? "150 分"
     : subject === "ip" ? "120 分"
+    : subject === "dk" ? "120 分"
     : subject === "sc" ? "40 分"
     : "90 分"
   return (

@@ -80,6 +80,16 @@ const CATEGORIES: Category[] = [
     status: "available",
   },
   {
+    slug: "dk",
+    href: "/dk",
+    label: "第二種電気工事士",
+    sub: "Second-Class Electrician",
+    description:
+      "第二種電気工事士 学科試験の過去問。図入り問題を含む39回分・1,950問を順番 / ランダム / 模試で解けます",
+    emoji: "⚡",
+    status: "available",
+  },
+  {
     slug: "takken",
     href: "/takken",
     label: "宅地建物取引士",
