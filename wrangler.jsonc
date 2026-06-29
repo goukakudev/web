@@ -4,6 +4,11 @@
   "main": "worker.ts",
   "compatibility_date": "2025-03-25",
   "compatibility_flags": ["nodejs_compat"],
+  // Keep the *.workers.dev URL enabled. Adding "routes" below otherwise makes
+  // wrangler auto-disable it. Handy as a direct test URL independent of the
+  // apex route; the app's canonical URLs point to goukaku.dev, so the
+  // workers.dev copy is not indexed.
+  "workers_dev": true,
   "containers": [
     {
       "class_name": "NextContainer",
