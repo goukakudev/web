@@ -24,12 +24,22 @@ function apiKey(): string {
 }
 
 async function get<T>(path: string, revalidate: number): Promise<T> {
-  const res = await fetch(`${baseUrl()}${path}`, {
-    headers: { "X-API-Key": apiKey(), Accept: "application/json" },
-    next: { revalidate },
-  })
-  if (!res.ok) throw new Error(`API ${res.status} on GET ${path}`)
-  return (await res.json()) as T
+  try {
+    const res = await fetch(`${baseUrl()}${path}`, {
+      headers: { "X-API-Key": apiKey(), Accept: "application/json" },
+      next: { revalidate },
+    })
+    if (!res.ok) throw new Error(`API ${res.status} on GET ${path}`)
+    return (await res.json()) as T
+  } catch (err) {
+    // Build-time API unreachability falls back to empty so SSG defers to runtime
+    // ISR. Gated to the build phase only. See lib/api-client.ts get() for details.
+    if (process.env.NEXT_PHASE === "phase-production-build") {
+      console.warn(`[build] exam API unreachable on GET ${path}; deferring to runtime ISR`)
+      return { exams: [], questions: [], tags: [], stats: [] } as unknown as T
+    }
+    throw err
+  }
 }
 
 /** 全試験。API は自然順で返すため、回(降順)→午前午後 で安定ソートして返す。 */
