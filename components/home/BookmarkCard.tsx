@@ -17,18 +17,20 @@ export function BookmarkCard({
   const examIdPrefix = examIdPrefixForSubject(subject)
 
   useEffect(() => {
-    const all = getBookmarks()
-    const filtered = [...all].filter((id) => id.startsWith(examIdPrefix))
-    const seenExams = new Set<string>()
-    for (const id of filtered) {
-      for (const e of exams) {
-        if (id.startsWith(`${e.exam_id}-`)) {
-          seenExams.add(e.exam_id)
-          break
+    queueMicrotask(() => {
+      const all = getBookmarks()
+      const filtered = [...all].filter((id) => id.startsWith(examIdPrefix))
+      const seenExams = new Set<string>()
+      for (const id of filtered) {
+        for (const e of exams) {
+          if (id.startsWith(`${e.exam_id}-`)) {
+            seenExams.add(e.exam_id)
+            break
+          }
         }
       }
-    }
-    setCounts({ total: filtered.length, examCount: seenExams.size })
+      setCounts({ total: filtered.length, examCount: seenExams.size })
+    })
   }, [exams, examIdPrefix])
 
   if (!counts || counts.total === 0) return null

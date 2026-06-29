@@ -22,6 +22,8 @@ export function GlossaryInline({ text }: GlossaryInlineProps) {
               key={i}
               href={`/glossary/${c.slug}`}
               className="underline decoration-dotted decoration-goukaku-pink-script/60 underline-offset-2"
+              data-analytics-event="glossary_link_click"
+              data-analytics-props={JSON.stringify({ term: c.text, source: "inline" })}
             >
               {c.text}
             </Link>

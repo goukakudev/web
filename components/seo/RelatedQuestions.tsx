@@ -8,6 +8,7 @@ export interface RelatedQuestionsProps {
   examLabel: string
   examIdSlug?: string
   maxRelated?: number
+  variant?: "default" | "denki"
 }
 
 export function RelatedQuestions({
@@ -16,6 +17,7 @@ export function RelatedQuestions({
   basePath,
   examLabel,
   maxRelated = 5,
+  variant = "default",
 }: RelatedQuestionsProps) {
   const currentTags = new Set(current.tags ?? [])
 
@@ -35,8 +37,21 @@ export function RelatedQuestions({
 
   if (sameTagRelated.length === 0 && !prevQ && !nextQ) return null
 
+  const asideCls =
+    variant === "denki"
+      ? "mt-8 border-t-2 border-[#d8d1bc] pt-6"
+      : "mt-8 border-t border-goukaku-divider pt-6"
+  const navLinkCls =
+    variant === "denki"
+      ? "flex-1 rounded-lg border border-[#d8d1bc] bg-[#fffdf6] px-3 py-2 hover:border-[#191815]"
+      : "flex-1 rounded-lg border border-goukaku-divider px-3 py-2 hover:bg-goukaku-surface"
+  const cardCls =
+    variant === "denki"
+      ? "block rounded-lg border border-[#d8d1bc] bg-[#fffdf6] px-3 py-2 hover:border-[#191815]"
+      : "block rounded-lg border border-goukaku-divider px-3 py-2 hover:bg-goukaku-surface"
+
   return (
-    <aside className="mt-8 border-t border-goukaku-divider pt-6">
+    <aside className={asideCls}>
       <h2 className="text-[14px] font-extrabold mb-3 text-goukaku-ink/80">
         関連問題
       </h2>
@@ -49,7 +64,7 @@ export function RelatedQuestions({
           {prevQ && (
             <Link
               href={`${basePath}/${prevQ.q_number}`}
-              className="flex-1 rounded-lg border border-goukaku-divider px-3 py-2 hover:bg-goukaku-surface"
+              className={navLinkCls}
             >
               ← 問{prevQ.q_number}
             </Link>
@@ -57,7 +72,7 @@ export function RelatedQuestions({
           {nextQ && (
             <Link
               href={`${basePath}/${nextQ.q_number}`}
-              className="flex-1 rounded-lg border border-goukaku-divider px-3 py-2 text-right hover:bg-goukaku-surface"
+              className={`${navLinkCls} text-right`}
             >
               問{nextQ.q_number} →
             </Link>
@@ -78,7 +93,7 @@ export function RelatedQuestions({
                 <li key={q._id}>
                   <Link
                     href={`${basePath}/${q.q_number}`}
-                    className="block rounded-lg border border-goukaku-divider px-3 py-2 hover:bg-goukaku-surface"
+                    className={cardCls}
                   >
                     <span className="text-[11px] font-bold opacity-60">
                       問{q.q_number}

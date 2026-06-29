@@ -8,6 +8,8 @@ export function HeroQuestCard({ subject = "fe" }: { subject?: QuizSubject } = {}
     <Link
       href={href}
       className="block bg-goukaku-lime rounded-[28px] p-5 relative mb-6"
+      data-analytics-event="start_practice_click"
+      data-analytics-props={JSON.stringify({ subject, mode: "random", source: "hero" })}
     >
       <div
         className="text-[22px] text-goukaku-ink-fixed"

@@ -68,7 +68,7 @@ function computeHero(prefix: string): HeroData {
 export function ScHero() {
   const [data, setData] = useState<HeroData>(emptyHero)
   useEffect(() => {
-    setData(computeHero("sc-"))
+    queueMicrotask(() => setData(computeHero("sc-")))
   }, [])
   const maxSpark = Math.max(1, ...data.last7)
   return (

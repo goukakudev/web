@@ -9,7 +9,7 @@ export default function StatsClient() {
   );
 
   useEffect(() => {
-    setStats(aggregateStats());
+    queueMicrotask(() => setStats(aggregateStats()));
   }, []);
 
   if (!stats) {

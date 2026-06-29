@@ -9,7 +9,7 @@ export default function WrongClient() {
   const [ids, setIds] = useState<string[] | null>(null);
 
   useEffect(() => {
-    setIds(recentWrongQuestionIds(undefined, 50));
+    queueMicrotask(() => setIds(recentWrongQuestionIds(undefined, 50)));
   }, []);
 
   if (ids === null) {

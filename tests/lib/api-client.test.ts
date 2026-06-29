@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest"
-import { listExams, listQuestions } from "@/lib/api-client"
+import { listExams, listFeExams, listQuestions } from "@/lib/api-client"
 
 const originalFetch = globalThis.fetch
 const ORIGINAL_ENV = { ...process.env }
@@ -37,6 +37,26 @@ describe("listExams", () => {
   it("throws when API returns non-2xx", async () => {
     globalThis.fetch = vi.fn(async () => new Response("nope", { status: 500 })) as typeof fetch
     await expect(listExams()).rejects.toThrow(/500/)
+  })
+})
+
+describe("listFeExams", () => {
+  it("filters mixed API results to FE exam IDs only", async () => {
+    globalThis.fetch = vi.fn(async () =>
+      new Response(
+        JSON.stringify({
+          exams: [
+            { exam_id: "fe-2025r07-a", exam: "fe", year: "2025", section: "a", question_count: 20 },
+            { exam_id: "ap-2025r07h-a", exam: "ap", year: "2025", section: "a", question_count: 80 },
+          ],
+        }),
+        { status: 200, headers: { "content-type": "application/json" } },
+      ),
+    ) as typeof fetch
+
+    const exams = await listFeExams()
+
+    expect(exams.map((exam) => exam.exam_id)).toEqual(["fe-2025r07-a"])
   })
 })
 

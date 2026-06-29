@@ -23,6 +23,7 @@ const sectionLinks = [
   { href: "/ap", label: "応用情報", match: (p: string) => p === "/ap" || p.startsWith("/ap/") },
   { href: "/sg", label: "情報セキュリティ", match: (p: string) => p === "/sg" || p.startsWith("/sg/") },
   { href: "/sc", label: "安全確保支援士", match: (p: string) => p === "/sc" || p.startsWith("/sc/") },
+  { href: "/denki", label: "電気工事士", match: (p: string) => p === "/denki" || p.startsWith("/denki/") || p === "/dk" || p.startsWith("/dk/") },
   { href: "/takken", label: "宅建", match: (p: string) => p === "/takken" || p.startsWith("/takken/") },
   { href: "/kango", label: "看護師", match: (p: string) => p === "/kango" || p.startsWith("/kango/") },
 ];

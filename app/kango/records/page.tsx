@@ -24,8 +24,10 @@ export default function KangoRecordsPage() {
   const [s, setS] = useState<KangoSummary | null>(null)
   const [breakdown, setBreakdown] = useState<Record<string, { answered: number; correct: number }>>({})
   useEffect(() => {
-    setS(kangoSummary())
-    setBreakdown(kangoExamBreakdown())
+    queueMicrotask(() => {
+      setS(kangoSummary())
+      setBreakdown(kangoExamBreakdown())
+    })
   }, [])
 
   const examEntries = Object.entries(breakdown).sort((a, b) => b[1].answered - a[1].answered)

@@ -16,8 +16,10 @@ export function AnswerFeedbackOverlay({
 
   useEffect(() => {
     if (trigger === 0 || kind === null) return
-    setVisible(true)
-    setAnimateIn(false)
+    queueMicrotask(() => {
+      setVisible(true)
+      setAnimateIn(false)
+    })
     const showId = requestAnimationFrame(() => setAnimateIn(true))
     const fadeOutId = window.setTimeout(() => setAnimateIn(false), 600)
     const hideId = window.setTimeout(() => setVisible(false), 870)

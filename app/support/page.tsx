@@ -8,7 +8,7 @@ const CONTACT_EMAIL = "contact@goukaku.dev";
 export const metadata: Metadata = {
   title: "サポート",
   description:
-    "合格.dev (Web / iOS アプリ) のサポートページ。対応試験 (基本情報技術者試験・宅建士 ほか) のよくある質問と問い合わせ先をまとめています。",
+    "合格.dev (Web / iOS アプリ) のサポートページ。対応試験のよくある質問と問い合わせ先をまとめています。",
   alternates: { canonical: "/support" },
 };
 
@@ -55,7 +55,7 @@ export default function SupportPage() {
         <div className="space-y-5 mt-3">
           <ExamCard
             title="ITパスポート試験 (IP)"
-            description="29 年分・全 2,900 問の過去問・解説・ヒント。ストラテジ / マネジメント / テクノロジの 3 分野別学習に対応。"
+            description="29 回分・全 2,700 問の過去問・解説・ヒント。ストラテジ / マネジメント / テクノロジの 3 分野別学習に対応。"
             webHref="/ip"
             webLabel="IP トップ (Web)"
             appStoreUrl="https://apps.apple.com/jp/app/goukaku-itパスポート-過去問/id6774202965"
@@ -70,12 +70,52 @@ export default function SupportPage() {
             appStoreAlt="基本情報技術者試験 合格.dev を App Store でダウンロード"
           />
           <ExamCard
+            title="応用情報技術者試験 (AP)"
+            description="午前の過去問 18 回分・全 1,440 問を、順番 / ランダム / 150 分模試で演習できます。"
+            webHref="/ap"
+            webLabel="AP トップ (Web)"
+            appStoreUrl="https://apps.apple.com/jp/app/goukaku-応用情報技術者-過去問/id6774940499"
+            appStoreAlt="応用情報技術者試験 合格.dev を App Store でダウンロード"
+          />
+          <ExamCard
+            title="情報セキュリティマネジメント試験 (SG)"
+            description="科目A の公開過去問・解説・ヒント。順番 / ランダム / 90 分模試と分野別学習に対応。"
+            webHref="/sg"
+            webLabel="SG トップ (Web)"
+            appStoreUrl="https://apps.apple.com/app/goukaku-情報セキュリティマネジメント-過去問/id6776073219"
+            appStoreAlt="情報セキュリティマネジメント試験 合格.dev を App Store でダウンロード"
+          />
+          <ExamCard
+            title="情報処理安全確保支援士試験 (SC)"
+            description="午前 II の公開過去問・解説。順番 / ランダム / 40 分模試で演習でき、登録セキスペ対策に使えます。"
+            webHref="/sc"
+            webLabel="SC トップ (Web)"
+            appStoreUrl="https://apps.apple.com/jp/app/goukaku-情報処理安全確保支援士-過去問/id6777353500"
+            appStoreAlt="情報処理安全確保支援士試験 合格.dev を App Store でダウンロード"
+          />
+          <ExamCard
+            title="第二種電気工事士試験"
+            description="学科試験 39 回分・全 1,950 問。図入り問題を含め、順番 / ランダム / 120 分模試で演習できます。"
+            webHref="/denki"
+            webLabel="第二種電気工事士トップ (Web)"
+            appStoreUrl="https://apps.apple.com/jp/app/第二種電気工事士-過去問演/id6782514809"
+            appStoreAlt="第二種電気工事士 合格.dev を App Store でダウンロード"
+          />
+          <ExamCard
             title="宅地建物取引士試験 (宅建)"
             description="4分野 (権利関係 / 宅建業法 / 法令上の制限 / 税その他) の過去問・解説。平成16年度 から 令和7年度 まで・1,200 問以上収録。"
             webHref="/takken"
             webLabel="宅建トップ (Web)"
             appStoreUrl="https://apps.apple.com/jp/app/宅建過去問/id6772390931"
             appStoreAlt="宅建 (宅地建物取引士試験) 合格.dev を App Store でダウンロード"
+          />
+          <ExamCard
+            title="看護師国家試験"
+            description="看護師・保健師・助産師国家試験の過去問。選択肢別解説付きで、順番 / ランダムに演習できます。"
+            webHref="/kango"
+            webLabel="看護師トップ (Web)"
+            appStoreUrl="https://apps.apple.com/jp/app/goukaku-看護師免許-過去問/id6777429272"
+            appStoreAlt="看護師国家試験 合格.dev を App Store でダウンロード"
           />
         </div>
         <p className="mt-4 text-[12px] text-goukaku-ink/60">
@@ -115,7 +155,22 @@ export default function SupportPage() {
           本番形式を模した出題モードです。試験ごとに本試験と同じ制限時間で出題されます。
           <ul className="list-disc pl-5 space-y-1 mt-2">
             <li>
+              <strong>ITパスポート試験:</strong> 120 分タイマー・100 問
+            </li>
+            <li>
               <strong>基本情報技術者試験:</strong> 90 分タイマー
+            </li>
+            <li>
+              <strong>応用情報技術者試験:</strong> 150 分タイマー
+            </li>
+            <li>
+              <strong>情報セキュリティマネジメント試験:</strong> 90 分タイマー
+            </li>
+            <li>
+              <strong>情報処理安全確保支援士試験:</strong> 40 分タイマー
+            </li>
+            <li>
+              <strong>第二種電気工事士試験:</strong> 120 分タイマー
             </li>
             <li>
               <strong>宅建士試験:</strong> 2時間タイマー・50問・合格ライン判定付き
@@ -180,9 +235,9 @@ export default function SupportPage() {
       <Section title="不具合報告のコツ">
         <p>不具合報告の際は以下の情報を含めていただけると、早く解決できます。</p>
         <ul className="list-disc pl-5 space-y-1 mt-2">
-          <li>対象試験 (例: 基本情報技術者試験 / 宅建士)</li>
+          <li>対象試験 (例: ITパスポート試験 / 応用情報技術者試験 / 看護師国家試験)</li>
           <li>利用環境 (iOS アプリ / Web 版)</li>
-          <li>端末モデル (例: iPhone 15 Pro, iPad Pro 13", MacBook Air)</li>
+          <li>端末モデル (例: iPhone 15 Pro, iPad Pro 13&quot;, MacBook Air)</li>
           <li>OS / ブラウザのバージョン (iOS 17.4 / Safari 17 等)</li>
           <li>アプリのバージョン (iOS アプリの場合)</li>
           <li>再現手順</li>

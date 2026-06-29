@@ -1,4 +1,4 @@
-import { listExams } from "@/lib/api-client"
+import { listFeExams } from "@/lib/api-client"
 import { renderOgImage, OG_SIZE, OG_CONTENT_TYPE } from "@/lib/seo/og"
 
 export const size = OG_SIZE
@@ -11,7 +11,7 @@ export default async function Image({
   params: Promise<{ examId: string }>
 }) {
   const { examId } = await params
-  const exams = await listExams()
+  const exams = await listFeExams()
   const exam = exams.find((e) => e.exam_id === examId)
   const label =
     exam?.title ?? `${exam?.year ?? ""} ${exam?.section ?? ""}`.trim()

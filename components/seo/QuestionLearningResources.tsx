@@ -46,9 +46,9 @@ const COPY: Record<ExamKey, { full: string; abbrev: string; guide: string; faq: 
   dk: {
     full: "第二種電気工事士 学科試験",
     abbrev: "DK",
-    guide: "/dk/guide",
-    faq: "/dk/faq",
-    top: "/dk",
+    guide: "/denki/guide",
+    faq: "/denki/faq",
+    top: "/denki",
     topLabel: "第二種電気工事士トップ",
   },
   kango: {
@@ -71,14 +71,24 @@ const COPY: Record<ExamKey, { full: string; abbrev: string; guide: string; faq: 
 
 interface Props {
   examKey: ExamKey
+  variant?: "default" | "denki"
 }
 
-export function QuestionLearningResources({ examKey }: Props) {
+export function QuestionLearningResources({ examKey, variant = "default" }: Props) {
   const c = COPY[examKey]
+  const containerCls =
+    variant === "denki"
+      ? "mt-8 rounded-lg border-2 border-[#191815] bg-[#fffdf6] p-5 shadow-[4px_4px_0_#191815]"
+      : "mt-8 rounded-2xl border border-goukaku-divider bg-goukaku-surface/40 p-5"
+  const buttonCls =
+    variant === "denki"
+      ? "inline-flex items-center rounded-lg border border-[#191815]/20 bg-[#f5f2e8] px-3 py-1.5 text-[12px] font-black text-[#191815] hover:border-[#191815]"
+      : "inline-flex items-center rounded-full border border-goukaku-divider bg-goukaku-surface px-3 py-1.5 text-[12px] font-extrabold text-goukaku-ink/80 hover:text-goukaku-ink"
+
   return (
     <aside
       aria-label={`${c.full} の学習リソース`}
-      className="mt-8 rounded-2xl border border-goukaku-divider bg-goukaku-surface/40 p-5"
+      className={containerCls}
     >
       <h2 className="text-[14px] font-extrabold text-goukaku-ink/85 mb-2">
         {c.abbrev} の学習リソース
@@ -94,19 +104,19 @@ export function QuestionLearningResources({ examKey }: Props) {
       <div className="flex flex-wrap gap-2">
         <Link
           href={c.guide}
-          className="inline-flex items-center rounded-full border border-goukaku-divider bg-goukaku-surface px-3 py-1.5 text-[12px] font-extrabold text-goukaku-ink/80 hover:text-goukaku-ink"
+          className={buttonCls}
         >
           📘 {c.abbrev} 学習ガイドを読む →
         </Link>
         <Link
           href={c.faq}
-          className="inline-flex items-center rounded-full border border-goukaku-divider bg-goukaku-surface px-3 py-1.5 text-[12px] font-extrabold text-goukaku-ink/80 hover:text-goukaku-ink"
+          className={buttonCls}
         >
           ❓ {c.abbrev} FAQ
         </Link>
         <Link
           href={c.top}
-          className="inline-flex items-center rounded-full border border-goukaku-divider bg-goukaku-surface px-3 py-1.5 text-[12px] font-extrabold text-goukaku-ink/80 hover:text-goukaku-ink"
+          className={buttonCls}
         >
           🏠 {c.topLabel}
         </Link>

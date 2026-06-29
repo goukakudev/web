@@ -152,10 +152,12 @@ export function KangoQuiz({
   // 全問シャッフル→先頭 limit 件に絞り、states も作り直す。
   useEffect(() => {
     if (shuffle) {
-      const sh = shuffleArr(initial).slice(0, limit ?? initial.length)
-      setQuestions(sh)
-      setStates(sh.map(() => ({ selected: [], revealed: false, numericText: "" })))
-      setIdx(0)
+      queueMicrotask(() => {
+        const sh = shuffleArr(initial).slice(0, limit ?? initial.length)
+        setQuestions(sh)
+        setStates(sh.map(() => ({ selected: [], revealed: false, numericText: "" })))
+        setIdx(0)
+      })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -165,7 +167,7 @@ export function KangoQuiz({
   const st = states[idx]
 
   useEffect(() => {
-    if (q) setBookmarked(isKangoBookmarked(q._id))
+    if (q) queueMicrotask(() => setBookmarked(isKangoBookmarked(q._id)))
   }, [q])
 
   // 用語シートは Escape でも閉じる。

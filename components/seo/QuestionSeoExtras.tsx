@@ -15,6 +15,7 @@ export interface QuestionSeoExtrasProps {
   /** この設問の解答統計 (正答率)。無ければ正答率は出さない。 */
   stat?: QuestionStat
   tags?: string[]
+  variant?: "default" | "denki"
 }
 
 function stripPlain(text: string): string {
@@ -46,6 +47,7 @@ export function QuestionSeoExtras({
   examUrl,
   stat,
   tags,
+  variant = "default",
 }: QuestionSeoExtrasProps) {
   const acceptedChoice = correctLabel
     ? choices.find((c) => c.label === correctLabel)
@@ -67,11 +69,17 @@ export function QuestionSeoExtras({
       ? `これまでの受験者の正答率は約${Math.round(rate)}%です。`
       : `各選択肢の正誤も解説付きで確認できます。`)
 
+  const sectionCls =
+    variant === "denki"
+      ? "mt-8 border-t-2 border-[#d8d1bc] pt-6 text-[13px] leading-[1.85]"
+      : "mt-8 border-t border-goukaku-divider pt-6 text-[13px] leading-[1.85]"
+  const mutedHeadingCls =
+    variant === "denki"
+      ? "mb-1.5 text-[13px] font-black text-[#6c6252]"
+      : "text-[13px] font-bold text-goukaku-ink/55 mb-1.5"
+
   return (
-    <section
-      className="mt-8 border-t border-goukaku-divider pt-6 text-[13px] leading-[1.85]"
-      aria-label="この問題の正解と解説"
-    >
+    <section className={sectionCls} aria-label="この問題の正解と解説">
       <h2 className="text-[15px] font-extrabold mb-2.5 text-goukaku-ink/85">
         解説
       </h2>
@@ -79,7 +87,7 @@ export function QuestionSeoExtras({
 
       {acceptedChoice && correctLabel && (
         <div className="mb-5">
-          <h3 className="text-[13px] font-bold text-goukaku-ink/55 mb-1.5">
+          <h3 className={mutedHeadingCls}>
             正解
           </h3>
           <p className="text-goukaku-ink/85">
@@ -98,7 +106,7 @@ export function QuestionSeoExtras({
 
       {explanation?.overall && (
         <div className="mb-5">
-          <h3 className="text-[13px] font-bold text-goukaku-ink/55 mb-1.5">
+          <h3 className={mutedHeadingCls}>
             問題の解説
           </h3>
           <p className="text-goukaku-ink/85">
@@ -109,7 +117,7 @@ export function QuestionSeoExtras({
 
       {explanation?.per_choice && explanation.per_choice.length > 0 && (
         <div className="mb-5">
-          <h3 className="text-[13px] font-bold text-goukaku-ink/55 mb-2">
+          <h3 className={variant === "denki" ? "mb-2 text-[13px] font-black text-[#6c6252]" : "text-[13px] font-bold text-goukaku-ink/55 mb-2"}>
             選択肢ごとの解説
           </h3>
           <ul className="space-y-2">
@@ -127,7 +135,7 @@ export function QuestionSeoExtras({
         </div>
       )}
 
-      <p className="text-[11px] opacity-60 pt-3 border-t border-goukaku-divider">
+      <p className={variant === "denki" ? "border-t border-[#d8d1bc] pt-3 text-[11px] opacity-60" : "text-[11px] opacity-60 pt-3 border-t border-goukaku-divider"}>
         <Link href={examUrl} className="underline">
           {examLabel} の過去問一覧
         </Link>

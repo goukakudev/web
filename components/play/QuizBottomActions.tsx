@@ -6,10 +6,10 @@ const IOS_APP_URLS: Record<QuizExamKey, string | null> = {
   fe: "https://apps.apple.com/jp/app/基本情報技術者-過去問/id6770801070",
   ip: "https://apps.apple.com/jp/app/goukaku-itパスポート-過去問/id6774202965",
   tk: "https://apps.apple.com/jp/app/宅建過去問/id6772390931",
-  ap: null,
+  ap: "https://apps.apple.com/jp/app/goukaku-応用情報技術者-過去問/id6774940499",
   sg: "https://apps.apple.com/app/goukaku-情報セキュリティマネジメント-過去問/id6776073219",
-  sc: null,
-  dk: null,
+  sc: "https://apps.apple.com/jp/app/goukaku-情報処理安全確保支援士-過去問/id6777353500",
+  dk: "https://apps.apple.com/jp/app/第二種電気工事士-過去問演/id6782514809",
 }
 
 const EXAM_LABELS: Record<QuizExamKey, string> = {
@@ -24,7 +24,7 @@ const EXAM_LABELS: Record<QuizExamKey, string> = {
 
 interface Props {
   examKey: QuizExamKey
-  variant?: "default" | "takken"
+  variant?: "default" | "takken" | "denki"
 }
 
 export function QuizBottomActions({ examKey, variant = "default" }: Props) {
@@ -33,17 +33,24 @@ export function QuizBottomActions({ examKey, variant = "default" }: Props) {
 
   const examLabel = EXAM_LABELS[examKey]
   const isTakken = variant === "takken"
+  const isDenki = variant === "denki"
 
   const containerCls = isTakken
     ? "mx-auto mt-8 max-w-3xl rounded-xl border border-tk-line bg-tk-card/40 px-4 py-5"
+    : isDenki
+      ? "mt-8 rounded-lg border-2 border-[#191815] bg-[#fffdf6] px-4 py-5 shadow-[4px_4px_0_#191815]"
     : "mt-8 rounded-xl border border-goukaku-divider bg-goukaku-surface px-4 py-5"
 
   const titleCls = isTakken
     ? "text-[12px] font-bold text-tk-ink-2"
+    : isDenki
+      ? "text-[12px] font-black text-[#191815]"
     : "text-[12px] font-bold text-goukaku-ink/80"
 
   const subCls = isTakken
     ? "text-[11px] leading-relaxed text-tk-ink-3"
+    : isDenki
+      ? "text-[11px] leading-relaxed text-[#6c6252]"
     : "text-[11px] leading-relaxed text-goukaku-ink/60"
 
   return (
@@ -66,6 +73,8 @@ export function QuizBottomActions({ examKey, variant = "default" }: Props) {
           className="mt-1 inline-block"
           aria-label={`${examLabel} の iOS アプリを App Store で開く`}
           data-testid={`quiz-bottom-actions-${examKey}-ios`}
+          data-analytics-event="app_store_click"
+          data-analytics-props={JSON.stringify({ subject: examKey, source: "quiz_bottom" })}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img

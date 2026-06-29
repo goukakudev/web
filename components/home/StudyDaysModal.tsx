@@ -1,9 +1,13 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { listExams, listQuestions } from "@/lib/api-client"
+import {
+  listClientQuestions,
+  playPathForExamId,
+  subjectForExamId,
+} from "@/lib/client-exam-api"
 import { getAllAnswers } from "@/lib/local-store"
-import type { Question, ExamSummary } from "@/lib/types"
+import type { Question } from "@/lib/types"
 
 export interface StudyDaysModalProps {
   open: boolean
@@ -14,6 +18,7 @@ interface WrongRow {
   questionId: string
   examId: string
   qNumber: number
+  href: string
   bodyPreview: string
 }
 
@@ -64,9 +69,11 @@ export function StudyDaysModal({ open, onClose }: StudyDaysModalProps) {
   // load wrong answers for the selected day
   useEffect(() => {
     if (!selectedDayKey) {
-      setWrongRows([])
-      setWrongError(null)
-      setWrongLoading(false)
+      queueMicrotask(() => {
+        setWrongRows([])
+        setWrongError(null)
+        setWrongLoading(false)
+      })
       return
     }
     let cancelled = false
@@ -93,14 +100,14 @@ export function StudyDaysModal({ open, onClose }: StudyDaysModalProps) {
         return
       }
       try {
-        const exams: ExamSummary[] = await listExams()
         const examIds = new Set(wrongRecords.map((r) => r.exam_id))
-        const idToTitle = new Map(exams.map((e) => [e.exam_id, e.title ?? e.exam_id]))
         const lists: Map<string, Question[]> = new Map()
         await Promise.all(
           [...examIds].map(async (id) => {
+            const subject = subjectForExamId(id)
+            if (!subject) return
             try {
-              lists.set(id, await listQuestions(id))
+              lists.set(id, await listClientQuestions(subject, id))
             } catch {
               // ignore individual exam failure
             }
@@ -115,9 +122,9 @@ export function StudyDaysModal({ open, onClose }: StudyDaysModalProps) {
               questionId: q._id,
               examId,
               qNumber: q.q_number,
+              href: playPathForExamId(examId, q.q_number),
               bodyPreview: q.body,
             })
-            void idToTitle
           }
         }
         rows.sort((a, b) => a.examId.localeCompare(b.examId) || a.qNumber - b.qNumber)
@@ -132,7 +139,9 @@ export function StudyDaysModal({ open, onClose }: StudyDaysModalProps) {
         }
       }
     }
-    void run()
+    queueMicrotask(() => {
+      void run()
+    })
     return () => {
       cancelled = true
     }
@@ -380,7 +389,7 @@ function WrongList({
             {rows.map((r) => (
               <li key={r.questionId}>
                 <a
-                  href={`/fe/play/${r.examId}/q/${r.qNumber}`}
+                  href={r.href}
                   onClick={onJump}
                   className="block p-3 bg-goukaku-surface rounded-xl border border-goukaku-divider"
                 >
@@ -412,7 +421,7 @@ function formatDay(key: string): string {
 
 function computeStreak(keys: Set<string>, today: Date): number {
   const todayKey = toDayKey(today)
-  let cursor = new Date(today)
+  const cursor = new Date(today)
   if (!keys.has(todayKey)) {
     cursor.setDate(cursor.getDate() - 1)
     if (!keys.has(toDayKey(cursor))) return 0

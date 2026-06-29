@@ -17,10 +17,12 @@ export function ExamTimer({
   startedAt,
   onTimeout,
   durationSeconds = DEFAULT_DURATION_SECONDS,
+  variant = "default",
 }: {
   startedAt: number;
   onTimeout: () => void;
   durationSeconds?: number;
+  variant?: "default" | "denki";
 }) {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
@@ -36,10 +38,12 @@ export function ExamTimer({
   }, [remaining, onTimeout]);
 
   const warn = remaining <= 300;
+  const cls =
+    variant === "denki"
+      ? `inline-flex min-h-9 items-center rounded-lg border border-[#191815]/20 bg-[#fffdf6] px-3 text-[13px] tabular-nums font-black ${warn ? "text-[#c7372f]" : "text-[#191815]"}`
+      : `tabular-nums font-extrabold ${warn ? "text-red-600" : "text-goukaku-ink"}`
   return (
-    <span
-      className={`tabular-nums font-extrabold ${warn ? "text-red-600" : "text-goukaku-ink"}`}
-    >
+    <span className={cls}>
       {format(remaining)}
     </span>
   );

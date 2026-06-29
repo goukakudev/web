@@ -25,6 +25,7 @@ export interface TagPageContentProps {
   examBase: string
   /** Full label e.g. "基本情報技術者試験" — for description text. */
   subjectFullName: string
+  variant?: "default" | "denki"
 }
 
 export function TagPageContent({
@@ -39,6 +40,7 @@ export function TagPageContent({
   playBase,
   examBase,
   subjectFullName,
+  variant = "default",
 }: TagPageContentProps) {
   const examYearSet = new Set<string>()
   for (const q of questions) examYearSet.add(q.exam_id)
@@ -63,10 +65,16 @@ export function TagPageContent({
         })}
       />
       <div className="flex items-center gap-2 mb-3">
-        <span className="inline-flex items-center bg-goukaku-cool/35 text-[#1a8acb] text-[13px] font-extrabold px-2.5 py-1.5 rounded-xl">
+        <span
+          className={
+            variant === "denki"
+              ? "inline-flex items-center rounded-lg border border-[#191815]/15 bg-[#b8f3f2] px-2.5 py-1.5 text-[13px] font-black text-[#005c63]"
+              : "inline-flex items-center bg-goukaku-cool/35 text-[#1a8acb] text-[13px] font-extrabold px-2.5 py-1.5 rounded-xl"
+          }
+        >
           #{display}
         </span>
-        <span className="text-[12px] font-extrabold text-goukaku-ink/55">
+        <span className={variant === "denki" ? "text-[12px] font-black text-[#6c6252]" : "text-[12px] font-extrabold text-goukaku-ink/55"}>
           {questions.length} 問
         </span>
       </div>
@@ -92,6 +100,8 @@ export function TagPageContent({
                 question={q}
                 exam={examsById.get(q.exam_id)}
                 subject={subject}
+                playBase={playBase}
+                variant={variant}
               />
             ))}
           </div>
@@ -109,7 +119,11 @@ export function TagPageContent({
                   <li key={t.tag}>
                     <Link
                       href={`${tagBase}/${tagToSlug(t.tag)}`}
-                      className="inline-flex items-center gap-1.5 rounded-full border border-goukaku-divider bg-goukaku-surface/40 px-2.5 py-1 text-[12px] hover:bg-goukaku-surface"
+                      className={
+                        variant === "denki"
+                          ? "inline-flex items-center gap-1.5 rounded-lg border border-[#191815]/15 bg-[#fffdf6] px-2.5 py-1 text-[12px] hover:border-[#191815]"
+                          : "inline-flex items-center gap-1.5 rounded-full border border-goukaku-divider bg-goukaku-surface/40 px-2.5 py-1 text-[12px] hover:bg-goukaku-surface"
+                      }
                     >
                       <span className="font-bold">{t.tag}</span>
                       <span className="text-[10px] opacity-60 tabular-nums">
@@ -135,7 +149,11 @@ export function TagPageContent({
                   <li key={exam.exam_id}>
                     <Link
                       href={`${examBase}/${exam.exam_id}`}
-                      className="block rounded-lg border border-goukaku-divider bg-goukaku-surface/40 px-3 py-2 text-[12px] hover:bg-goukaku-surface"
+                      className={
+                        variant === "denki"
+                          ? "block rounded-lg border border-[#d8d1bc] bg-[#fffdf6] px-3 py-2 text-[12px] hover:border-[#191815]"
+                          : "block rounded-lg border border-goukaku-divider bg-goukaku-surface/40 px-3 py-2 text-[12px] hover:bg-goukaku-surface"
+                      }
                     >
                       <span className="font-bold truncate block">
                         {exam.title ?? exam.exam_id}

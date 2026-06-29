@@ -41,7 +41,7 @@ function readStatsByExam(): Map<string, Stats> {
 export function ScYearLedger({ exams }: { exams: ExamSummary[] }) {
   const [statsByExam, setStatsByExam] = useState<Map<string, Stats>>(new Map())
   useEffect(() => {
-    setStatsByExam(readStatsByExam())
+    queueMicrotask(() => setStatsByExam(readStatsByExam()))
   }, [])
 
   return (

@@ -216,6 +216,249 @@ body {
 }
 
 /* ============================================================
+   第二種電気工事士 — /denki/* 専用。トップページのコントロール盤風UIに
+   汎用演習コンポーネントの配色も寄せる。
+   ============================================================ */
+.denki-root {
+  --denki-bg: #f5f2e8;
+  --denki-surface: #fffdf6;
+  --denki-warm: #fff8cf;
+  --denki-accent: #ffe25a;
+  --denki-on-accent: #191815;
+  --denki-cool: #b8f3f2;
+  --denki-solid: #191815;
+  --denki-ink: #191815;
+  --denki-text-soft: #4d473a;
+  --denki-muted: #6c6252;
+  --denki-line: #d8d1bc;
+  --denki-disabled: #e5dfcf;
+  --denki-teal: #007c83;
+  --denki-cyan-text: #005c63;
+  --denki-danger: #c7372f;
+  --denki-danger-bg: #ffe1d8;
+  --denki-success: #2f7d32;
+  --denki-success-bg: #f0fadf;
+  --denki-success-bg-strong: #e6f7d7;
+  --denki-strong-border: #191815;
+  --denki-focus: #007c83;
+  --denki-ink-rgb: 25 24 21;
+  --denki-line-rgb: 216 209 188;
+  --color-goukaku-lime: #ffe25a;
+  --color-goukaku-pink: #ffe1d8;
+  --color-goukaku-pink-script: #c7372f;
+  --color-goukaku-cool: #b8f3f2;
+  --color-goukaku-accent-purple: #007c83;
+  --color-goukaku-ink: #191815;
+  --color-goukaku-bg: #f5f2e8;
+  --color-goukaku-warm: #fff8cf;
+  --color-goukaku-surface: #fffdf6;
+  --color-goukaku-divider: rgba(25, 24, 21, 0.16);
+  min-height: 100dvh;
+  background:
+    linear-gradient(90deg, rgba(25, 24, 21, 0.035) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(25, 24, 21, 0.035) 1px, transparent 1px),
+    var(--denki-bg);
+  background-size: 28px 28px;
+  color: var(--denki-ink);
+}
+
+[data-theme="dark"] .denki-root {
+  color-scheme: dark;
+  --denki-bg: #11100d;
+  --denki-surface: #1d1b16;
+  --denki-warm: #282313;
+  --denki-accent: #ffd84a;
+  --denki-on-accent: #191815;
+  --denki-cool: #164f52;
+  --denki-solid: #070705;
+  --denki-ink: #f8f2df;
+  --denki-text-soft: #ded3b8;
+  --denki-muted: #bfb69e;
+  --denki-line: #4d4530;
+  --denki-disabled: #2e291f;
+  --denki-teal: #73e1dd;
+  --denki-cyan-text: #b6fffb;
+  --denki-danger: #ff8178;
+  --denki-danger-bg: #3a1815;
+  --denki-success: #78d57d;
+  --denki-success-bg: #142615;
+  --denki-success-bg-strong: #17351a;
+  --denki-strong-border: #f2ddb2;
+  --denki-focus: #73e1dd;
+  --denki-ink-rgb: 248 242 223;
+  --denki-line-rgb: 77 69 48;
+  --color-goukaku-lime: var(--denki-accent);
+  --color-goukaku-pink: #3b211f;
+  --color-goukaku-pink-script: var(--denki-danger);
+  --color-goukaku-cool: #164f52;
+  --color-goukaku-accent-purple: var(--denki-teal);
+  --color-goukaku-ink: var(--denki-ink);
+  --color-goukaku-bg: var(--denki-bg);
+  --color-goukaku-warm: var(--denki-warm);
+  --color-goukaku-surface: var(--denki-surface);
+  --color-goukaku-divider: rgba(248, 242, 223, 0.16);
+  background:
+    linear-gradient(90deg, rgba(255, 216, 74, 0.05) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(255, 216, 74, 0.05) 1px, transparent 1px),
+    var(--denki-bg);
+  color: var(--denki-ink);
+}
+
+.denki-root :where([class~="bg-[#f5f2e8]"]) {
+  background-color: var(--denki-bg);
+}
+
+.denki-root :where([class~="bg-[#fffdf6]"], [class~="bg-white"]) {
+  background-color: var(--denki-surface);
+}
+
+.denki-root :where([class~="bg-[#fff8cf]"]) {
+  background-color: var(--denki-warm);
+}
+
+.denki-root :where([class~="bg-[#ffe25a]"]) {
+  background-color: var(--denki-accent);
+}
+
+.denki-root :where([class~="bg-[#e6f7d7]"]) {
+  background-color: var(--denki-success-bg-strong);
+}
+
+.denki-root :where([class~="bg-[#f0fadf]"]) {
+  background-color: var(--denki-success-bg);
+}
+
+.denki-root :where([class~="bg-[#ffe1d8]"]) {
+  background-color: var(--denki-danger-bg);
+}
+
+.denki-root :where([class~="bg-[#b8f3f2]"]) {
+  background-color: var(--denki-cool);
+}
+
+.denki-root :where([class~="bg-[#191815]"]) {
+  background-color: var(--denki-solid);
+}
+
+.denki-root :where([class~="bg-[#191815]/35"]) {
+  background-color: rgb(var(--denki-ink-rgb) / 0.35);
+}
+
+.denki-root :where([class~="bg-[#d8d1bc]/55"]) {
+  background-color: rgb(var(--denki-line-rgb) / 0.55);
+}
+
+.denki-root :where([class~="bg-[#e5dfcf]"]) {
+  background-color: var(--denki-disabled);
+}
+
+.denki-root :where([class~="hover:bg-[#fffdf6]"]):is(:hover, :focus, :focus-visible) {
+  background-color: var(--denki-surface);
+  color: var(--denki-ink);
+}
+
+.denki-root :where([class~="hover:bg-[#fff8cf]"]):is(:hover, :focus, :focus-visible) {
+  background-color: var(--denki-warm);
+  color: var(--denki-ink);
+}
+
+.denki-root :where([class~="hover:bg-[#b8f3f2]"]):is(:hover, :focus, :focus-visible) {
+  background-color: var(--denki-cool);
+  color: var(--denki-ink);
+}
+
+.denki-root :where([class~="text-[#191815]"]) {
+  color: var(--denki-ink);
+}
+
+.denki-root :where([class~="text-[#191815]/50"]) {
+  color: rgb(var(--denki-ink-rgb) / 0.5);
+}
+
+.denki-root :where([class~="text-[#4d473a]"]) {
+  color: var(--denki-text-soft);
+}
+
+.denki-root :where([class~="text-[#6c6252]"]) {
+  color: var(--denki-muted);
+}
+
+.denki-root :where([class~="text-[#007c83]"]) {
+  color: var(--denki-teal);
+}
+
+.denki-root :where([class~="text-[#005c63]"]) {
+  color: var(--denki-cyan-text);
+}
+
+.denki-root :where([class~="text-[#c7372f]"]) {
+  color: var(--denki-danger);
+}
+
+.denki-root :where([class~="border-[#c7372f]"]) {
+  border-color: var(--denki-danger);
+}
+
+.denki-root :where([class~="border-[#2f7d32]"]) {
+  border-color: var(--denki-success);
+}
+
+.denki-root :where([class~="text-[#ffe25a]"]) {
+  color: var(--denki-accent);
+}
+
+[data-theme="dark"] .denki-root :where(
+  [class~="bg-[#e6f7d7]"],
+  [class~="bg-[#f0fadf]"],
+  [class~="bg-[#ffe1d8]"]
+) {
+  color: var(--denki-ink);
+}
+
+.denki-root :where([class~="bg-[#ffe25a]"]) {
+  color: var(--denki-on-accent);
+}
+
+.denki-root :where([class~="bg-[#ffe25a]"]) :where([class~="text-[#191815]"]) {
+  color: var(--denki-on-accent);
+}
+
+.denki-root :where([class~="border-[#191815]"]) {
+  border-color: var(--denki-strong-border);
+}
+
+.denki-root :where([class~="border-[#191815]/15"]) {
+  border-color: rgb(var(--denki-ink-rgb) / 0.15);
+}
+
+.denki-root :where([class~="border-[#191815]/20"]) {
+  border-color: rgb(var(--denki-ink-rgb) / 0.2);
+}
+
+.denki-root :where([class~="border-[#191815]/30"]) {
+  border-color: rgb(var(--denki-ink-rgb) / 0.3);
+}
+
+.denki-root :where([class~="border-[#d8d1bc]"]) {
+  border-color: var(--denki-line);
+}
+
+.denki-root :where([class~="divide-[#d8d1bc]"]) > :not([hidden]) ~ :not([hidden]) {
+  border-color: var(--denki-line);
+}
+
+.denki-root a,
+.denki-root button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.denki-root a:focus-visible,
+.denki-root button:focus-visible {
+  outline: 3px solid var(--denki-focus);
+  outline-offset: 3px;
+}
+
+/* ============================================================
    Takken-scoped overrides — /takken/* ページ専用 (.tk-root)
    ============================================================ */
 .tk-root {

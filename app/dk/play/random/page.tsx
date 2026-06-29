@@ -5,6 +5,7 @@ import {
 } from "@/lib/api-client"
 import { MobileFrame } from "@/components/layout/MobileFrame"
 import { PlayController } from "@/components/play/PlayController"
+import { shuffledCopy } from "@/lib/server-random"
 import type { Question, ExamSummary, QuestionStat } from "@/lib/types"
 
 const VIRTUAL_EXAM: ExamSummary = {
@@ -25,11 +26,7 @@ export default async function DkPlayRandomPage({ searchParams }: PageProps) {
   const limit = Math.max(1, Math.min(100, Number(count ?? 20) || 20))
 
   const exams = await listDkExams()
-  const shuffledExams = [...exams]
-  for (let i = shuffledExams.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[shuffledExams[i], shuffledExams[j]] = [shuffledExams[j], shuffledExams[i]]
-  }
+  const shuffledExams = shuffledCopy(exams)
   const targetPoolSize = limit * 3
   const selectedExams: typeof exams = []
   let pool = 0
@@ -44,11 +41,7 @@ export default async function DkPlayRandomPage({ searchParams }: PageProps) {
     ),
   )
   const all: Question[] = questionLists.flat()
-  const shuffled = [...all]
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
-  }
+  const shuffled = shuffledCopy(all)
   const seed = shuffled.slice(0, limit)
   const examIdsInSeed = Array.from(new Set(seed.map((q) => q.exam_id)))
   const statsResults = await Promise.all(

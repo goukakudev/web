@@ -25,7 +25,7 @@ export function ActionBar({
   const [sheet, setSheet] = useState<Sheet>(null);
 
   useEffect(() => {
-    setVote(getTkVote(questionId));
+    queueMicrotask(() => setVote(getTkVote(questionId)));
   }, [questionId]);
 
   const handleVote = (pressed: VoteValue) => {

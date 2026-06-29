@@ -1,9 +1,8 @@
 import type { Metadata } from "next"
-import Script from "next/script"
-import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import { PendingFlusher } from "@/components/common/PendingFlusher"
 import { CookieConsent } from "@/components/common/CookieConsent"
+import { AnalyticsEvents } from "@/components/common/AnalyticsEvents"
 import { SITE_NAME, SITE_URL, websiteJsonLd, organizationJsonLd } from "@/lib/seo/structured-data"
 import { JsonLd } from "@/components/seo/JsonLd"
 
@@ -52,20 +51,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ja">
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-      </head>
-      <body>
-        <Script
+        <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-0806107180807915"
           crossOrigin="anonymous"
-          strategy="afterInteractive"
         />
+      </head>
+      <body>
         <JsonLd data={websiteJsonLd()} />
         <JsonLd data={organizationJsonLd()} />
         <PendingFlusher />
+        <AnalyticsEvents />
         {children}
         <CookieConsent />
-        <Analytics />
       </body>
     </html>
   )

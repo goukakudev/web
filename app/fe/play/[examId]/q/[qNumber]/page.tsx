@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { listExams, listQuestions, getExamStats } from "@/lib/api-client";
+import { listFeExams, listQuestions, getExamStats } from "@/lib/api-client";
 import { MobileFrame } from "@/components/layout/MobileFrame";
 import { PlayController } from "@/components/play/PlayController";
 import type { QuestionStat } from "@/lib/types";
@@ -13,6 +13,11 @@ import { RelatedQuestions } from "@/components/seo/RelatedQuestions";
 import { QuestionLearningResources } from "@/components/seo/QuestionLearningResources";
 import { QuizBottomActions } from "@/components/play/QuizBottomActions";
 import { stripMd } from "@/lib/text-utils";
+import {
+  questionCanonicalPath,
+  questionSeoDescription,
+  questionSeoTitle,
+} from "@/lib/seo/question-url";
 
 interface PageProps {
   params: Promise<{ examId: string; qNumber: string }>;
@@ -27,18 +32,16 @@ export async function generateMetadata({
 
   try {
     const [exams, questions] = await Promise.all([
-      listExams(),
+      listFeExams(),
       listQuestions(examId),
     ]);
     const exam = exams.find((e) => e.exam_id === examId);
     const q = questions.find((q) => q.q_number === n);
     if (!exam || !q) return {};
 
-    const examLabel = exam.title ?? `${exam.year} ${exam.section}`;
-    const bodyPreview = stripMd(q.body).slice(0, 90);
-    const title = `${examLabel} 午前 問${n}：${bodyPreview}`;
-    const description = `基本情報技術者試験 ${examLabel} 午前 問${n} の問題本文・選択肢・正解・解説。${bodyPreview}…`;
-    const canonical = `/fe/play/${exam.exam_id}/q/${n}`;
+    const title = questionSeoTitle("fe", exam, q);
+    const description = questionSeoDescription("fe", exam, q);
+    const canonical = questionCanonicalPath("fe", exam, q);
 
     return makeMetadata({ title, description, path: canonical, type: "article" });
   } catch {
@@ -51,13 +54,13 @@ export default async function FePlayQuestionPage({ params }: PageProps) {
   const n = Number(qNumber);
   if (!Number.isInteger(n) || n < 1) notFound();
 
-  const [exams, questions, statsMap] = await Promise.all([
-    listExams(),
+  const exams = await listFeExams();
+  const exam = exams.find((e) => e.exam_id === examId);
+  if (!exam) notFound();
+  const [questions, statsMap] = await Promise.all([
     listQuestions(examId),
     getExamStats(examId),
   ]);
-  const exam = exams.find((e) => e.exam_id === examId);
-  if (!exam) notFound();
   // Filter stats to only entries whose question_id belongs to this exam.
   // The upstream stats DB can include pollution from old test data; passing
   // the unfiltered map to the client component blows up the RSC payload
@@ -91,7 +94,8 @@ export default async function FePlayQuestionPage({ params }: PageProps) {
         },
   );
 
-  const url = `${SITE_URL}/fe/play/${exam.exam_id}/q/${n}`;
+  const canonicalPath = questionCanonicalPath("fe", exam, q);
+  const url = `${SITE_URL}${canonicalPath}`;
   const examLabel = exam.title ?? exam.exam_id;
   const examUrl = `/fe/exam/${exam.exam_id}`;
 

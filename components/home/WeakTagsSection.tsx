@@ -14,12 +14,20 @@ export function WeakTagsSection({
   const [tags, setTags] = useState<WeakTag[] | null>(null)
 
   useEffect(() => {
-    const deviceId = getDeviceId()
-    if (!deviceId) {
-      setTags([])
-      return
+    let cancelled = false
+    queueMicrotask(() => {
+      const deviceId = getDeviceId()
+      if (!deviceId) {
+        if (!cancelled) setTags([])
+        return
+      }
+      fetchWeakTags(deviceId, 10).then((next) => {
+        if (!cancelled) setTags(next)
+      })
+    })
+    return () => {
+      cancelled = true
     }
-    fetchWeakTags(deviceId, 10).then(setTags)
   }, [])
 
   if (tags === null || tags.length === 0) return null

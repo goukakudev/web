@@ -13,17 +13,18 @@ export function TopBar() {
   const [hydrated, setHydrated] = useState(false)
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- random phrase must run after hydration to keep SSR deterministic
-    setPhrase(randomPhrase())
-    setStreak(computeStreak())
-    setHydrated(true)
+    queueMicrotask(() => {
+      setPhrase(randomPhrase())
+      setStreak(computeStreak())
+      setHydrated(true)
+    })
   }, [])
 
   // Recompute streak whenever modal closes (user may have answered new questions)
   useEffect(() => {
     if (!hydrated) return
     if (open) return
-    setStreak(computeStreak())
+    queueMicrotask(() => setStreak(computeStreak()))
   }, [open, hydrated])
 
   return (
@@ -75,7 +76,7 @@ function computeStreak(): number {
     days.add(toDayKey(d))
   }
   const today = new Date()
-  let cursor = new Date(today)
+  const cursor = new Date(today)
   if (!days.has(toDayKey(cursor))) {
     cursor.setDate(cursor.getDate() - 1)
     if (!days.has(toDayKey(cursor))) return 0
@@ -94,4 +95,3 @@ function toDayKey(d: Date): string {
   const day = String(d.getDate()).padStart(2, "0")
   return `${y}-${m}-${day}`
 }
-

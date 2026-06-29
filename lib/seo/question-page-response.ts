@@ -1,0 +1,54 @@
+import {
+  loadSeoQuestionPageData,
+  type SeoQuestionPageData,
+} from "@/lib/seo/question-page-data"
+import {
+  renderQuestionNotFoundHtml,
+  renderQuestionPageHtml,
+} from "@/lib/seo/question-page-html"
+import {
+  SEO_QUESTION_SUBJECTS,
+  type SeoQuestionSubject,
+} from "@/lib/seo/question-url"
+
+const HTML_HEADERS = {
+  "Content-Type": "text/html; charset=utf-8",
+  "Cache-Control": "public, max-age=0, s-maxage=86400",
+}
+
+export async function questionPageResponse(
+  subject: SeoQuestionSubject,
+  slug: string,
+): Promise<Response> {
+  const data = await loadSeoQuestionPageData(subject, slug)
+  if (!data) {
+    return new Response(renderQuestionNotFoundHtml(), {
+      status: 404,
+      headers: HTML_HEADERS,
+    })
+  }
+
+  const requestedPath = `${SEO_QUESTION_SUBJECTS[subject].questionsPath}/${slug}`
+  if (data.canonicalPath !== requestedPath) {
+    return new Response(null, {
+      status: 308,
+      headers: {
+        Location: data.canonicalPath,
+        "Cache-Control": "public, max-age=0, s-maxage=86400",
+      },
+    })
+  }
+
+  return new Response(renderQuestionPageHtml(toRenderInput(subject, data)), {
+    headers: HTML_HEADERS,
+  })
+}
+
+function toRenderInput(subject: SeoQuestionSubject, data: SeoQuestionPageData) {
+  return {
+    subject,
+    exam: data.exam,
+    question: data.question,
+    questions: data.questions,
+  }
+}

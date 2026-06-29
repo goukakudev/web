@@ -11,6 +11,7 @@ export interface ExamDetailExtrasProps {
   parentLabel: string
   parentHref: string
   examLabel: string
+  variant?: "default" | "denki"
 }
 
 function stripPlain(text: string): string {
@@ -30,6 +31,7 @@ export function ExamDetailExtras({
   parentLabel,
   parentHref,
   examLabel,
+  variant = "default",
 }: ExamDetailExtrasProps) {
   const tagCounts = new Map<string, number>()
   for (const q of questions) {
@@ -41,6 +43,23 @@ export function ExamDetailExtras({
   const topTags = [...tagCounts.entries()]
     .sort((a, b) => b[1] - a[1])
     .slice(0, 8)
+
+  const chipCls =
+    variant === "denki"
+      ? "flex items-center justify-between rounded-lg border border-[#d8d1bc] bg-[#fffdf6] px-3 py-1.5 text-[12px] hover:border-[#191815]"
+      : "flex items-center justify-between rounded-lg border border-goukaku-divider bg-goukaku-surface/40 px-3 py-1.5 text-[12px] hover:bg-goukaku-surface"
+  const plainChipCls =
+    variant === "denki"
+      ? "flex items-center justify-between rounded-lg border border-[#d8d1bc] bg-[#fffdf6] px-3 py-1.5 text-[12px]"
+      : "flex items-center justify-between rounded-lg border border-goukaku-divider bg-goukaku-surface/40 px-3 py-1.5 text-[12px]"
+  const questionCls =
+    variant === "denki"
+      ? "flex items-baseline gap-2 rounded-lg border border-transparent px-2 py-1 hover:border-[#d8d1bc] hover:bg-[#fffdf6]"
+      : "flex items-baseline gap-2 rounded-md px-2 py-1 hover:bg-goukaku-surface/60"
+  const relatedCls =
+    variant === "denki"
+      ? "block rounded-lg border border-[#d8d1bc] bg-[#fffdf6] px-3 py-2 hover:border-[#191815]"
+      : "block rounded-lg border border-goukaku-divider bg-goukaku-surface/40 px-3 py-2 hover:bg-goukaku-surface"
 
   return (
     <section className="mt-8 space-y-7 text-[13px] leading-[1.85]">
@@ -74,12 +93,12 @@ export function ExamDetailExtras({
                   {tagBase ? (
                     <Link
                       href={`${tagBase}/${tagToSlug(tag)}`}
-                      className="flex items-center justify-between rounded-lg border border-goukaku-divider bg-goukaku-surface/40 px-3 py-1.5 text-[12px] hover:bg-goukaku-surface"
+                      className={chipCls}
                     >
                       {chipInner}
                     </Link>
                   ) : (
-                    <span className="flex items-center justify-between rounded-lg border border-goukaku-divider bg-goukaku-surface/40 px-3 py-1.5 text-[12px]">
+                    <span className={plainChipCls}>
                       {chipInner}
                     </span>
                   )}
@@ -108,7 +127,7 @@ export function ExamDetailExtras({
                   <li key={q._id}>
                     <Link
                       href={`${playBase}/${q.q_number}`}
-                      className="flex items-baseline gap-2 rounded-md px-2 py-1 hover:bg-goukaku-surface/60"
+                      className={questionCls}
                     >
                       <span className="text-[11px] font-bold opacity-60 tabular-nums w-[2.5em] shrink-0">
                         問{q.q_number}
@@ -133,7 +152,7 @@ export function ExamDetailExtras({
           <li>
             <Link
               href={`${parentHref}/guide`}
-              className="block rounded-lg border border-goukaku-divider bg-goukaku-surface/40 px-3 py-2 hover:bg-goukaku-surface"
+              className={relatedCls}
             >
               <span className="font-bold">📚 学習ガイド</span>
               <span className="block text-[11px] opacity-55 mt-0.5">
@@ -144,7 +163,7 @@ export function ExamDetailExtras({
           <li>
             <Link
               href={`${parentHref}/faq`}
-              className="block rounded-lg border border-goukaku-divider bg-goukaku-surface/40 px-3 py-2 hover:bg-goukaku-surface"
+              className={relatedCls}
             >
               <span className="font-bold">❓ FAQ</span>
               <span className="block text-[11px] opacity-55 mt-0.5">

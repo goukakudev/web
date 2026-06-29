@@ -1,30 +1,58 @@
 import type { Metadata } from "next"
 import { notFound, redirect } from "next/navigation"
-import { listExams, listQuestions, getExamStats } from "@/lib/api-client"
+import { listFeExams, listQuestions, getExamStats } from "@/lib/api-client"
 import { MobileFrame } from "@/components/layout/MobileFrame"
 import { PlayController } from "@/components/play/PlayController"
 import type { QuestionStat } from "@/lib/types"
-
-export const metadata: Metadata = {
-  robots: { index: false, follow: true },
-}
+import { makeMetadata } from "@/lib/seo/metadata"
 
 interface PageProps {
   params: Promise<{ examId: string }>
   searchParams: Promise<{ mode?: string }>
 }
 
+function playModeLabel(mode?: string): string {
+  if (mode === "random") return "ランダム演習"
+  if (mode === "wrongOnly") return "復習演習"
+  if (mode === undefined || mode === "sequential") return "問題演習"
+  return "模試"
+}
+
+export async function generateMetadata({
+  params,
+  searchParams,
+}: PageProps): Promise<Metadata> {
+  const { examId } = await params
+  const { mode } = await searchParams
+  const label = playModeLabel(mode)
+
+  try {
+    const exams = await listFeExams()
+    const exam = exams.find((e) => e.exam_id === examId)
+    const examLabel = exam?.title ?? examId
+
+    return makeMetadata({
+      title: `基本情報技術者試験 ${examLabel} ${label}`,
+      description: `基本情報技術者試験 ${examLabel} の${label}ページです。解説・選択肢別解説付きで演習できます。`,
+      path: `/fe/play/${examId}`,
+      noindex: true,
+    })
+  } catch {
+    return { robots: { index: false, follow: true } }
+  }
+}
+
 export default async function FePlayPage({ params, searchParams }: PageProps) {
   const { examId } = await params
   const { mode } = await searchParams
 
-  const [exams, questions, statsMap] = await Promise.all([
-    listExams(),
+  const exams = await listFeExams()
+  const exam = exams.find((e) => e.exam_id === examId)
+  if (!exam) notFound()
+  const [questions, statsMap] = await Promise.all([
     listQuestions(examId),
     getExamStats(examId),
   ])
-  const exam = exams.find((e) => e.exam_id === examId)
-  if (!exam) notFound()
 
   if (mode === undefined || mode === "sequential") {
     const first = [...questions].sort((a, b) => a.q_number - b.q_number)[0]
@@ -41,9 +69,13 @@ export default async function FePlayPage({ params, searchParams }: PageProps) {
     mode === "random" ? "random" :
     mode === "wrongOnly" ? "wrongOnly" :
     "exam"
+  const label = playModeLabel(playMode)
 
   return (
     <MobileFrame>
+      <h1 className="sr-only">
+        基本情報技術者試験 {exam.title ?? exam.exam_id} {label}
+      </h1>
       <PlayController
         questions={questions}
         exam={exam}

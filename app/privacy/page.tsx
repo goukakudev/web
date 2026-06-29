@@ -6,11 +6,11 @@ import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 export const metadata: Metadata = {
   title: "プライバシーポリシー",
   description:
-    "合格.dev (Web / iOS アプリ群: 合格.dev / 宅建合格.dev など) のプライバシーポリシー。localStorage / UserDefaults に保存する情報、サーバーへ送信される情報 (匿名 device_id / Good・Bad 評価 / 問題報告本文)、第三者サービス (Cloudflare R2 / Vercel) について明記します。",
+    "合格.dev (Web / iOS アプリ群: 合格.dev / 宅建合格.dev / 第二種電工 過去問 など) のプライバシーポリシー。localStorage / UserDefaults に保存する情報、サーバーへ送信される情報 (匿名 device_id / Good・Bad 評価 / 問題報告本文)、第三者サービス (Cloudflare R2 など) について明記します。",
   alternates: { canonical: "/privacy" },
 };
 
-const REVISED = "2026-06-01";
+const REVISED = "2026-06-24";
 const CONTACT_EMAIL = "contact@goukaku.dev";
 
 export default function PrivacyPage() {
@@ -25,7 +25,7 @@ export default function PrivacyPage() {
 
       <Section title="1. 適用範囲">
         <p>
-          本ポリシーは、合格.dev (以下「当サイト」) および当サイトが提供する iOS アプリ群 (基本情報技術者試験向けの「合格.dev」、宅地建物取引士試験向けの「宅建合格.dev」を含み、以下これらを総称して「本アプリ」といいます) を利用するにあたって、利用者の情報をどのように取り扱うかを明記するものです。当サイトが今後追加する関連 Web サービス・iOS アプリにも、特段の断りがない限り本ポリシーが適用されます。
+          本ポリシーは、合格.dev (以下「当サイト」) および当サイトが提供する iOS アプリ群 (基本情報技術者試験向けの「合格.dev」、宅地建物取引士試験向けの「宅建合格.dev」、第二種電気工事士試験向けの「第二種電工 過去問」を含み、以下これらを総称して「本アプリ」といいます) を利用するにあたって、利用者の情報をどのように取り扱うかを明記するものです。当サイトが今後追加する関連 Web サービス・iOS アプリにも、特段の断りがない限り本ポリシーが適用されます。
         </p>
       </Section>
 
@@ -108,7 +108,7 @@ export default function PrivacyPage() {
             <strong>問題データの取得</strong>: 試験問題や解説の取得時、サーバーは IP アドレス・User-Agent などの一般的なアクセスログを記録します。これらは運用 (不正アクセス対策、性能改善) 目的でのみ使用します。
           </li>
           <li>
-            <strong>解答ログ送信</strong> (Web 版および将来的に iOS 版で有効化される機能): 匿名の <code>device_id</code>、問題 ID、試験 ID、選択した選択肢、正誤、解答時刻 (ISO8601)、任意のセッション ID。出題傾向の集計・難易度分析・サービス改善のために利用します。
+            <strong>解答ログ送信</strong> (Web 版および対応する iOS 版で有効な機能): 匿名の <code>device_id</code>、問題 ID、試験 ID、選択した選択肢、正誤、解答時刻 (ISO8601)、任意のセッション ID。出題傾向の集計・難易度分析・サービス改善のために利用します。
           </li>
           <li>
             <strong>Good / Bad 評価</strong>: 利用者が解説の「Good」「Bad」ボタンを押した場合、匿名の <code>device_id</code>、問題 ID、試験 ID、評価値 (<code>good</code> / <code>bad</code> / 取消)、操作時刻を送信します。同一端末からの最新の評価のみを集計に反映し、過去の評価は履歴として保持します。
@@ -165,7 +165,7 @@ export default function PrivacyPage() {
       <Section title="9. 利用している第三者サービス">
         <ul className="list-disc pl-5 space-y-1">
           <li>
-            <strong>Vercel</strong> — Web サイトのホスティング、CDN、サーバーレス関数の実行。アクセスログ (IP アドレス、User-Agent 等) が運営目的で保持されます。Vercel Web Analytics による匿名のページビュー集計を利用します (Cookie を使用せず、個人特定情報は収集しません)。
+            <strong>AWS EC2</strong> — Web サイトのホスティング、API 中継、サーバーログの保存。アクセスログ (IP アドレス、User-Agent 等) が運営・保守目的で処理されます。
           </li>
           <li>
             <strong>Cloudflare R2 / CDN</strong> — 図表画像の配信。エッジでのキャッシュ統計やアクセスログが処理されます。
@@ -175,7 +175,7 @@ export default function PrivacyPage() {
 
       <Section title="10. アクセス解析">
         <p>
-          Google Analytics 等の第三者解析ツールは導入していません。Vercel Web Analytics (Cookie 不使用) によるページビューの匿名集計のみ行います。
+          第三者解析ツールは導入していません。学習開始、解答、模試完了、問題報告などの操作イベントは、Cookie を使わず、当サイトのサーバー側イベントログとして匿名で記録します。
         </p>
       </Section>
 
@@ -252,10 +252,16 @@ export default function PrivacyPage() {
       <Section title="15. 改訂履歴">
         <ul className="list-disc pl-5 space-y-1">
           <li>
+            2026-06-24: Web サイトの運用基盤を EC2 に移行したことに伴い、旧ホスティングおよび旧解析サービスに関する記載を削除し、サーバー側イベントログの記載に更新。
+          </li>
+          <li>
+            2026-06-21: 「第二種電工 過去問」(第二種電気工事士試験向け) iOS アプリ公開に伴い、適用範囲 (§1) に同アプリを明記。
+          </li>
+          <li>
             2026-06-06: 「12. コンテンツの著作権と独自編集について」を新設し、引用範囲と独自編集部分の境界を明示。これに伴い後続のセクション番号を 1 ずつ繰り下げ。
           </li>
           <li>
-            2026-06-01: 広告掲載 (Google AdSense) を停止したことに伴い、第三者広告サービスに関する記載を削除し、Vercel Web Analytics の導入 (Cookie 不使用の匿名ページビュー集計) を追記。セクション番号を整理。
+            2026-06-01: 広告掲載 (Google AdSense) を停止したことに伴い、第三者広告サービスに関する記載を削除し、Cookie 不使用の匿名ページビュー集計に関する記載を追記。セクション番号を整理。
           </li>
           <li>
             2026-05-22: 「宅建合格.dev」iOS アプリ公開に伴う改訂。適用範囲を当サイトの iOS アプリ群に拡張、サーバへ送信される情報 (Good / Bad 評価、問題報告本文) を明記、データ保管期間の記載 (§6) と利用者の削除請求権の記載 (§12) を追加。

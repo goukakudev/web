@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { listExams } from "@/lib/api-client"
+import { listFeExams } from "@/lib/api-client"
 import { MobileFrame } from "@/components/layout/MobileFrame"
 import { makeMetadata } from "@/lib/seo/metadata"
 import {
@@ -24,7 +24,7 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-  const exams = await listExams()
+  const exams = await listFeExams()
   const byYear = groupExamsByYear(exams)
   return [...byYear.keys()].map((year) => ({ year: encodeURIComponent(year) }))
 }
@@ -32,7 +32,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { year: yearSlug } = await params
   const yearKey = decodeURIComponent(yearSlug)
-  const exams = await listExams()
+  const exams = await listFeExams()
   const byYear = groupExamsByYear(exams)
   if (!byYear.has(yearKey)) return {}
   const yearExams = byYear.get(yearKey)!
@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function FeYearPage({ params }: PageProps) {
   const { year: yearSlug } = await params
   const yearKey = decodeURIComponent(yearSlug)
-  const allExams = await listExams()
+  const allExams = await listFeExams()
   const byYear = groupExamsByYear(allExams)
   if (!byYear.has(yearKey)) notFound()
   const yearExams = byYear.get(yearKey)!

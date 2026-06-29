@@ -9,7 +9,7 @@ export default function BookmarksClient() {
   const [ids, setIds] = useState<string[] | null>(null);
 
   useEffect(() => {
-    setIds(listBookmarks());
+    queueMicrotask(() => setIds(listBookmarks()));
   }, []);
 
   if (ids === null) {

@@ -40,7 +40,9 @@ export function OnboardingFlow() {
   const [pageIndex, setPageIndex] = useState(0)
 
   useEffect(() => {
-    if (!isOnboardingCompleted()) setActive(true)
+    queueMicrotask(() => {
+      if (!isOnboardingCompleted()) setActive(true)
+    })
   }, [])
 
   if (!active) return null

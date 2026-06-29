@@ -1,10 +1,11 @@
 import type { Metadata } from "next"
-import { listExams, listPopularTags } from "@/lib/api-client"
+import { listFeExams, listPopularTags } from "@/lib/api-client"
 import { MobileFrame } from "@/components/layout/MobileFrame"
 import { TopBar } from "@/components/home/TopBar"
 import { HeroQuestCard } from "@/components/home/HeroQuestCard"
 import { SubjectPageHeading } from "@/components/home/SubjectPageHeading"
 import { SubjectCategoryLinks } from "@/components/home/SubjectCategoryLinks"
+import { SubjectYearLinks } from "@/components/home/SubjectYearLinks"
 import { StatCard } from "@/components/home/StatCard"
 import { SubjectTile } from "@/components/home/SubjectTile"
 import { PopularTags } from "@/components/home/PopularTags"
@@ -20,16 +21,21 @@ import { makeMetadata } from "@/lib/seo/metadata"
 import { itemListJsonLd, courseJsonLd, SITE_URL } from "@/lib/seo/structured-data"
 import { JsonLd } from "@/components/seo/JsonLd"
 
-export const metadata: Metadata = makeMetadata({
-  title: "基本情報技術者試験 過去問 + 解説",
-  description:
-    "基本情報技術者試験の過去問を無料で。13 年分・各 80 問前後を、順番に / ランダムに / 模試形式で解けます。全問解説・選択肢ごとの解説付き。",
-  path: "/fe",
-})
+export async function generateMetadata(): Promise<Metadata> {
+  const exams = await listFeExams()
+  const total = exams.reduce((sum, exam) => sum + (exam.question_count ?? 0), 0)
+  const totalText = total > 0 ? `全${total.toLocaleString("ja-JP")}問` : "全問"
+  return makeMetadata({
+    title: "基本情報技術者試験 過去問 無料 [科目A] 全問解説・模試",
+    description:
+      `無料・登録不要・スマホ最適化。基本情報技術者試験 科目Aの過去問を平成25年〜令和7年・${totalText}収録。順番／ランダム／90分模試で演習でき、全問に解説と独自の選択肢別解説付き。`,
+    path: "/fe",
+  })
+}
 
 export default async function FeHomePage() {
   const [exams, popularTags] = await Promise.all([
-    listExams(),
+    listFeExams(),
     listPopularTags(20),
   ])
   return (
@@ -81,6 +87,7 @@ export default async function FeHomePage() {
       <WeakTagsSection />
       <PopularTags tags={popularTags} />
       <SubjectCategoryLinks subject="fe" />
+      <SubjectYearLinks subject="fe" exams={exams} />
       <MockTestBanner exam={exams[0]} />
       <SiteIntro />
     </MobileFrame>

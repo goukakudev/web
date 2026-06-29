@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
-import { listExams, listQuestions } from "@/lib/api-client"
+import { listFeExams, listQuestions } from "@/lib/api-client"
 import { MobileFrame } from "@/components/layout/MobileFrame"
 import { ModeButton } from "@/components/exam/ModeButton"
 import { makeMetadata } from "@/lib/seo/metadata"
@@ -11,7 +11,7 @@ import { ExamDetailExtras } from "@/components/seo/ExamDetailExtras"
 import { buildExamIntro } from "@/lib/seo/exam-intro"
 
 export async function generateStaticParams() {
-  const exams = await listExams()
+  const exams = await listFeExams()
   return exams.map((e) => ({ examId: e.exam_id }))
 }
 
@@ -21,7 +21,7 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { examId } = await params
-  const exams = await listExams()
+  const exams = await listFeExams()
   const exam = exams.find((e) => e.exam_id === examId)
   if (!exam) return {}
 
@@ -35,12 +35,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function FeExamDetailPage({ params }: PageProps) {
   const { examId } = await params
-  const [exams, questions] = await Promise.all([
-    listExams(),
-    listQuestions(examId).catch(() => []),
-  ])
+  const exams = await listFeExams()
   const exam = exams.find((e) => e.exam_id === examId)
   if (!exam) notFound()
+  const questions = await listQuestions(examId).catch(() => [])
 
   const base = `/fe/play/${exam.exam_id}`
   const examLabel = exam.title ?? `${exam.year} ${exam.section}`

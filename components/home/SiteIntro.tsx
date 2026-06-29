@@ -35,8 +35,8 @@ const COPY: Record<QuizSubject, SubjectCopy> = {
     abbrev: "IP",
     authority: "独立行政法人情報処理推進機構 (IPA)",
     authorityShort: "IPA",
-    rangeLabel: "29 年分",
-    totalLabel: "各回 100 問、合計 2,900 問以上",
+    rangeLabel: "29 回分",
+    totalLabel: "合計 2,700 問",
     modesLine:
       "3 つの学習モード — 順番に解く / ランダムに解く / 模試形式 (120 分・時間計測あり) — を切り替えて、苦手分野の補強から本番形式の通し演習まで一貫して対応できます。問題ごとにヒントも参照可能です。",
     scopeLine:

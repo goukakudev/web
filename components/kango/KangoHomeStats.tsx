@@ -25,7 +25,7 @@ function Stat({ label, value }: { label: string; value: string }) {
 export function KangoHomeStats() {
   const [s, setS] = useState<KangoSummary | null>(null)
   useEffect(() => {
-    setS(kangoSummary())
+    queueMicrotask(() => setS(kangoSummary()))
   }, [])
   if (!s) return null
   return (

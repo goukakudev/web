@@ -17,6 +17,11 @@ import { RelatedQuestions } from "@/components/seo/RelatedQuestions"
 import { QuestionLearningResources } from "@/components/seo/QuestionLearningResources"
 import { QuizBottomActions } from "@/components/play/QuizBottomActions"
 import { stripMd } from "@/lib/text-utils"
+import {
+  questionCanonicalPath,
+  questionSeoDescription,
+  questionSeoTitle,
+} from "@/lib/seo/question-url"
 
 interface PageProps {
   params: Promise<{ examId: string; qNumber: string }>
@@ -38,11 +43,9 @@ export async function generateMetadata({
     const q = questions.find((q) => q.q_number === n)
     if (!exam || !q) return {}
 
-    const examLabel = exam.title ?? `${exam.year} ${exam.section}`
-    const bodyPreview = stripMd(q.body).slice(0, 90)
-    const title = `${examLabel} 問${n}：${bodyPreview}`
-    const description = `ITパスポート試験 ${examLabel} 問${n} の問題本文・選択肢・正解・解説・ヒント。${bodyPreview}…`
-    const canonical = `/ip/play/${exam.exam_id}/q/${n}`
+    const title = questionSeoTitle("ip", exam, q)
+    const description = questionSeoDescription("ip", exam, q)
+    const canonical = questionCanonicalPath("ip", exam, q)
 
     return makeMetadata({ title, description, path: canonical, type: "article" })
   } catch {
@@ -89,7 +92,8 @@ export default async function IpPlayQuestionPage({ params }: PageProps) {
         },
   )
 
-  const url = `${SITE_URL}/ip/play/${exam.exam_id}/q/${n}`
+  const canonicalPath = questionCanonicalPath("ip", exam, q)
+  const url = `${SITE_URL}${canonicalPath}`
   const examLabel = exam.title ?? exam.exam_id
   const examUrl = `/ip/exam/${exam.exam_id}`
 

@@ -49,6 +49,11 @@ export async function listExams(): Promise<ExamSummary[]> {
   return data.exams
 }
 
+export async function listFeExams(): Promise<ExamSummary[]> {
+  const exams = await listExams()
+  return exams.filter((exam) => exam.exam_id.startsWith("fe-"))
+}
+
 export async function listQuestions(examId: string): Promise<Question[]> {
   const data = await get<QuestionListResponse>(
     `/v1/exams/${encodeURIComponent(examId)}/questions`,

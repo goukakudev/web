@@ -9,11 +9,13 @@ export function CookieConsent() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    try {
-      if (!localStorage.getItem(STORAGE_KEY)) setVisible(true);
-    } catch {
-      // ignore localStorage errors (SSR / privacy modes)
-    }
+    queueMicrotask(() => {
+      try {
+        if (!localStorage.getItem(STORAGE_KEY)) setVisible(true);
+      } catch {
+        // ignore localStorage errors (SSR / privacy modes)
+      }
+    });
   }, []);
 
   if (!visible) return null;

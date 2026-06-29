@@ -20,20 +20,23 @@ export default function SearchClient() {
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
-    loadSearchIndex()
-      .then((data) => {
-        if (!cancelled) {
-          setIndex(data);
-          setLoading(false);
-        }
-      })
-      .catch((e) => {
-        if (!cancelled) {
-          setError(e instanceof Error ? e.message : "load_error");
-          setLoading(false);
-        }
-      });
+    queueMicrotask(() => {
+      if (cancelled) return;
+      setLoading(true);
+      loadSearchIndex()
+        .then((data) => {
+          if (!cancelled) {
+            setIndex(data);
+            setLoading(false);
+          }
+        })
+        .catch((e) => {
+          if (!cancelled) {
+            setError(e instanceof Error ? e.message : "load_error");
+            setLoading(false);
+          }
+        });
+    });
     return () => {
       cancelled = true;
     };

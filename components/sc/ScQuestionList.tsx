@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useEffect, useState } from "react"
-import { listScExams, listScQuestions } from "@/lib/api-client"
+import { listClientExams, listClientQuestions } from "@/lib/client-exam-api"
 import { getAllAnswers, getBookmarks } from "@/lib/local-store"
 import type { Question, ExamSummary } from "@/lib/types"
 
@@ -47,7 +47,7 @@ export function ScQuestionList({ mode }: { mode: ScListMode }) {
           }
           return
         }
-        const exams: ExamSummary[] = await listScExams()
+        const exams: ExamSummary[] = await listClientExams("sc")
         const titleByExam = new Map(exams.map((e) => [e.exam_id, e.title ?? e.exam_id]))
         const examIds = new Set<string>()
         for (const id of targetIds) {
@@ -62,7 +62,7 @@ export function ScQuestionList({ mode }: { mode: ScListMode }) {
         await Promise.all(
           [...examIds].map(async (examId) => {
             try {
-              const qs = await listScQuestions(examId)
+              const qs = await listClientQuestions("sc", examId)
               results.set(examId, qs)
             } catch {
               // ignore

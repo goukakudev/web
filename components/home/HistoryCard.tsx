@@ -10,15 +10,17 @@ export function HistoryCard({ subject = "fe" }: { subject?: QuizSubject } = {}) 
   const examIdPrefix = examIdPrefixForSubject(subject)
 
   useEffect(() => {
-    const map = getAllAnswers()
-    const exams = new Set<string>()
-    let total = 0
-    for (const rec of Object.values(map)) {
-      if (!rec.exam_id.startsWith(examIdPrefix)) continue
-      exams.add(rec.exam_id)
-      total++
-    }
-    setStats({ total, examCount: exams.size })
+    queueMicrotask(() => {
+      const map = getAllAnswers()
+      const exams = new Set<string>()
+      let total = 0
+      for (const rec of Object.values(map)) {
+        if (!rec.exam_id.startsWith(examIdPrefix)) continue
+        exams.add(rec.exam_id)
+        total++
+      }
+      setStats({ total, examCount: exams.size })
+    })
   }, [examIdPrefix])
 
   if (!stats || stats.total === 0) return null

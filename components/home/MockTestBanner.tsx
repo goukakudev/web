@@ -23,6 +23,8 @@ export function MockTestBanner({
     <Link
       href={href}
       className="block bg-goukaku-ink-fixed rounded-[24px] p-5 relative overflow-hidden mt-6"
+      data-analytics-event="mock_start"
+      data-analytics-props={JSON.stringify({ subject, exam_id: exam.exam_id })}
     >
       <div
         className="text-[22px] text-goukaku-lime"

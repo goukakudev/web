@@ -38,9 +38,11 @@ export function ContinueSection({
   const examIdPrefix = examIdPrefixForSubject(subject)
 
   useEffect(() => {
-    const sessions = loadExamSessions()
-    const filtered = sessions.filter((s) => s.exam_id.startsWith(examIdPrefix))
-    setLatest(filtered[0] ?? null)
+    queueMicrotask(() => {
+      const sessions = loadExamSessions()
+      const filtered = sessions.filter((s) => s.exam_id.startsWith(examIdPrefix))
+      setLatest(filtered[0] ?? null)
+    })
   }, [examIdPrefix])
 
   const exam = useMemo(() => {

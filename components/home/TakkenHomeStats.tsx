@@ -12,7 +12,7 @@ export function TakkenHomeStats() {
   );
 
   useEffect(() => {
-    setStats(aggregateStats());
+    queueMicrotask(() => setStats(aggregateStats()));
   }, []);
 
   if (!stats) return null;

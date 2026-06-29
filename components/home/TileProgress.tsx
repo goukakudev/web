@@ -15,7 +15,7 @@ export function TileProgress({
   const [stats, setStats] = useState<ExamStats | null>(null)
 
   useEffect(() => {
-    setStats(getExamStats(examId, total))
+    queueMicrotask(() => setStats(getExamStats(examId, total)))
   }, [examId, total])
 
   if (!stats || stats.answered === 0) {

@@ -24,9 +24,11 @@ export function ScThemeToggle() {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    const stored = (localStorage.getItem(STORAGE_KEY) as Pref | null) ?? "auto"
-    setPref(stored)
-    setMounted(true)
+    queueMicrotask(() => {
+      const stored = (localStorage.getItem(STORAGE_KEY) as Pref | null) ?? "auto"
+      setPref(stored)
+      setMounted(true)
+    })
   }, [])
 
   function apply(next: Pref) {

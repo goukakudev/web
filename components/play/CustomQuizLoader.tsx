@@ -23,7 +23,9 @@ export function CustomQuizLoader({
   useEffect(() => {
     let cancelled = false;
     if (ids.length === 0) {
-      setQuestions([]);
+      queueMicrotask(() => {
+        if (!cancelled) setQuestions([]);
+      });
       return;
     }
     (async () => {

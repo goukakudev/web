@@ -16,8 +16,10 @@ export default function KangoBookmarksPage() {
       const eid = examIdFromQuestionId(id)
       m[eid] = (m[eid] ?? 0) + 1
     }
-    setByExam(m)
-    setTotal(ids.length)
+    queueMicrotask(() => {
+      setByExam(m)
+      setTotal(ids.length)
+    })
   }, [])
 
   const entries = Object.entries(byExam).sort((a, b) => b[1] - a[1])

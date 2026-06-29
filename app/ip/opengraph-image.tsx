@@ -7,7 +7,7 @@ export const alt = "ITパスポート試験 過去問 + 解説 — 合格.dev"
 export default async function Image() {
   return renderOgImage({
     title: "ITパスポート試験 過去問",
-    subtitle: "29 年分・全 2,900 問・解説 + ヒント付き",
+    subtitle: "29 回分・全 2,700 問・解説 + ヒント付き",
     badge: "IP / ITパスポート",
     accent: "pink",
   })

@@ -25,6 +25,7 @@ import type {
 import { setAnswer, getDeviceId, getAllAnswers } from "@/lib/local-store";
 import { addExamSession } from "@/lib/exam-session";
 import { recordAnswer } from "@/lib/client-api";
+import { trackEvent } from "@/lib/client-events";
 import { withShuffledChoicesAndMap } from "@/lib/question-display";
 import {
   getGlossaryEntry,
@@ -55,11 +56,16 @@ function examDurationSeconds(examId: string): number {
   return 90 * 60;
 }
 
+function nowMs(): number {
+  return new Date().getTime();
+}
+
 function subjectFromUrlBase(urlBase: string): "fe" | "ip" | "ap" | "sg" | "sc" | "dk" {
   if (urlBase.startsWith("/ip")) return "ip";
   if (urlBase.startsWith("/ap")) return "ap";
   if (urlBase.startsWith("/sg")) return "sg";
   if (urlBase.startsWith("/sc")) return "sc";
+  if (urlBase.startsWith("/denki")) return "dk";
   if (urlBase.startsWith("/dk")) return "dk";
   return "fe";
 }
@@ -72,6 +78,7 @@ export function PlayController({
   urlBase = "/fe/play",
   homeHref = "/fe",
   stats,
+  variant = "default",
 }: {
   questions: Question[];
   exam: ExamSummary;
@@ -80,8 +87,10 @@ export function PlayController({
   urlBase?: string;
   homeHref?: string;
   stats?: Record<string, QuestionStat>;
+  variant?: "default" | "denki";
 }) {
   const router = useRouter();
+  const subject = subjectFromUrlBase(urlBase);
   const [questions, setQuestions] = useState<Question[]>(() =>
     sortBySequence(initialQuestions),
   );
@@ -92,6 +101,7 @@ export function PlayController({
   >({});
 
   useEffect(() => {
+    let cancelled = false;
     let next: Question[];
     if (mode === "random") {
       next = shuffle(initialQuestions);
@@ -115,10 +125,14 @@ export function PlayController({
     for (const r of shuffled) {
       maps[r.question._id] = r.displayedToOriginal;
     }
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- mode-dependent filter runs after hydration
-    setQuestions(shuffled.map((r) => r.question));
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- mode-dependent filter runs after hydration
-    setShuffleMaps(maps);
+    queueMicrotask(() => {
+      if (cancelled) return;
+      setQuestions(shuffled.map((r) => r.question));
+      setShuffleMaps(maps);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [initialQuestions, mode]);
 
   const [currentIndex, setCurrentIndex] = useState(() => {
@@ -151,14 +165,21 @@ export function PlayController({
 
   useEffect(() => {
     if (mode === "exam" && examStartedAt === null) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- start exam timer after hydration
-      setExamStartedAt(Date.now());
+      let cancelled = false;
+      queueMicrotask(() => {
+        if (!cancelled) setExamStartedAt(nowMs());
+      });
+      return () => {
+        cancelled = true;
+      };
     }
   }, [mode, examStartedAt]);
 
   useEffect(() => {
-    setIsHintRevealed(false);
-    setFeedbackSheet({ open: false, initialRating: null });
+    queueMicrotask(() => {
+      setIsHintRevealed(false);
+      setFeedbackSheet({ open: false, initialRating: null });
+    });
   }, [currentIndex]);
 
   const isExamMode = mode === "exam";
@@ -181,7 +202,7 @@ export function PlayController({
 
   function finishExam(): void {
     if (!isExamMode || examStartedAt === null) return;
-    const finishedAt = Date.now();
+    const finishedAt = nowMs();
     const elapsed = Math.floor((finishedAt - examStartedAt) / 1000);
     addExamSession({
       id: crypto.randomUUID(),
@@ -190,6 +211,14 @@ export function PlayController({
       elapsed_seconds: elapsed,
       correct: examCorrect,
       answered: examAnswered,
+    });
+    trackEvent("mock_complete", {
+      subject,
+      exam_id: exam.exam_id,
+      correct: examCorrect,
+      answered: examAnswered,
+      total: questions.length,
+      elapsed_seconds: elapsed,
     });
     setExamFinishedAt(finishedAt);
     setExamFinished(true);
@@ -220,17 +249,19 @@ export function PlayController({
           currentIndex={0}
           total={questions.length}
           homeHref={homeHref}
+          variant={variant}
         />
         <ExamResult
           correct={examCorrect}
           total={questions.length}
           elapsedSeconds={elapsed}
+          variant={variant}
           onRetry={() => {
             setSelectedByQid({});
             setCurrentIndex(0);
             setExamFinished(false);
             setExamFinishedAt(null);
-            setExamStartedAt(Date.now());
+            setExamStartedAt(nowMs());
           }}
         />
       </>
@@ -242,6 +273,16 @@ export function PlayController({
   const selected = selectedByQid[current._id];
   const revealed = selected !== undefined && !isExamMode;
   const showsStats = !isExamMode;
+  const isRandomMode = mode === "random";
+  const topBarDisplayQNumber = isRandomMode
+    ? currentIndex + 1
+    : current.q_number;
+  const topBarProgressText = isRandomMode
+    ? `/ ${questions.length}`
+    : `${currentIndex + 1} / ${questions.length}`;
+  const topBarSourceLabel = isRandomMode
+    ? `出典: ${current.exam_id} 問${current.q_number}`
+    : undefined;
 
   function handleSelect(label: ChoiceLabel) {
     if (selected !== undefined && !isExamMode) return;
@@ -251,6 +292,12 @@ export function PlayController({
       const kind: FeedbackKind =
         label === current.correct_label ? "correct" : "wrong";
       setFeedback((prev) => ({ trigger: prev.trigger + 1, kind }));
+      trackEvent("explanation_open", {
+        subject,
+        exam_id: current.exam_id,
+        question_id: current._id,
+        q_number: current.q_number,
+      });
     }
 
     const answeredAt = new Date().toISOString();
@@ -280,6 +327,15 @@ export function PlayController({
       skipped: false,
       client_ts: answeredAt,
       label_space: "original",
+    });
+    trackEvent("question_answer_submit", {
+      subject,
+      exam_id: current.exam_id,
+      question_id: current._id,
+      q_number: current.q_number,
+      selected_label: originalSelected,
+      is_correct: current.correct_label === label,
+      mode,
     });
 
     if (isExamMode && currentIndex < questions.length - 1) {
@@ -334,6 +390,10 @@ export function PlayController({
         total={questions.length}
         questionId={current._id}
         homeHref={homeHref}
+        displayQNumber={topBarDisplayQNumber}
+        progressText={topBarProgressText}
+        sourceLabel={topBarSourceLabel}
+        variant={variant}
       />
       {isExamMode && examStartedAt !== null && (
         <div className="flex items-center justify-end mb-3">
@@ -341,6 +401,7 @@ export function PlayController({
             startedAt={examStartedAt}
             onTimeout={finishExam}
             durationSeconds={examDurationSeconds(exam.exam_id)}
+            variant={variant}
           />
         </div>
       )}
@@ -348,6 +409,7 @@ export function PlayController({
         body={current.body}
         figures={current.figures}
         onGlossaryClick={handleGlossaryClick}
+        variant={variant}
       />
       {current.choices.map((c) => {
         const isSelected = selected === c.label;
@@ -371,19 +433,21 @@ export function PlayController({
               isSelected={isSelected}
               isCorrect={isCorrect}
               onClick={() => handleSelect(c.label)}
+              variant={variant}
             />
             {showMeter && (
               <SelectionMeter
                 rate={rate}
                 isCorrect={c.label === current.correct_label}
                 revealed={revealed}
+                variant={variant}
               />
             )}
           </div>
         );
       })}
       {showsStats && stats?.[current._id] && (
-        <CorrectRateBadge stat={stats[current._id]!} />
+        <CorrectRateBadge stat={stats[current._id]!} variant={variant} />
       )}
       {revealed && current.explanation && (
         <ExplanationCard
@@ -393,6 +457,7 @@ export function PlayController({
           priorGlossaryTerms={usedGlossaryTerms(current.body)}
           onGlossaryClick={handleGlossaryClick}
           subject={subjectFromUrlBase(urlBase)}
+          variant={variant}
         />
       )}
       <GlossaryModal
@@ -407,6 +472,7 @@ export function PlayController({
               setFeedbackSheet({ open: true, initialRating: "good" })
             }
             icon={<ThumbUpIcon />}
+            variant={variant}
           />
           <FeedbackChip
             label="Bad"
@@ -414,6 +480,7 @@ export function PlayController({
               setFeedbackSheet({ open: true, initialRating: "bad" })
             }
             icon={<ThumbDownIcon />}
+            variant={variant}
           />
           {current.hint && current.hint.length > 0 && (
             <button
@@ -421,9 +488,13 @@ export function PlayController({
               onClick={() => setIsHintRevealed((v) => !v)}
               aria-label={isHintRevealed ? "ヒントを閉じる" : "ヒントを表示"}
               className={
-                isHintRevealed
-                  ? "inline-flex items-center gap-1.5 px-3 py-2 rounded-full font-extrabold text-[10px] tracking-wider bg-goukaku-lime/50 text-goukaku-ink-fixed"
-                  : "inline-flex items-center gap-1.5 px-3 py-2 rounded-full font-extrabold text-[10px] tracking-wider border border-goukaku-divider text-goukaku-ink/55"
+                variant === "denki"
+                  ? isHintRevealed
+                    ? "inline-flex items-center gap-1.5 rounded-lg border border-[#191815] bg-[#ffe25a] px-3 py-2 text-[10px] font-black tracking-wider text-[#191815]"
+                    : "inline-flex items-center gap-1.5 rounded-lg border border-[#191815]/20 bg-[#fffdf6] px-3 py-2 text-[10px] font-black tracking-wider text-[#6c6252]"
+                  : isHintRevealed
+                    ? "inline-flex items-center gap-1.5 px-3 py-2 rounded-full font-extrabold text-[10px] tracking-wider bg-goukaku-lime/50 text-goukaku-ink-fixed"
+                    : "inline-flex items-center gap-1.5 px-3 py-2 rounded-full font-extrabold text-[10px] tracking-wider border border-goukaku-divider text-goukaku-ink/55"
               }
             >
               <LightbulbIcon filled={isHintRevealed} className="w-3 h-3" />
@@ -437,7 +508,11 @@ export function PlayController({
               setFeedbackSheet({ open: true, initialRating: null })
             }
             aria-label="問題を報告"
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full font-extrabold text-[10px] tracking-wider border border-goukaku-divider text-goukaku-ink/55"
+            className={
+              variant === "denki"
+                ? "inline-flex items-center gap-1.5 rounded-lg border border-[#191815]/20 bg-[#fffdf6] px-3 py-2 text-[10px] font-black tracking-wider text-[#6c6252]"
+                : "inline-flex items-center gap-1.5 px-3 py-2 rounded-full font-extrabold text-[10px] tracking-wider border border-goukaku-divider text-goukaku-ink/55"
+            }
           >
             <ReportIcon />
             <span>問題を報告</span>
@@ -445,7 +520,11 @@ export function PlayController({
         </div>
         {isHintRevealed && current.hint && current.hint.length > 0 && (
           <div
-            className="flex gap-2.5 items-start px-3.5 py-3 rounded-2xl bg-goukaku-warm border border-goukaku-divider"
+            className={
+              variant === "denki"
+                ? "flex items-start gap-2.5 rounded-lg border-2 border-[#191815] bg-[#fff8cf] px-3.5 py-3 shadow-[3px_3px_0_#191815]"
+                : "flex gap-2.5 items-start px-3.5 py-3 rounded-2xl bg-goukaku-warm border border-goukaku-divider"
+            }
             role="note"
             aria-label={`ヒント、${current.hint}`}
           >
@@ -464,7 +543,11 @@ export function PlayController({
           type="button"
           onClick={prev}
           disabled={currentIndex === 0}
-          className="flex-1 py-3 rounded-full font-extrabold text-[13px] bg-goukaku-surface border border-goukaku-divider disabled:opacity-40"
+          className={
+            variant === "denki"
+              ? "flex-1 rounded-lg border border-[#191815]/20 bg-[#fffdf6] py-3 text-[13px] font-black disabled:opacity-40"
+              : "flex-1 py-3 rounded-full font-extrabold text-[13px] bg-goukaku-surface border border-goukaku-divider disabled:opacity-40"
+          }
         >
           ← 前へ
         </button>
@@ -472,9 +555,13 @@ export function PlayController({
           type="button"
           onClick={next}
           className={
-            isExamMode && currentIndex >= questions.length - 1
-              ? "flex-1 py-3 rounded-full font-extrabold text-[13px] bg-goukaku-ink-fixed text-goukaku-lime"
-              : "flex-1 py-3 rounded-full font-extrabold text-[13px] bg-goukaku-surface border border-goukaku-divider"
+            variant === "denki"
+              ? isExamMode && currentIndex >= questions.length - 1
+                ? "flex-1 rounded-lg border-2 border-[#191815] bg-[#ffe25a] py-3 text-[13px] font-black text-[#191815] shadow-[3px_3px_0_#191815]"
+                : "flex-1 rounded-lg border border-[#191815]/20 bg-[#fffdf6] py-3 text-[13px] font-black"
+              : isExamMode && currentIndex >= questions.length - 1
+                ? "flex-1 py-3 rounded-full font-extrabold text-[13px] bg-goukaku-ink-fixed text-goukaku-lime"
+                : "flex-1 py-3 rounded-full font-extrabold text-[13px] bg-goukaku-surface border border-goukaku-divider"
           }
         >
           {isExamMode && currentIndex >= questions.length - 1
@@ -501,16 +588,22 @@ function FeedbackChip({
   label,
   onClick,
   icon,
+  variant = "default",
 }: {
   label: string;
   onClick: () => void;
   icon: React.ReactNode;
+  variant?: "default" | "denki";
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full font-extrabold text-[10px] tracking-wider border border-goukaku-divider text-goukaku-ink/55"
+      className={
+        variant === "denki"
+          ? "inline-flex items-center gap-1.5 rounded-lg border border-[#191815]/20 bg-[#fffdf6] px-3 py-2 text-[10px] font-black tracking-wider text-[#6c6252]"
+          : "inline-flex items-center gap-1.5 px-3 py-2 rounded-full font-extrabold text-[10px] tracking-wider border border-goukaku-divider text-goukaku-ink/55"
+      }
     >
       {icon}
       <span>{label}</span>

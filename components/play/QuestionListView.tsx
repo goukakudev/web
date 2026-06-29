@@ -3,22 +3,13 @@
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import { MobileFrame } from "@/components/layout/MobileFrame"
+import { DenkiFrame } from "@/components/denki/DenkiFrame"
 import {
-  listExams,
-  listQuestions,
-  listIpExams,
-  listIpQuestions,
-  listApExams,
-  listApQuestions,
-  listSgExams,
-  listSgQuestions,
-  listScExams,
-  listScQuestions,
-  listDkExams,
-  listDkQuestions,
-} from "@/lib/api-client"
+  listClientExams,
+  listClientQuestions,
+} from "@/lib/client-exam-api"
 import { getAllAnswers, getBookmarks } from "@/lib/local-store"
-import type { Question, ExamSummary } from "@/lib/types"
+import type { ExamSummary, Question } from "@/lib/types"
 import { examIdPrefixForSubject, type QuizSubject } from "@/lib/exam-utils"
 
 export type ListMode = "history" | "bookmarks"
@@ -36,36 +27,16 @@ interface Row {
 export function QuestionListView({
   mode,
   subject = "fe",
+  basePath,
+  variant = "default",
 }: {
   mode: ListMode
   subject?: SubjectKey
+  basePath?: string
+  variant?: "default" | "denki"
 }) {
-  const subjectPrefix = `/${subject}`
+  const subjectPrefix = basePath ?? `/${subject}`
   const examIdPrefix = examIdPrefixForSubject(subject)
-  const fetchExams =
-    subject === "ip"
-      ? listIpExams
-      : subject === "ap"
-        ? listApExams
-        : subject === "sg"
-          ? listSgExams
-          : subject === "sc"
-            ? listScExams
-            : subject === "dk"
-              ? listDkExams
-              : listExams
-  const fetchQuestions =
-    subject === "ip"
-      ? listIpQuestions
-      : subject === "ap"
-        ? listApQuestions
-        : subject === "sg"
-          ? listSgQuestions
-          : subject === "sc"
-            ? listScQuestions
-            : subject === "dk"
-              ? listDkQuestions
-              : listQuestions
   const [rows, setRows] = useState<Row[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -90,7 +61,7 @@ export function QuestionListView({
           return
         }
 
-        const exams: ExamSummary[] = await fetchExams()
+        const exams: ExamSummary[] = await listClientExams(subject)
         const titleByExam = new Map(exams.map((e) => [e.exam_id, e.title ?? e.exam_id]))
 
         const examIds = new Set<string>()
@@ -107,7 +78,7 @@ export function QuestionListView({
         await Promise.all(
           [...examIds].map(async (examId) => {
             try {
-              const qs = await fetchQuestions(examId)
+              const qs = await listClientQuestions(subject, examId)
               results.set(examId, qs)
             } catch {
               // ignore individual exam failures
@@ -156,17 +127,21 @@ export function QuestionListView({
     return () => {
       cancelled = true
     }
-  }, [mode])
+  }, [examIdPrefix, mode, subject])
 
-  return (
-    <MobileFrame>
-      <Link href={subjectPrefix} className="inline-block text-[14px] mb-4">
-        ← ホーム
-      </Link>
-      <h1 className="text-[22px] font-extrabold mb-2">
-        {mode === "history" ? "回答履歴" : "ブックマークした問題"}
-      </h1>
-      <p className="text-[12px] opacity-60 mb-5">
+  const content = (
+    <>
+      {variant === "default" ? (
+        <Link href={subjectPrefix} className="inline-block text-[14px] mb-4">
+          ← ホーム
+        </Link>
+      ) : null}
+      {variant === "default" ? (
+        <h1 className="text-[22px] font-extrabold mb-2">
+          {mode === "history" ? "回答履歴" : "ブックマークした問題"}
+        </h1>
+      ) : null}
+      <p className={variant === "denki" ? "mb-5 text-[12px] font-medium text-[#6c6252]" : "text-[12px] opacity-60 mb-5"}>
         {mode === "history"
           ? "回答した問題を新しい順に表示しています"
           : "ブックマークした問題を表示しています"}
@@ -194,7 +169,11 @@ export function QuestionListView({
             <li key={r.questionId}>
               <Link
                 href={`${subjectPrefix}/play/${r.examId}/q/${r.qNumber}`}
-                className="block p-3 bg-goukaku-surface rounded-xl border border-goukaku-divider"
+                className={
+                  variant === "denki"
+                    ? "block rounded-lg border border-[#d8d1bc] bg-[#fffdf6] p-3 transition hover:border-[#191815] hover:shadow-[3px_3px_0_#191815]"
+                    : "block p-3 bg-goukaku-surface rounded-xl border border-goukaku-divider"
+                }
               >
                 <div className="text-[10px] tracking-wider font-bold opacity-55 uppercase">
                   {r.examId} · Q{r.qNumber}
@@ -207,6 +186,24 @@ export function QuestionListView({
           ))}
         </ul>
       )}
-    </MobileFrame>
+    </>
   )
+
+  if (variant === "denki") {
+    return (
+      <DenkiFrame
+        title={mode === "history" ? "回答履歴" : "ブックマークした問題"}
+        eyebrow="MY PANEL"
+        description={
+          mode === "history"
+            ? "第二種電気工事士の回答履歴を新しい順に確認できます。"
+            : "第二種電気工事士でブックマークした問題だけを確認できます。"
+        }
+      >
+        {content}
+      </DenkiFrame>
+    )
+  }
+
+  return <MobileFrame>{content}</MobileFrame>
 }

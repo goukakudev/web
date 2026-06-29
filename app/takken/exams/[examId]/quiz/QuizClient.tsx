@@ -10,6 +10,13 @@ import { ActionBar, HintButton } from "./ActionBar";
 
 type Mode = "instant" | "exam";
 
+function createSessionId(): string {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  return `${new Date().getTime()}`;
+}
+
 export default function QuizClient({
   examId,
   breadcrumb,
@@ -37,9 +44,12 @@ export default function QuizClient({
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [revealed, setRevealed] = useState<Set<number>>(new Set());
   const [finished, setFinished] = useState(false);
-  const sessionIdRef = useRef<string>(
-    typeof crypto !== "undefined" ? crypto.randomUUID() : `${Date.now()}`,
-  );
+  const sessionIdRef = useRef<string | null>(null);
+
+  const getSessionId = () => {
+    sessionIdRef.current ??= createSessionId();
+    return sessionIdRef.current;
+  };
 
   // URL bar follows current question without unmounting the client tree.
   // Browser back/forward navigates between questions by syncing index from
@@ -106,7 +116,7 @@ export default function QuizClient({
         selectedAnswer: n,
         isCorrect,
         skipped: false,
-        sessionId: sessionIdRef.current,
+        sessionId: getSessionId(),
       });
     }
   };
@@ -136,7 +146,7 @@ export default function QuizClient({
             selectedAnswer: sel,
             isCorrect,
             skipped: false,
-            sessionId: sessionIdRef.current,
+            sessionId: getSessionId(),
           });
         });
       }

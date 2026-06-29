@@ -1,10 +1,12 @@
 import type { Metadata } from "next"
+import Link from "next/link"
 import { listIpExams } from "@/lib/api-client"
 import { MobileFrame } from "@/components/layout/MobileFrame"
 import { TopBar } from "@/components/home/TopBar"
 import { HeroQuestCard } from "@/components/home/HeroQuestCard"
 import { SubjectPageHeading } from "@/components/home/SubjectPageHeading"
 import { SubjectCategoryLinks } from "@/components/home/SubjectCategoryLinks"
+import { SubjectYearLinks } from "@/components/home/SubjectYearLinks"
 import { StatCard } from "@/components/home/StatCard"
 import { SubjectTile } from "@/components/home/SubjectTile"
 import { ContinueSection } from "@/components/home/ContinueSection"
@@ -17,12 +19,17 @@ import { makeMetadata } from "@/lib/seo/metadata"
 import { itemListJsonLd, courseJsonLd, SITE_URL } from "@/lib/seo/structured-data"
 import { JsonLd } from "@/components/seo/JsonLd"
 
-export const metadata: Metadata = makeMetadata({
-  title: "ITパスポート試験 過去問 + 解説",
-  description:
-    "ITパスポート試験の過去問を無料で。29 年分・各 100 問・全 2,900 問を、順番に / ランダムに / 模試形式で解けます。全問解説・選択肢ごとの解説・ヒント付き。",
-  path: "/ip",
-})
+export async function generateMetadata(): Promise<Metadata> {
+  const exams = await listIpExams()
+  const total = exams.reduce((sum, exam) => sum + (exam.question_count ?? 0), 0)
+  const totalText = total > 0 ? `全${total.toLocaleString("ja-JP")}問` : "全問"
+  return makeMetadata({
+    title: "ITパスポート過去問 無料 29回分2700問 全問解説・模試",
+    description:
+      `無料・登録不要・スマホ最適化。ITパスポート試験の過去問を平成21年〜令和8年・${totalText}収録。順番／ランダム／CBT模試で演習でき、全問に解説と独自の選択肢別解説・ヒント付き。`,
+    path: "/ip",
+  })
+}
 
 export default async function IpHomePage() {
   const exams = await listIpExams()
@@ -40,16 +47,39 @@ export default async function IpHomePage() {
         data={courseJsonLd({
           name: "ITパスポート試験 過去問学習コース",
           description:
-            "ITパスポート試験 (IP) の過去問 29 年分・全 2,900 問を解説・ヒント付きで無料演習。ストラテジ / マネジメント / テクノロジの 3 分野別学習に対応。",
+            "ITパスポート試験 (IP) の過去問 29 回分・全 2,700 問を解説・ヒント付きで無料演習。ストラテジ / マネジメント / テクノロジの 3 分野別学習に対応。",
           url: `${SITE_URL}/ip`,
           aboutName: "ITパスポート試験",
-          examYears: "平成 9 年 (1997) 〜 令和 7 年 (2025)",
+          examYears: "平成 21 年 (2009) 〜 令和 8 年 (2026)",
           totalQuestions: exams.reduce((s, e) => s + (e.question_count ?? 0), 0),
           credentialName: "ITパスポート",
         })}
       />
       <TopBar />
       <SubjectPageHeading subject="ip" />
+      <section className="mb-6 rounded-xl border border-goukaku-divider bg-goukaku-surface/45 p-4">
+        <h2 className="text-[15px] font-extrabold text-goukaku-ink">
+          ITパスポート対策メニュー
+        </h2>
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          {[
+            { href: "/ip/questions", label: "過去問解説" },
+            { href: "/ip/mock", label: "CBT模試" },
+            { href: "/ip/terms", label: "頻出用語" },
+            { href: "/ip/30-days", label: "30日計画" },
+            { href: "/ip/frequent-topics", label: "頻出テーマ" },
+            { href: "/ip/ai-dx-security", label: "AI・DX・セキュリティ" },
+          ].map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="rounded-lg border border-goukaku-divider bg-white/45 px-3 py-2 text-[12px] font-extrabold text-goukaku-ink/78"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+      </section>
       <HeroQuestCard subject="ip" />
       <ContinueSection exams={exams} subject="ip" />
       <BookmarkCard exams={exams} subject="ip" />
@@ -72,6 +102,7 @@ export default async function IpHomePage() {
         ))}
       </div>
       <SubjectCategoryLinks subject="ip" />
+      <SubjectYearLinks subject="ip" exams={exams} />
       <MockTestBanner exam={exams[0]} subject="ip" />
       <SiteIntro subject="ip" />
     </MobileFrame>
