@@ -1,0 +1,43 @@
+name: Deploy web to Cloudflare Containers
+
+# Runs on push to the spike branch (verify), and manually. Point at main later.
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [spike/cloudflare-deploy]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest # amd64 native — no QEMU emulation, fast API access
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - run: npm ci
+
+      # SSG pages fetch the exam API at build time, so API_BASE/API_KEY must be
+      # present during `next build`. Provide them via a BuildKit secret file so
+      # they are NOT baked into the image. Values come from GitHub repo secrets.
+      - name: Write build-time env (BuildKit secret source)
+        run: |
+          {
+            echo "API_BASE=${{ secrets.API_BASE }}"
+            echo "API_KEY=${{ secrets.API_KEY }}"
+            echo "REVALIDATE_TOKEN=${{ secrets.REVALIDATE_TOKEN }}"
+          } > .env.ci
+
+      - name: Build linux/amd64 image
+        run: |
+          docker buildx build --platform linux/amd64 --load \
+            --secret id=apienv,src=.env.ci \
+            -t goukaku-web:ci .
+
+      - name: Push image to Cloudflare registry + deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          npx wrangler containers push goukaku-web:ci
+          npx wrangler deploy

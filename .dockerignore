@@ -1,0 +1,13 @@
+# Build the image from source; build artifacts and local state are rebuilt inside.
+node_modules
+.next
+.open-next
+.wrangler
+.git
+.github
+.vscode
+coverage
+*.log
+# Secrets / local env — inject runtime config via Cloudflare, never bake into the image.
+.env
+.env.*

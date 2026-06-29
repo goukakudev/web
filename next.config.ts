@@ -1,6 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Build a minimal standalone Node server (.next/standalone/server.js) so the
+  // app runs inside the Cloudflare Containers image. See Dockerfile.
+  output: "standalone",
+  // OG image fonts are read at runtime via fs (lib/seo/og.tsx). File tracing
+  // can't follow the dynamic readFile paths, so include them explicitly in the
+  // standalone output.
+  outputFileTracingIncludes: {
+    "/**": ["./lib/seo/fonts/**/*"],
+  },
   experimental: {
     inlineCss: true,
   },

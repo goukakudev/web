@@ -1,0 +1,29 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "goukaku-web",
+  "main": "worker.ts",
+  "compatibility_date": "2025-03-25",
+  "compatibility_flags": ["nodejs_compat"],
+  "containers": [
+    {
+      "class_name": "NextContainer",
+      "image": "registry.cloudflare.com/76f707f5e922704134eb4dee65d05e45/goukaku-web:ci",
+      "instance_type": "basic",
+      "max_instances": 3
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      { "name": "NEXT_CONTAINER", "class_name": "NextContainer" }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["NextContainer"]
+    }
+  ],
+  "vars": {
+    "API_BASE": "https://api.goukaku.dev"
+  }
+}
