@@ -5,6 +5,7 @@ import { TopBar } from "@/components/home/TopBar"
 import { HeroQuestCard } from "@/components/home/HeroQuestCard"
 import { SubjectPageHeading } from "@/components/home/SubjectPageHeading"
 import { SubjectCategoryLinks } from "@/components/home/SubjectCategoryLinks"
+import { SubjectYearLinks } from "@/components/home/SubjectYearLinks"
 import { StatCard } from "@/components/home/StatCard"
 import { SubjectTile } from "@/components/home/SubjectTile"
 import { ContinueSection } from "@/components/home/ContinueSection"
@@ -17,12 +18,17 @@ import { makeMetadata } from "@/lib/seo/metadata"
 import { itemListJsonLd, courseJsonLd, SITE_URL } from "@/lib/seo/structured-data"
 import { JsonLd } from "@/components/seo/JsonLd"
 
-export const metadata: Metadata = makeMetadata({
-  title: "応用情報技術者試験 過去問 + 解説",
-  description:
-    "応用情報技術者試験 (AP) の午前過去問を無料で。18 回分・各 80 問・全 1,440 問を、順番に / ランダムに / 150 分模試形式で解けます。全問解説・選択肢ごとの解説・ヒント付き。",
-  path: "/ap",
-})
+export async function generateMetadata(): Promise<Metadata> {
+  const exams = await listApExams()
+  const total = exams.reduce((sum, exam) => sum + (exam.question_count ?? 0), 0)
+  const totalText = total > 0 ? `全${total.toLocaleString("ja-JP")}問` : "全問"
+  return makeMetadata({
+    title: "応用情報技術者試験 過去問 無料 午前 全1440問・解説・模試",
+    description:
+      `無料・登録不要・スマホ最適化。応用情報技術者試験 午前の過去問を平成28年〜令和7年・${totalText}収録。順番／ランダム／150分模試で演習でき、全問に解説と独自の選択肢別解説付き。`,
+    path: "/ap",
+  })
+}
 
 export default async function ApHomePage() {
   const exams = await listApExams()
@@ -72,6 +78,7 @@ export default async function ApHomePage() {
         ))}
       </div>
       <SubjectCategoryLinks subject="ap" />
+      <SubjectYearLinks subject="ap" exams={exams} />
       <MockTestBanner exam={exams[0]} subject="ap" />
       <SiteIntro subject="ap" />
     </MobileFrame>

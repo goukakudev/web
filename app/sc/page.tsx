@@ -9,6 +9,7 @@ import {
   SITE_URL,
 } from "@/lib/seo/structured-data"
 import { JsonLd } from "@/components/seo/JsonLd"
+import { groupExamsByYear, sortYearsDesc, prettyYear } from "@/lib/seo/year-summary"
 import { ScHairline, ScSectionHead, ScTopBar } from "@/components/sc/ScChrome"
 import { ScHero } from "@/components/sc/ScHero"
 import { ScTodayCTA } from "@/components/sc/ScTodayCTA"
@@ -16,12 +17,17 @@ import { ScPopularTags } from "@/components/sc/ScPopularTags"
 import { ScYearLedger } from "@/components/sc/ScYearLedger"
 import { ScThemeToggle } from "@/components/sc/ScThemeToggle"
 
-export const metadata: Metadata = makeMetadata({
-  title: "情報処理安全確保支援士試験 過去問 + 解説 (SC・登録セキスペ)",
-  description:
-    "情報処理安全確保支援士試験 (SC、登録セキスペ) の午前 II 過去問を無料で。順番に / ランダムに / 模試形式 (40 分) で解け、全問解説・選択肢ごとの解説・ヒント付き。",
-  path: "/sc",
-})
+export async function generateMetadata(): Promise<Metadata> {
+  const exams = await listScExams()
+  const total = exams.reduce((sum, exam) => sum + (exam.question_count ?? 0), 0)
+  const totalText = total > 0 ? `全${total.toLocaleString("ja-JP")}問を` : ""
+  return makeMetadata({
+    title: "情報処理安全確保支援士(登録セキスペ)午前II過去問 無料・解説",
+    description:
+      `無料・登録不要・スマホ最適化。情報処理安全確保支援士(SC・登録セキスペ)の午前II公開過去問・${totalText}順次収録。順番／ランダム／40分模試で演習でき、全問に解説と独自の選択肢別解説・ヒント付き。`,
+    path: "/sc",
+  })
+}
 
 export default async function ScHomePage() {
   const [exams, tags] = await Promise.all([listScExams(), listScPopularTags(12)])
@@ -32,6 +38,9 @@ export default async function ScHomePage() {
 
   const sortedExams = [...exams].sort((a, b) => (a.exam_id < b.exam_id ? 1 : -1))
   const firstExam = sortedExams[0]
+  const scYears = sortYearsDesc([...groupExamsByYear(sortedExams).keys()]).filter(
+    (y) => y && y !== "unknown",
+  )
 
   return (
     <main className="sc-page">
@@ -102,6 +111,18 @@ export default async function ScHomePage() {
 
       <ScSectionHead title="年別 過去問" />
       <ScYearLedger exams={sortedExams} />
+      {scYears.length > 0 && (
+        <nav
+          aria-label="年度別インデックス"
+          style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", padding: "0.25rem 1.375rem 0.5rem" }}
+        >
+          {scYears.map((y) => (
+            <Link key={y} href={`/sc/year/${encodeURIComponent(y)}`} className="sc-pill">
+              {prettyYear(y)} の過去問
+            </Link>
+          ))}
+        </nav>
+      )}
 
       <ScSectionHead title="情報処理安全確保支援士試験について" />
       <ScHairline />

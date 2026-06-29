@@ -6,15 +6,22 @@ import { itemListJsonLd, courseJsonLd, SITE_URL, webPageJsonLd } from "@/lib/seo
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 
-export const metadata: Metadata = makeMetadata({
-  title: "宅建士 過去問",
-  description: "宅地建物取引士(宅建士)試験の過去問演習サイト。H16〜R7 の全試験・1,200 問以上を解説付きで掲載。関連条文・判例タップで本文ポップアップ表示。",
-  path: "/takken",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const exams = await TakkenAPI.listExams();
+  const total = exams.reduce((sum, exam) => sum + exam.question_count, 0);
+  const totalText = total > 0 ? `全${total.toLocaleString("ja-JP")}問` : "";
+  return makeMetadata({
+    title: "宅建 過去問 無料 H16〜R7全1200問 条文・判例解説",
+    description:
+      `無料・登録不要・スマホ最適化。宅建(宅地建物取引士)の過去問をH16〜R7・${totalText}収録。順番／ランダム／模試で演習でき、全問に解説と独自の選択肢別解説、関連条文・判例リンク付き。`,
+    path: "/takken",
+  });
+}
 
 export default async function TakkenHome() {
   const exams = await TakkenAPI.listExams();
   const latest = exams[0];
+  const takkenYears = [...new Set(exams.map((e) => e.year))].sort((a, b) => b - a);
 
   return (
     <main className="min-h-screen bg-bg">
@@ -85,6 +92,25 @@ export default async function TakkenHome() {
             </Link>
           </div>
         </div>
+
+        {takkenYears.length > 0 && (
+          <section className="mt-8">
+            <h2 className="font-mincho text-sm tracking-widest text-ink-3 mb-3">
+              年度別インデックス
+            </h2>
+            <nav aria-label="年度別の過去問" className="flex flex-wrap gap-2">
+              {takkenYears.map((y) => (
+                <Link
+                  key={y}
+                  href={`/takken/year/${y}`}
+                  className="inline-flex items-center rounded-full border border-line bg-bg/60 px-3.5 py-1.5 text-[12px] font-semibold text-ink/80 transition hover:text-ink"
+                >
+                  {y} 年の過去問
+                </Link>
+              ))}
+            </nav>
+          </section>
+        )}
 
         <section className="mt-12 text-[13px] leading-[1.85] text-ink-2">
           <h2 className="font-mincho text-lg font-semibold text-ink mb-3">

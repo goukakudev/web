@@ -10,12 +10,17 @@ import { courseJsonLd, webPageJsonLd, itemListJsonLd, SITE_URL } from "@/lib/seo
 import { KANGO_CATEGORIES } from "@/lib/kango/categories"
 import { makeMetadata } from "@/lib/seo/metadata"
 
-export const metadata: Metadata = makeMetadata({
-  title: "看護師国家試験 過去問演習",
-  description:
-    "看護師・保健師・助産師 国家試験の過去問を、選択肢別解説つきで無料演習。第115回ほか、必修・一般・状況設定・計算問題に対応。",
-  path: "/kango",
-})
+export async function generateMetadata(): Promise<Metadata> {
+  const exams = await listKnExams()
+  const total = exams.reduce((sum, exam) => sum + exam.question_count, 0)
+  const totalText = total > 0 ? `全${total.toLocaleString("ja-JP")}問` : ""
+  return makeMetadata({
+    title: "看護師国家試験 過去問 無料 第115回 選択肢別解説・必修対応",
+    description:
+      `無料・登録不要・スマホ最適化。看護師国家試験(保健師・助産師含む)の過去問を第115回ほか${totalText}収録。必修・一般・状況設定・計算問題に対応し、独自の選択肢別解説付き。`,
+    path: "/kango",
+  })
+}
 
 export const revalidate = 3600
 
