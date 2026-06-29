@@ -30,13 +30,13 @@
   ],
   "vars": {
     "API_BASE": "https://api.goukaku.dev"
-  },
-  // Production cutover: bind the apex to this Worker. goukaku.dev is already a
-  // Cloudflare-proxied record (origin = EC2/Caddy), so this route intercepts
-  // traffic before it reaches the origin. Rollback = remove this route (the
-  // existing proxied DNS record falls back to the EC2 origin). www is still
-  // served by EC2's 301 for now; it moves here in the EC2-decommission step.
-  "routes": [
-    { "pattern": "goukaku.dev/*", "zone_name": "goukaku.dev" }
-  ]
+  }
+  // Apex routing (goukaku.dev/* -> this Worker) is managed in the Cloudflare
+  // dashboard (Workers > goukaku-web > Domains & Routes), NOT here, because the
+  // CI deploy token lacks "Zone > Workers Routes > Edit" and wrangler fails the
+  // whole deploy when it can't manage a configured route. goukaku.dev is already
+  // a CF-proxied record (origin = EC2/Caddy), so a dashboard route intercepts
+  // traffic before the origin; rollback = delete that route (DNS falls back to
+  // EC2). If the token later gains Workers Routes:Edit, move routing back to IaC:
+  //   "routes": [{ "pattern": "goukaku.dev/*", "zone_name": "goukaku.dev" }]
 }
