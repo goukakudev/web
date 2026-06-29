@@ -21,9 +21,11 @@ export interface Env {
 export class NextContainer extends Container<Env> {
   // Must match the port the Next standalone server binds (Dockerfile: PORT=8080).
   defaultPort = 8080;
-  // Scale to zero: sleep the instance after idle so we stay within the
-  // $5/mo Workers Paid allowance. Raise this if cold starts hurt UX.
-  sleepAfter = "5m";
+  // Scale to zero after idle to stay near the $5/mo Workers Paid allowance.
+  // Prod traffic is ~7k req/day, so 30m keeps the instance warm across daytime
+  // gaps — only deep-idle overnight stretches sleep (one cold start next morning).
+  // Raise further (or add a cron keep-warm ping) if cold starts still hurt UX.
+  sleepAfter = "30m";
 
   constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env);
