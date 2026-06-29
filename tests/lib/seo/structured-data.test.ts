@@ -12,11 +12,26 @@ describe("structured-data", () => {
     expect(d.potentialAction["@type"]).toBe("SearchAction")
   })
 
+  it("websiteJsonLd exposes brand readings via alternateName", () => {
+    const d = websiteJsonLd()
+    expect(Array.isArray(d.alternateName)).toBe(true)
+    expect(d.alternateName).toEqual(
+      expect.arrayContaining(["goukaku", "ごうかく", "合格ドットデブ"]),
+    )
+  })
+
   it("organizationJsonLd includes sameAs and logo", () => {
     const d = organizationJsonLd()
     expect(d["@type"]).toBe("Organization")
     expect(d.logo).toMatch(/^https:\/\//)
     expect(Array.isArray(d.sameAs)).toBe(true)
+  })
+
+  it("organizationJsonLd exposes brand readings via alternateName", () => {
+    const d = organizationJsonLd()
+    expect(d.alternateName).toEqual(
+      expect.arrayContaining(["goukaku", "ごうかく", "合格ドットデブ"]),
+    )
   })
 
   it("breadcrumbJsonLd assigns positions in order", () => {

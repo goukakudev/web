@@ -11,7 +11,7 @@ export function websiteJsonLd() {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: SITE_NAME,
-    alternateName: "ゴウカクドットデブ",
+    alternateName: ["goukaku", "ごうかく", "合格ドットデブ", "ゴウカクドットデブ"],
     url: SITE_URL,
     inLanguage: "ja",
     description:
@@ -32,6 +32,7 @@ export function organizationJsonLd() {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: SITE_NAME,
+    alternateName: ["goukaku", "ごうかく", "合格ドットデブ", "ゴウカクドットデブ"],
     url: SITE_URL,
     logo: `${SITE_URL}/icon.png`,
     sameAs: [
