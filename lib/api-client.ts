@@ -26,14 +26,29 @@ function apiKey(): string {
 }
 
 async function get<T>(path: string, revalidate: number): Promise<T> {
-  const res = await fetch(`${baseUrl()}${path}`, {
-    headers: { "X-API-Key": apiKey(), Accept: "application/json" },
-    next: { revalidate },
-  })
-  if (!res.ok) {
-    throw new Error(`API ${res.status} on GET ${path}`)
+  try {
+    const res = await fetch(`${baseUrl()}${path}`, {
+      headers: { "X-API-Key": apiKey(), Accept: "application/json" },
+      next: { revalidate },
+    })
+    if (!res.ok) {
+      throw new Error(`API ${res.status} on GET ${path}`)
+    }
+    return (await res.json()) as T
+  } catch (err) {
+    // During `next build` the exam API can be unreachable from the build
+    // environment (CI/Docker egress differs from the running container). Rather
+    // than hard-fail the whole build ("Failed to collect page data"), return an
+    // empty response so generateStaticParams yields no params and those routes
+    // fall back to on-demand ISR — the running container CAN reach the API at
+    // request time. Gated to the build phase ONLY: at runtime, real failures
+    // still throw so ISR keeps serving stale content instead of emptying pages.
+    if (process.env.NEXT_PHASE === "phase-production-build") {
+      console.warn(`[build] exam API unreachable on GET ${path}; deferring to runtime ISR`)
+      return { exams: [], questions: [], tags: [], stats: [] } as unknown as T
+    }
+    throw err
   }
-  return (await res.json()) as T
 }
 
 function normalizeQuestionTags(questions: Question[]): Question[] {

@@ -1,9 +1,21 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  experimental: {
-    inlineCss: true,
+  // Build a minimal standalone Node server (.next/standalone/server.js) so the
+  // app runs inside the Cloudflare Containers image. See Dockerfile.
+  output: "standalone",
+  // OG image fonts are read at runtime via fs (lib/seo/og.tsx). File tracing
+  // can't follow the dynamic readFile paths, so include them explicitly in the
+  // standalone output.
+  outputFileTracingIncludes: {
+    "/**": ["./lib/seo/fonts/**/*"],
   },
+  // NOTE: experimental.inlineCss was previously enabled to avoid a
+  // render-blocking CSS <link> (PageSpeed audit). But the global stylesheet is
+  // ~100KB — far past the ~14KB "critical CSS" inlining threshold — so inlining
+  // it bloated every HTML document (~100KB, re-sent on every full load, never
+  // cached) and delayed first paint. Reverting to a linked stylesheet keeps the
+  // HTML light and lets the edge/browser cache the CSS once per session.
   async redirects() {
     return [
       // Legacy FE URLs → /fe/* (kept for SEO / external links)

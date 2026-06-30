@@ -1,0 +1,59 @@
+name: Deploy web to Cloudflare Containers
+
+# Production deploy: runs on push to main, and manually via workflow_dispatch.
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest # amd64 native — no QEMU emulation, fast API access
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - run: npm ci
+
+      # SSG pages fetch the exam API at build time, so API_BASE/API_KEY must be
+      # present during `next build`. Provide them via a BuildKit secret file so
+      # they are NOT baked into the image. Values come from GitHub repo secrets.
+      - name: Write build-time env (BuildKit secret source)
+        run: |
+          {
+            echo "API_BASE=${{ secrets.API_BASE }}"
+            echo "API_KEY=${{ secrets.API_KEY }}"
+            echo "REVALIDATE_TOKEN=${{ secrets.REVALIDATE_TOKEN }}"
+          } > .env.ci
+
+      - name: Build linux/amd64 image
+        run: |
+          docker buildx build --platform linux/amd64 --load \
+            --secret id=apienv,src=.env.ci \
+            -t goukaku-web:${{ github.sha }} .
+
+      - name: Push image to Cloudflare registry + deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          API_KEY: ${{ secrets.API_KEY }}
+          REVALIDATE_TOKEN: ${{ secrets.REVALIDATE_TOKEN }}
+        run: |
+          npx wrangler containers push goukaku-web:${{ github.sha }}
+          # Point wrangler.jsonc at THIS build's immutable per-commit tag before
+          # deploying. The committed config carries a stable ":ci" placeholder, but
+          # reusing a mutable tag makes `wrangler deploy` report "no changes" and
+          # skip the container rollout — the warm instance keeps serving the old
+          # image. Substituting the commit SHA guarantees a new image reference, so
+          # CF always rolls the container forward.
+          sed -i "s|goukaku-web:ci|goukaku-web:${{ github.sha }}|" wrangler.jsonc
+          npx wrangler deploy
+          # Runtime secrets the container reads via worker.ts (env.API_KEY /
+          # env.REVALIDATE_TOKEN). CF Worker secrets are a SEPARATE store from the
+          # GitHub Actions secrets above, so set them here on every deploy — without
+          # them the running container can't reach the exam API and on-demand routes
+          # (e.g. /fe/play/random) return 500. printf avoids a trailing newline.
+          printf '%s' "$API_KEY" | npx wrangler secret put API_KEY
+          printf '%s' "$REVALIDATE_TOKEN" | npx wrangler secret put REVALIDATE_TOKEN

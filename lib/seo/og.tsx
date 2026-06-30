@@ -1,4 +1,6 @@
 import { ImageResponse } from "next/og"
+import { readFile } from "node:fs/promises"
+import path from "node:path"
 import type { ReactElement } from "react"
 
 export const OG_SIZE = { width: 1200, height: 630 } as const
@@ -17,47 +19,57 @@ const ACCENTS = {
   charcoal: { from: "#1E1E22", to: "#2A2A30", ink: "#FFFFFF", tag: "#FFD27A" },
 } as const
 
-// satori (next/og) only accepts OTF/TTF — it rejects woff2 with
-// "Unsupported OpenType signature wOF2". Google Fonts returns woff2 to
-// modern UAs, so we use the old-UA + text=... API to get an opentype/
-// truetype subset containing only the glyphs we actually render.
-const LEGACY_UA =
-  "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.116 Safari/537.36"
+// Fonts are bundled locally (lib/seo/fonts) so OG generation needs NO network
+// at build OR run time — previously we fetched a subset from fonts.gstatic.com,
+// which breaks in network-restricted build environments (e.g. the container
+// build). satori (next/og) accepts TTF/OTF but rejects woff2. We ship the Noto
+// Sans JP "japanese" subset (JP glyphs) + "latin" subset (ASCII like "合格.dev")
+// for each weight; satori falls back glyph-by-glyph across the list.
+// These files are pulled into the standalone build via next.config
+// outputFileTracingIncludes.
+const FONT_DIR = path.join(process.cwd(), "lib/seo/fonts")
 
-async function loadFontSubset(
-  text: string,
-  weight: 400 | 700 | 900,
-): Promise<ArrayBuffer> {
-  const url = `https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@${weight}&text=${encodeURIComponent(text)}&display=swap`
-  const css = await fetch(url, { headers: { "User-Agent": LEGACY_UA } }).then(
-    (r) => r.text(),
-  )
-  const match = css.match(/src:\s*url\((.+?)\)\s*format\('(opentype|truetype|woff)'\)/)
-  if (!match) {
-    throw new Error(`OG font: could not extract opentype/truetype/woff URL for weight ${weight} (css: ${css.slice(0, 200)})`)
+async function loadFont(file: string): Promise<ArrayBuffer> {
+  const buf = await readFile(path.join(FONT_DIR, file))
+  return buf.buffer.slice(
+    buf.byteOffset,
+    buf.byteOffset + buf.byteLength,
+  ) as ArrayBuffer
+}
+
+type OgFont = {
+  name: string
+  data: ArrayBuffer
+  weight: 400 | 700 | 900
+  style: "normal"
+}
+
+// Load + cache once per server process (OG images are generated repeatedly).
+let fontsPromise: Promise<OgFont[]> | null = null
+function loadFonts(): Promise<OgFont[]> {
+  if (!fontsPromise) {
+    fontsPromise = Promise.all([
+      loadFont("notosansjp-400.ttf"),
+      loadFont("notosansjp-700.ttf"),
+      loadFont("notosansjp-900.ttf"),
+      loadFont("notosansjp-latin-400.ttf"),
+      loadFont("notosansjp-latin-700.ttf"),
+      loadFont("notosansjp-latin-900.ttf"),
+    ]).then(([jp4, jp7, jp9, la4, la7, la9]) => [
+      { name: "Noto Sans JP", data: jp4, weight: 400, style: "normal" },
+      { name: "Noto Sans JP", data: jp7, weight: 700, style: "normal" },
+      { name: "Noto Sans JP", data: jp9, weight: 900, style: "normal" },
+      { name: "Noto Sans JP", data: la4, weight: 400, style: "normal" },
+      { name: "Noto Sans JP", data: la7, weight: 700, style: "normal" },
+      { name: "Noto Sans JP", data: la9, weight: 900, style: "normal" },
+    ])
   }
-  const fontRes = await fetch(match[1])
-  if (!fontRes.ok) {
-    throw new Error(`OG font: fetch failed for ${match[1]}`)
-  }
-  return fontRes.arrayBuffer()
+  return fontsPromise
 }
 
 export async function renderOgImage(input: RenderOgInput): Promise<ImageResponse> {
   const accent = ACCENTS[input.accent ?? "pink"]
-  const allText = ["合格.dev", input.title, input.subtitle ?? "", input.badge ?? ""].join(
-    " ",
-  )
-  const [regular, bold, black] = await Promise.all([
-    loadFontSubset(allText, 400),
-    loadFontSubset(allText, 700),
-    loadFontSubset(allText, 900),
-  ])
-  const fonts = [
-    { name: "Noto Sans JP", data: regular, weight: 400 as const, style: "normal" as const },
-    { name: "Noto Sans JP", data: bold, weight: 700 as const, style: "normal" as const },
-    { name: "Noto Sans JP", data: black, weight: 900 as const, style: "normal" as const },
-  ]
+  const fonts = await loadFonts()
 
   const element: ReactElement = (
     <div

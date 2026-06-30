@@ -1,4 +1,9 @@
 import katex from "katex";
+// KaTeX CSS is scoped here (the single math renderer) instead of globals.css so
+// it only ships on routes that actually render math (~23 /play/ + /q/ routes),
+// not the other ~104 routes. With experimental.inlineCss this keeps the inlined
+// <style> ~25KB smaller on every non-math page.
+import "katex/dist/katex.min.css";
 import type { ReactNode } from "react";
 import { parseSegments } from "@/lib/math-segments";
 import { findGlossaryMatches } from "@/lib/glossary";
