@@ -1,10 +1,10 @@
 name: Deploy web to Cloudflare Containers
 
-# Runs on push to the spike branch (verify), and manually. Point at main later.
+# Production deploy: runs on push to main, and manually via workflow_dispatch.
 on:
   workflow_dispatch: {}
   push:
-    branches: [spike/cloudflare-deploy]
+    branches: [main]
 
 jobs:
   deploy:
