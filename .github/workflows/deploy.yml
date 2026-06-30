@@ -33,7 +33,7 @@ jobs:
         run: |
           docker buildx build --platform linux/amd64 --load \
             --secret id=apienv,src=.env.ci \
-            -t goukaku-web:ci .
+            -t goukaku-web:${{ github.sha }} .
 
       - name: Push image to Cloudflare registry + deploy
         env:
@@ -41,7 +41,14 @@ jobs:
           API_KEY: ${{ secrets.API_KEY }}
           REVALIDATE_TOKEN: ${{ secrets.REVALIDATE_TOKEN }}
         run: |
-          npx wrangler containers push goukaku-web:ci
+          npx wrangler containers push goukaku-web:${{ github.sha }}
+          # Point wrangler.jsonc at THIS build's immutable per-commit tag before
+          # deploying. The committed config carries a stable ":ci" placeholder, but
+          # reusing a mutable tag makes `wrangler deploy` report "no changes" and
+          # skip the container rollout — the warm instance keeps serving the old
+          # image. Substituting the commit SHA guarantees a new image reference, so
+          # CF always rolls the container forward.
+          sed -i "s|goukaku-web:ci|goukaku-web:${{ github.sha }}|" wrangler.jsonc
           npx wrangler deploy
           # Runtime secrets the container reads via worker.ts (env.API_KEY /
           # env.REVALIDATE_TOKEN). CF Worker secrets are a SEPARATE store from the

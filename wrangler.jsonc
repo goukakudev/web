@@ -12,6 +12,10 @@
   "containers": [
     {
       "class_name": "NextContainer",
+      // ":ci" is a stable placeholder. CI (.github/workflows/deploy.yml) rewrites
+      // it to the commit SHA before `wrangler deploy` so each deploy references a
+      // new image tag — a mutable tag makes wrangler report "no changes" and skip
+      // the container rollout, leaving the warm instance on the old image.
       "image": "registry.cloudflare.com/76f707f5e922704134eb4dee65d05e45/goukaku-web:ci",
       "instance_type": "basic",
       "max_instances": 3
