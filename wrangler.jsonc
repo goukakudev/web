@@ -34,6 +34,14 @@
   ],
   "vars": {
     "API_BASE": "https://api.goukaku.dev"
+  },
+  // Keep-warm: ping the container every 10 min (< the 30m sleepAfter) so it does
+  // not scale to zero, eliminating 4.5-9.5s cold starts. The worker's scheduled()
+  // handler does a direct container fetch. Trade-off: ~always-on basic-tier
+  // compute (+~$3-4/mo vs pure scale-to-zero, still under the replaced EC2).
+  // Narrow the cron to active JST hours, or remove it, to trim cost.
+  "triggers": {
+    "crons": ["*/10 * * * *"]
   }
   // Apex routing (goukaku.dev/* -> this Worker) is managed in the Cloudflare
   // dashboard (Workers > goukaku-web > Domains & Routes), NOT here, because the

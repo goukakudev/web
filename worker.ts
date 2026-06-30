@@ -142,4 +142,23 @@ export default {
       return getContainer(env.NEXT_CONTAINER).fetch(request);
     }
   },
+
+  // Keep-warm. A cron trigger (wrangler.jsonc "triggers.crons") invokes this on a
+  // schedule to ping the container directly — bypassing the edge cache so it
+  // always resets the container's sleepAfter timer. Without it, idle gaps cause
+  // 4.5-9.5s cold starts for the next visitor; with it the container stays warm
+  // at the cost of ~always-on basic-tier compute (still under the EC2 it
+  // replaced). Remove the cron to restore pure scale-to-zero.
+  async scheduled(
+    _controller: ScheduledController,
+    env: Env,
+    ctx: ExecutionContext,
+  ): Promise<void> {
+    ctx.waitUntil(
+      getContainer(env.NEXT_CONTAINER)
+        .fetch(new Request("https://goukaku.dev/"))
+        .then(() => undefined)
+        .catch(() => undefined),
+    );
+  },
 } satisfies ExportedHandler<Env>;
