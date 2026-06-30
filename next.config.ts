@@ -10,9 +10,12 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/**": ["./lib/seo/fonts/**/*"],
   },
-  experimental: {
-    inlineCss: true,
-  },
+  // NOTE: experimental.inlineCss was previously enabled to avoid a
+  // render-blocking CSS <link> (PageSpeed audit). But the global stylesheet is
+  // ~100KB — far past the ~14KB "critical CSS" inlining threshold — so inlining
+  // it bloated every HTML document (~100KB, re-sent on every full load, never
+  // cached) and delayed first paint. Reverting to a linked stylesheet keeps the
+  // HTML light and lets the edge/browser cache the CSS once per session.
   async redirects() {
     return [
       // Legacy FE URLs → /fe/* (kept for SEO / external links)
