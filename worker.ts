@@ -78,11 +78,44 @@ function isCacheableResponse(response: Response): boolean {
   return !/no-store|private|no-cache/i.test(cc);
 }
 
+/**
+ * Hostname guard. The apex Workers Route is dashboard-managed and has (at
+ * least historically) been broader than intended — a legacy `*.goukaku.dev/*`
+ * pattern from the cutover also captured subdomains, which silently broke all
+ * question figures: r2.goukaku.dev is the R2 custom domain, and routing it
+ * into the Next.js container returns 404 for every image. Never serve the app
+ * for a host that is not the apex, regardless of how the route is configured:
+ *  - r2.goukaku.dev → pass through. A same-zone subrequest bypasses Workers
+ *    Routes and is served by R2's custom-domain layer directly.
+ *  - other *.goukaku.dev (www, …) → 301 to the apex, preserving path/query,
+ *    so no duplicate copy of the site is ever served.
+ *  - anything else (localhost under `wrangler dev`, *.workers.dev) → serve
+ *    normally.
+ */
+function guardHostname(request: Request): Promise<Response> | Response | null {
+  const url = new URL(request.url);
+  if (url.hostname === "r2.goukaku.dev") {
+    return fetch(request);
+  }
+  if (
+    url.hostname !== "goukaku.dev" &&
+    url.hostname.endsWith(".goukaku.dev")
+  ) {
+    url.hostname = "goukaku.dev";
+    return Response.redirect(url.toString(), 301);
+  }
+  return null;
+}
+
 async function handle(
   request: Request,
   env: Env,
   ctx: ExecutionContext,
 ): Promise<Response> {
+  const guarded = guardHostname(request);
+  if (guarded) {
+    return guarded;
+  }
   const container = getContainer(env.NEXT_CONTAINER);
   if (!isCacheableRequest(request)) {
     return container.fetch(request);
