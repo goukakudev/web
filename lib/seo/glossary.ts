@@ -33,7 +33,17 @@ export function termToSlug(term: string): string {
 
 const BY_SLUG = new Map<string, GlossaryEntry>()
 for (const e of ALL) {
-  BY_SLUG.set(termToSafeSlug(e.term), e)
+  const slug = termToSafeSlug(e.term)
+  const existing = BY_SLUG.get(slug)
+  // 衝突時は無言で上書きしない。上書きされた側の用語は /glossary/{slug} が
+  // 別の用語として解決され続けてしまうため、ビルド/起動時ログで即座に気づける
+  // ようにする (テストの一意性チェックはデータ追加時にしか走らない安全網)。
+  if (existing && existing.term !== e.term) {
+    console.error(
+      `[glossary] slug collision: "${existing.term}" と "${e.term}" が同じ slug "${slug}" になっています。後勝ちで "${e.term}" が使われます。`,
+    )
+  }
+  BY_SLUG.set(slug, e)
 }
 
 export function findByTerm(term: string): GlossaryEntry | undefined {

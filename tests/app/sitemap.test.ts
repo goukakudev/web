@@ -186,6 +186,29 @@ describe("split sitemaps", () => {
     expect(xml).not.toContain("?q=")
   })
 
+  it("takken sitemap excludes exams whose questions can't be retrieved", async () => {
+    const api = await import("@/lib/takken/api")
+    vi.mocked(api.TakkenAPI.listExams).mockResolvedValueOnce([
+      { exam_id: "tk-r5", era: "令和", era_year: 5, exam_month: 10, year: 2023, label: "R5", passing_score: 36, question_count: 50 },
+      { exam_id: "tk-broken", era: "令和", era_year: 6, exam_month: 4, year: 2024, label: "R6", passing_score: 36, question_count: 50 },
+    ])
+    vi.mocked(api.TakkenAPI.listExamQuestions).mockImplementation(async (examId) => {
+      if (examId === "tk-broken") return null
+      return {
+        exam_id: "tk-r5",
+        count: 1,
+        questions: [
+          { _id: "tkq1", question_number: 1, category: "宅建業法", format: "simple", question_text: "宅建業法の説明はどれか。", choices: {}, correct_answer: 1, accepted_answers: [1] },
+        ],
+      }
+    })
+
+    const { sitemapEntries } = await import("@/lib/seo/sitemaps")
+    const urls = (await sitemapEntries("takken-questions")).map((entry) => entry.url)
+    expect(urls).toContain("https://goukaku.dev/takken/exams/tk-r5/quiz")
+    expect(urls).not.toContain("https://goukaku.dev/takken/exams/tk-broken/quiz")
+  })
+
   it("omits lastmod because real modification dates are unknown", async () => {
     const { sitemapEntries, urlsetXml } = await import("@/lib/seo/sitemaps")
     const names = ["static", "ip-questions", "takken-questions", "glossary"] as const

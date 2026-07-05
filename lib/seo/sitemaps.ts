@@ -307,12 +307,24 @@ async function takkenQuestionEntries(): Promise<SitemapEntry[]> {
   // = 1,200 URL 超)、クエリ付き近重複ページとして GSC の「クロール済み -
   // インデックス未登録」に滞留するだけだった。canonical は /quiz に統一済み
   // なので、sitemap も試験回ごとの基底 URL 1 件に絞る。
+  // ただし listExams() が返す試験回でも、個別の questions が取得できない
+  // (インポート未了・データ欠損) ケースはあり得るため、そのままでは 404 する
+  // URL を sitemap に載せてしまう。以前の実装はこの existence チェックを
+  // 兼ねていたため、ここでも維持する。
   const exams = await TakkenAPI.listExams()
-  return exams.map((exam) => ({
-    url: `${SITEMAP_BASE}/takken/exams/${exam.exam_id}/quiz`,
-    changeFrequency: "monthly" as const,
-    priority: 0.66,
-  }))
+  const results = await Promise.all(
+    exams.map((exam) => TakkenAPI.listExamQuestions(exam.exam_id).catch(() => null)),
+  )
+  return exams.flatMap((exam, index) => {
+    if (!results[index]?.questions.length) return []
+    return [
+      {
+        url: `${SITEMAP_BASE}/takken/exams/${exam.exam_id}/quiz`,
+        changeFrequency: "monthly" as const,
+        priority: 0.66,
+      },
+    ]
+  })
 }
 
 function glossaryEntries(): SitemapEntry[] {

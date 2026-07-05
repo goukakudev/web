@@ -65,7 +65,7 @@ export default async function QuizPage({ params, searchParams }: Props) {
             { name: exam.label, href: `/takken/exams/${exam.exam_id}` },
             {
               name: `問${current.question_number}`,
-              href: `/takken/exams/${exam.exam_id}/quiz?q=${current.question_number}`,
+              href: `/takken/exams/${exam.exam_id}/quiz`,
             },
           ]}
         />
@@ -74,7 +74,7 @@ export default async function QuizPage({ params, searchParams }: Props) {
         data={questionJsonLd({
           name: `${exam?.label ?? examId} 宅建 問${current.question_number}`,
           text: current.question_text,
-          url: `https://goukaku.dev/takken/exams/${examId}/quiz?q=${current.question_number}`,
+          url: `https://goukaku.dev/takken/exams/${examId}/quiz`,
           choices,
           correctLabel:
             current.correct_answer != null

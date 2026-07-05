@@ -87,8 +87,10 @@ function isCacheableResponse(response: Response): boolean {
  * for a host that is not the apex, regardless of how the route is configured:
  *  - r2.goukaku.dev → pass through. A same-zone subrequest bypasses Workers
  *    Routes and is served by R2's custom-domain layer directly.
- *  - other *.goukaku.dev (www, …) → 301 to the apex, preserving path/query,
- *    so no duplicate copy of the site is ever served.
+ *  - other *.goukaku.dev (www, …) → 308 to the apex, preserving path/query,
+ *    so no duplicate copy of the site is ever served. 308 (not 301) so that
+ *    a non-GET request (e.g. a stray POST to /api/events) keeps its method
+ *    and body on redirect instead of being silently downgraded to GET.
  *  - anything else (localhost under `wrangler dev`, *.workers.dev) → serve
  *    normally.
  */
@@ -102,7 +104,7 @@ function guardHostname(request: Request): Promise<Response> | Response | null {
     url.hostname.endsWith(".goukaku.dev")
   ) {
     url.hostname = "goukaku.dev";
-    return Response.redirect(url.toString(), 301);
+    return Response.redirect(url.toString(), 308);
   }
   return null;
 }
