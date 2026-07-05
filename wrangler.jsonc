@@ -32,23 +32,13 @@
       "new_sqlite_classes": ["NextContainer"]
     }
   ],
+  // 2026-07-05: 本番は EC2 (GO-WEB) に戻した。この Containers スタックは休止中の
+  // フォールバック — Workers Route は未バインド、keep-warm cron も撤去済み
+  // (トラフィック 0 なら scale-to-zero でコンテナ課金 ~$0)。緊急切替は
+  // .github/workflows/deploy.yml を手動実行し、CF ダッシュボードで
+  // goukaku.dev/* route を追加する (CI token は Zone>Workers Routes>Edit を
+  // 持たないため route は dashboard 管理)。
   "vars": {
     "API_BASE": "https://api.goukaku.dev"
-  },
-  // Keep-warm: ping the container every 10 min (< the 30m sleepAfter) so it does
-  // not scale to zero, eliminating 4.5-9.5s cold starts. The worker's scheduled()
-  // handler does a direct container fetch. Trade-off: ~always-on basic-tier
-  // compute (+~$3-4/mo vs pure scale-to-zero, still under the replaced EC2).
-  // Narrow the cron to active JST hours, or remove it, to trim cost.
-  "triggers": {
-    "crons": ["*/10 * * * *"]
   }
-  // Apex routing (goukaku.dev/* -> this Worker) is managed in the Cloudflare
-  // dashboard (Workers > goukaku-web > Domains & Routes), NOT here, because the
-  // CI deploy token lacks "Zone > Workers Routes > Edit" and wrangler fails the
-  // whole deploy when it can't manage a configured route. goukaku.dev is already
-  // a CF-proxied record (origin = EC2/Caddy), so a dashboard route intercepts
-  // traffic before the origin; rollback = delete that route (DNS falls back to
-  // EC2). If the token later gains Workers Routes:Edit, move routing back to IaC:
-  //   "routes": [{ "pattern": "goukaku.dev/*", "zone_name": "goukaku.dev" }]
 }

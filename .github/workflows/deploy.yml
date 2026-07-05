@@ -1,10 +1,10 @@
-name: Deploy web to Cloudflare Containers
+name: Deploy web to Cloudflare Containers (dormant fallback)
 
-# Production deploy: runs on push to main, and manually via workflow_dispatch.
+# 2026-07-05: 本番は EC2 (GO-WEB) に戻したため、main push での自動デプロイは停止。
+# この workflow は緊急フォールバック用に手動実行のみ残す (実行後、CF ダッシュボードで
+# goukaku.dev/* route を追加すると Containers 配信に切替わる)。デプロイ手順は AGENTS.md。
 on:
   workflow_dispatch: {}
-  push:
-    branches: [main]
 
 jobs:
   deploy:
