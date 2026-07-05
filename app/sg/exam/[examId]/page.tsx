@@ -9,6 +9,7 @@ import { JsonLd } from "@/components/seo/JsonLd"
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs"
 import { ExamDetailExtras } from "@/components/seo/ExamDetailExtras"
 import { buildExamIntro } from "@/lib/seo/exam-intro"
+import { questionCanonicalPath } from "@/lib/seo/question-url"
 
 export async function generateStaticParams() {
   const exams = await listSgExams()
@@ -75,6 +76,7 @@ export default async function SgExamDetailPage({ params }: PageProps) {
         intro={intro}
         questions={questions}
         playBase={`${base}/q`}
+        questionHref={(q) => questionCanonicalPath("sg", exam, q)}
         tagBase="/sg/tag"
         parentLabel="情報セキュリティマネジメント試験"
         parentHref="/sg"

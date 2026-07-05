@@ -6,6 +6,12 @@ export interface ExamDetailExtrasProps {
   intro: string
   questions: Question[]
   playBase: string
+  /**
+   * When set, 収録問題一覧 links go to this URL instead of `${playBase}/${q_number}`.
+   * ip/fe/sg では canonical の /questions/ 解説ページへ張り、ハブからの内部リンクを
+   * canonical 側へ集約する (play ページは canonical で解説ページを指す非 index 面)。
+   */
+  questionHref?: (question: Question) => string
   /** When undefined, tags render as plain chips instead of links (use when tag pages don't exist for this subject yet). */
   tagBase?: string
   parentLabel: string
@@ -27,6 +33,7 @@ export function ExamDetailExtras({
   intro,
   questions,
   playBase,
+  questionHref,
   tagBase,
   parentLabel,
   parentHref,
@@ -115,7 +122,7 @@ export function ExamDetailExtras({
             収録問題一覧
           </h2>
           <p className="text-[11px] opacity-55 mb-2">
-            全 {questions.length} 問。クリックで問題ページへ
+            全 {questions.length} 問。クリックで{questionHref ? "解説ページ" : "問題ページ"}へ
           </p>
           <ol className="space-y-1">
             {questions
@@ -126,7 +133,7 @@ export function ExamDetailExtras({
                 return (
                   <li key={q._id}>
                     <Link
-                      href={`${playBase}/${q.q_number}`}
+                      href={questionHref ? questionHref(q) : `${playBase}/${q.q_number}`}
                       className={questionCls}
                     >
                       <span className="text-[11px] font-bold opacity-60 tabular-nums w-[2.5em] shrink-0">

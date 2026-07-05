@@ -9,6 +9,7 @@ import { JsonLd } from "@/components/seo/JsonLd"
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs"
 import { ExamDetailExtras } from "@/components/seo/ExamDetailExtras"
 import { buildExamIntro } from "@/lib/seo/exam-intro"
+import { questionCanonicalPath } from "@/lib/seo/question-url"
 
 export async function generateStaticParams() {
   const exams = await listIpExams()
@@ -75,6 +76,7 @@ export default async function IpExamDetailPage({ params }: PageProps) {
         intro={intro}
         questions={questions}
         playBase={`${base}/q`}
+        questionHref={(q) => questionCanonicalPath("ip", exam, q)}
         tagBase="/ip/tag"
         parentLabel="ITパスポート試験"
         parentHref="/ip"

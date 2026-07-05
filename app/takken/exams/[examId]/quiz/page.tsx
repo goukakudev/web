@@ -25,14 +25,14 @@ export async function generateMetadata({
   if (!exam) return {}
   const parsed = Number(q ?? "1")
   const qn = Number.isInteger(parsed) && parsed > 0 ? parsed : 1
-  const path =
-    qn > 1
-      ? `/takken/exams/${exam.exam_id}/quiz?q=${qn}`
-      : `/takken/exams/${exam.exam_id}/quiz`
+  // ?q=N は同一クイズページの表示状態。以前は ?q 付き URL を自己 canonical に
+  // していたが、試験回ごとに最大 50 のクエリ付き近重複 URL が生まれ、GSC で
+  // 「クロール済み - インデックス未登録」に大量滞留した。canonical をクエリ
+  // なしの /quiz に統一し、1 試験回 = 1 インデックス対象へ集約する。
   return makeMetadata({
     title: `${exam.label} 問${qn}`,
     description: `宅地建物取引士試験 ${exam.label} 問${qn} の本文・選択肢・正解・解説。`,
-    path,
+    path: `/takken/exams/${exam.exam_id}/quiz`,
     type: "article",
   })
 }

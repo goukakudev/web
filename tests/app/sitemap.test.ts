@@ -163,8 +163,8 @@ describe("split sitemaps", () => {
     expect(ap).toContain("https://goukaku.dev/ap/play/ap-2025r07-a/q/1")
     expect(sc).toContain("https://goukaku.dev/sc/play/sc-2025r07-a/q/1")
     expect(kango).toContain("https://goukaku.dev/kango/play/kn-115/q/1")
-    expect(takken).toContain("https://goukaku.dev/takken/exams/tk-r5/quiz")
-    expect(takken).toContain("https://goukaku.dev/takken/exams/tk-r5/quiz?q=2")
+    // 宅建 quiz は試験回ごとの基底 URL 1 件のみ。?q=N の近重複 URL は登録しない。
+    expect(takken).toEqual(["https://goukaku.dev/takken/exams/tk-r5/quiz"])
 
     const xml = urlsetXml(
       [...ap, ...sc, ...kango, ...takken].map((url) => ({ url })),
@@ -173,7 +173,27 @@ describe("split sitemaps", () => {
     expect(xml).toContain("https://goukaku.dev/sc/play/sc-2025r07-a/q/1")
     expect(xml).toContain("https://goukaku.dev/kango/play/kn-115/q/1")
     expect(xml).toContain("https://goukaku.dev/takken/exams/tk-r5/quiz")
-    expect(xml).toContain("https://goukaku.dev/takken/exams/tk-r5/quiz?q=2")
+    expect(xml).not.toContain("quiz?q=")
+  })
+
+  it("urlset renderer rejects legacy takken ?q= URLs", async () => {
+    const { urlsetXml } = await import("@/lib/seo/sitemaps")
+    const xml = urlsetXml([
+      { url: "https://goukaku.dev/takken/exams/tk-r5/quiz" },
+      { url: "https://goukaku.dev/takken/exams/tk-r5/quiz?q=2" },
+    ])
+    expect(xml.match(/<url>/g)).toHaveLength(1)
+    expect(xml).not.toContain("?q=")
+  })
+
+  it("omits lastmod because real modification dates are unknown", async () => {
+    const { sitemapEntries, urlsetXml } = await import("@/lib/seo/sitemaps")
+    const names = ["static", "ip-questions", "takken-questions", "glossary"] as const
+    for (const name of names) {
+      const entries = await sitemapEntries(name)
+      expect(entries.every((entry) => entry.lastModified === undefined)).toBe(true)
+      expect(urlsetXml(entries)).not.toContain("<lastmod>")
+    }
   })
 
   it("glossary sitemap includes canonical glossary pages with enough study context", async () => {
@@ -181,6 +201,16 @@ describe("split sitemaps", () => {
     const glossary = (await sitemapEntries("glossary")).map((entry) => entry.url)
     expect(glossary).toContain("https://goukaku.dev/glossary/%E5%81%BD%E8%A3%85%E8%AB%8B%E8%B2%A0")
     expect(glossary).toContain("https://goukaku.dev/glossary/2%E7%9B%B8%E3%82%B3%E3%83%9F%E3%83%83%E3%83%88")
+  })
+
+  it("glossary sitemap uses hyphenated slugs for reserved-character terms", async () => {
+    const { sitemapEntries } = await import("@/lib/seo/sitemaps")
+    const glossary = (await sitemapEntries("glossary")).map((entry) => entry.url)
+    // %2F は Google 側で / に正規化され 2 セグメント URL の 404 を生むため禁止。
+    expect(glossary).toContain("https://goukaku.dev/glossary/S-MIME")
+    expect(glossary).toContain("https://goukaku.dev/glossary/JPCERT-CC")
+    expect(glossary.some((url) => url.includes("%2F"))).toBe(false)
+    expect(glossary.some((url) => url.includes("%20"))).toBe(false)
   })
 
   it("urlset renderer filters non-indexable URLs and duplicates", async () => {

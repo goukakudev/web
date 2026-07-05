@@ -9,6 +9,7 @@ import { JsonLd } from "@/components/seo/JsonLd"
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs"
 import { ExamDetailExtras } from "@/components/seo/ExamDetailExtras"
 import { buildExamIntro } from "@/lib/seo/exam-intro"
+import { questionCanonicalPath } from "@/lib/seo/question-url"
 
 export async function generateStaticParams() {
   const exams = await listFeExams()
@@ -73,6 +74,7 @@ export default async function FeExamDetailPage({ params }: PageProps) {
         intro={intro}
         questions={questions}
         playBase={`${base}/q`}
+        questionHref={(q) => questionCanonicalPath("fe", exam, q)}
         tagBase="/fe/tag"
         parentLabel="基本情報技術者試験"
         parentHref="/fe"

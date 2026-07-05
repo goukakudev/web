@@ -7,9 +7,8 @@ import { SITE_URL, SITE_NAME } from "@/lib/seo/structured-data"
 import { JsonLd } from "@/components/seo/JsonLd"
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs"
 import {
-  findByTerm,
   findRelated,
-  slugToTerm,
+  resolveGlossarySlug,
   termToSlug,
 } from "@/lib/seo/glossary"
 import { glossaryQuality } from "@/lib/seo/glossary-quality"
@@ -37,7 +36,7 @@ import type { ExamSummary, Question } from "@/lib/types"
 import { stripMd } from "@/lib/text-utils"
 
 interface PageProps {
-  params: Promise<{ term: string }>
+  params: Promise<{ term: string[] }>
 }
 
 // 用語データはローカル JSON だが、generateStaticParams による静的 prerender は
@@ -46,13 +45,17 @@ interface PageProps {
 // (encodeURIComponent して返しても raw で返しても 404)。動的ルート(takken の
 // 分野別ページと同方式)にすれば日本語 URL も正しく解決できる。データは外部 API を
 // 叩かないため、revalidate でレスポンスをキャッシュすればコストも無視できる。
+// catch-all ([...term]) なのは、旧 URL 形式で用語中のスラッシュが生のまま
+// パスに入った /glossary/S/MIME のようなリクエストを受けて 308 で正規スラッグへ
+// 送るため (単一セグメントの [term] だと 2 セグメント時点で 404 になる)。
 export const revalidate = 86400
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   // 動的セグメントの params はエンコード済みで渡るため decode してから引く。
-  const { term: slug } = await params
-  const entry = findByTerm(slugToTerm(slug))
-  if (!entry) return {}
+  const { term: segments } = await params
+  const resolved = resolveGlossarySlug(segments)
+  if (!resolved) return {}
+  const { entry } = resolved
   const preview = entry.description.slice(0, 90)
   const quality = glossaryQuality(entry)
   const enrichment = getGlossaryTermEnrichment(entry.term)
@@ -68,21 +71,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function GlossaryTermPage({ params }: PageProps) {
-  const { term: slug } = await params
-  const decoded = slugToTerm(slug)
-  const entry = findByTerm(decoded)
-  if (!entry) {
-    // 外部被リンク/過去URL由来の連番サフィックス (例 PAN-2, CSIRT-2) は、素の用語が
-    // 実在する場合のみ正規 URL へ 308 永久リダイレクト。SHA-256 等の正規用語は上の
-    // findByTerm で既にヒットするため、ここには来ず誤って壊さない。
-    const stripped = decoded.replace(/-\d+$/, "")
-    if (stripped !== decoded) {
-      const base = findByTerm(stripped)
-      if (base) permanentRedirect(`/glossary/${termToSlug(base.term)}`)
-    }
-    notFound()
+  const { term: segments } = await params
+  // レガシー URL (生用語・%2F 入り・生スラッシュで複数セグメント・連番
+  // サフィックス) はすべて resolveGlossarySlug が拾い、正規スラッグへ 308。
+  const resolved = resolveGlossarySlug(segments)
+  if (!resolved) notFound()
+  const { entry, canonicalSlug } = resolved
+  if (!resolved.isCanonical) {
+    permanentRedirect(`/glossary/${canonicalSlug}`)
   }
-  const canonicalSlug = termToSlug(entry.term)
   const related = findRelated(entry, 6)
   const relatedQuestions = await findRelatedQuestions(entry.term)
   const quality = glossaryQuality(entry)

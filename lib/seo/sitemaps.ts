@@ -79,11 +79,9 @@ export function isIndexableSitemapUrl(url: string): boolean {
   ) {
     return true
   }
-  if (
-    /^https:\/\/goukaku\.dev\/takken\/exams\/[^/?]+\/quiz(?:\?q=\d+)?$/.test(
-      url,
-    )
-  ) {
+  // 宅建 quiz はクエリなしの基底 URL のみ。?q=N は canonical を /quiz に
+  // 向けた表示状態 URL なので sitemap には載せない。
+  if (/^https:\/\/goukaku\.dev\/takken\/exams\/[^/?]+\/quiz$/.test(url)) {
     return true
   }
   return !NON_INDEXABLE.some((fragment) => url.includes(fragment))
@@ -156,8 +154,11 @@ export async function sitemapEntries(name: SitemapName): Promise<SitemapEntry[]>
   }
 }
 
+// NOTE: 各エントリに lastModified を付けない。実際の更新日時を持っていないのに
+// 生成時刻を <lastmod> として出すと「全 URL が毎日更新」という虚偽シグナルになり、
+// Google は不正確な lastmod を学習して無視する (公式ドキュメント明記)。正確な
+// 更新日時を持てるようになるまでは省略する方がクロールシグナルとして健全。
 async function staticEntries(): Promise<SitemapEntry[]> {
-  const now = new Date()
   const out: SitemapEntry[] = [
     entry("/", "weekly", 1),
     entry("/ip", "weekly", 0.95),
@@ -226,19 +227,17 @@ async function staticEntries(): Promise<SitemapEntry[]> {
   for (const exam of takken) {
     out.push({
       url: `${SITEMAP_BASE}/takken/exams/${exam.exam_id}`,
-      lastModified: now,
       changeFrequency: "monthly",
       priority: 0.6,
     })
   }
   out.push(
-    { url: `${SITEMAP_BASE}/takken/exams`, lastModified: now, changeFrequency: "weekly", priority: 0.6 },
-    { url: `${SITEMAP_BASE}/takken/categories`, lastModified: now, changeFrequency: "weekly", priority: 0.6 },
+    { url: `${SITEMAP_BASE}/takken/exams`, changeFrequency: "weekly", priority: 0.6 },
+    { url: `${SITEMAP_BASE}/takken/categories`, changeFrequency: "weekly", priority: 0.6 },
   )
   for (const cat of ["権利関係", "宅建業法", "法令上の制限", "税その他"]) {
     out.push({
       url: `${SITEMAP_BASE}/takken/categories/${encodeURIComponent(cat)}`,
-      lastModified: now,
       changeFrequency: "monthly",
       priority: 0.55,
     })
@@ -247,7 +246,6 @@ async function staticEntries(): Promise<SitemapEntry[]> {
   for (const exam of kn) {
     out.push({
       url: `${SITEMAP_BASE}/kango/exam/${exam.exam_id}`,
-      lastModified: now,
       changeFrequency: "monthly",
       priority: 0.6,
     })
@@ -255,7 +253,6 @@ async function staticEntries(): Promise<SitemapEntry[]> {
   for (const category of KANGO_CATEGORIES) {
     out.push({
       url: `${SITEMAP_BASE}/kango/category/${category.slug}`,
-      lastModified: now,
       changeFrequency: "monthly",
       priority: 0.55,
     })
@@ -265,7 +262,6 @@ async function staticEntries(): Promise<SitemapEntry[]> {
 }
 
 async function questionEntries(subject: SeoQuestionSubject): Promise<SitemapEntry[]> {
-  const now = new Date()
   const exams = await listSubjectExams(subject)
   const questionLists = await Promise.all(
     exams.map((exam) => listSubjectQuestions(subject, exam.exam_id).catch(() => [])),
@@ -273,7 +269,6 @@ async function questionEntries(subject: SeoQuestionSubject): Promise<SitemapEntr
   return exams.flatMap((exam, index) =>
     questionLists[index].map((question) => ({
       url: `${SITEMAP_BASE}${questionCanonicalPath(subject, exam, question)}`,
-      lastModified: now,
       changeFrequency: "monthly" as const,
       priority: subject === "ip" ? 0.75 : 0.7,
     })),
@@ -294,7 +289,6 @@ async function playQuestionEntries(
   listQuestionsFn: (examId: string) => Promise<QuestionWithNumber[]>,
   priority: number,
 ): Promise<SitemapEntry[]> {
-  const now = new Date()
   const exams = await listExamsFn()
   const questionLists = await Promise.all(
     exams.map((exam) => listQuestionsFn(exam.exam_id).catch(() => [])),
@@ -302,7 +296,6 @@ async function playQuestionEntries(
   return exams.flatMap((exam, index) =>
     questionLists[index].map((question) => ({
       url: `${SITEMAP_BASE}/${subjectPath}/play/${exam.exam_id}/q/${question.q_number}`,
-      lastModified: now,
       changeFrequency: "monthly" as const,
       priority,
     })),
@@ -310,41 +303,23 @@ async function playQuestionEntries(
 }
 
 async function takkenQuestionEntries(): Promise<SitemapEntry[]> {
-  const now = new Date()
+  // 以前は問番号ごとに ?q=N 付き URL を全件登録していたが (試験回 × 最大 50 問
+  // = 1,200 URL 超)、クエリ付き近重複ページとして GSC の「クロール済み -
+  // インデックス未登録」に滞留するだけだった。canonical は /quiz に統一済み
+  // なので、sitemap も試験回ごとの基底 URL 1 件に絞る。
   const exams = await TakkenAPI.listExams()
-  const questionLists = await Promise.all(
-    exams.map(async (exam) => {
-      const result = await TakkenAPI.listExamQuestions(exam.exam_id).catch(
-        () => null,
-      )
-      return result?.questions ?? []
-    }),
-  )
-  return exams.flatMap((exam, index) =>
-    questionLists[index].flatMap((question) => {
-      const qNumber = question.question_number
-      if (!Number.isInteger(qNumber) || qNumber < 1) return []
-      return [
-        {
-          url: `${SITEMAP_BASE}/takken/exams/${exam.exam_id}/quiz${
-            qNumber > 1 ? `?q=${qNumber}` : ""
-          }`,
-          lastModified: now,
-          changeFrequency: "monthly" as const,
-          priority: 0.66,
-        },
-      ]
-    }),
-  )
+  return exams.map((exam) => ({
+    url: `${SITEMAP_BASE}/takken/exams/${exam.exam_id}/quiz`,
+    changeFrequency: "monthly" as const,
+    priority: 0.66,
+  }))
 }
 
 function glossaryEntries(): SitemapEntry[] {
-  const now = new Date()
   return listAllTerms()
     .filter(isIndexableGlossaryEntry)
     .map((term) => ({
       url: `${SITEMAP_BASE}/glossary/${termToSlug(term.term)}`,
-      lastModified: now,
       changeFrequency: "monthly",
       priority: 0.45,
     }))
@@ -370,11 +345,9 @@ function addExamEntries(
   subject: "fe" | "ip" | "ap" | "sg" | "sc" | "dk" | "denki",
   exams: ExamSummary[],
 ) {
-  const now = new Date()
   for (const exam of exams) {
     out.push({
       url: `${SITEMAP_BASE}/${subject}/exam/${exam.exam_id}`,
-      lastModified: now,
       changeFrequency: "monthly",
       priority: subject === "ip" ? 0.8 : 0.7,
     })
@@ -388,7 +361,6 @@ function addExamEntries(
   for (const cat of cats) {
     out.push({
       url: `${SITEMAP_BASE}/${subject}/category/${cat}`,
-      lastModified: now,
       changeFrequency: "monthly",
       priority: 0.58,
     })
@@ -402,7 +374,6 @@ function entry(
 ): SitemapEntry {
   return {
     url: `${SITEMAP_BASE}${path}`,
-    lastModified: new Date(),
     changeFrequency,
     priority,
   }
