@@ -52,7 +52,7 @@ export default async function ScPlayPage({ params, searchParams }: PageProps) {
 
   const [exams, questions, statsMap] = await Promise.all([
     listScExams(),
-    listScQuestions(examId),
+    listScQuestions(examId).catch(() => []),
     getScExamStats(examId),
   ])
   const exam = exams.find((e) => e.exam_id === examId)

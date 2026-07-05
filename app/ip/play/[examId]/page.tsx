@@ -52,7 +52,7 @@ export default async function IpPlayPage({ params, searchParams }: PageProps) {
 
   const [exams, questions, statsMap] = await Promise.all([
     listIpExams(),
-    listIpQuestions(examId),
+    listIpQuestions(examId).catch(() => []),
     getIpExamStats(examId),
   ])
   const exam = exams.find((e) => e.exam_id === examId)

@@ -57,7 +57,7 @@ export default async function ApPlayQuestionPage({ params }: PageProps) {
 
   const [exams, questions, statsMap] = await Promise.all([
     listApExams(),
-    listApQuestions(examId),
+    listApQuestions(examId).catch(() => []),
     getApExamStats(examId),
   ])
   const exam = exams.find((e) => e.exam_id === examId)

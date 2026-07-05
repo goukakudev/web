@@ -24,7 +24,7 @@ export default async function DkPlayPage({ params, searchParams }: PageProps) {
 
   const [exams, questions, statsMap] = await Promise.all([
     listDkExams(),
-    listDkQuestions(examId),
+    listDkQuestions(examId).catch(() => []),
     getDkExamStats(examId),
   ])
   const exam = exams.find((e) => e.exam_id === examId)

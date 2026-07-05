@@ -60,7 +60,7 @@ export default async function SgPlayQuestionPage({ params }: PageProps) {
 
   const [exams, questions, statsMap] = await Promise.all([
     listSgExams(),
-    listSgQuestions(examId),
+    listSgQuestions(examId).catch(() => []),
     getSgExamStats(examId),
   ])
   const exam = exams.find((e) => e.exam_id === examId)

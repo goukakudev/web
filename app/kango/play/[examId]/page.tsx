@@ -35,7 +35,10 @@ export default async function KangoPlayPage({
 }) {
   const { examId } = await params
   const sp = await searchParams
-  const [questions, exam] = await Promise.all([listKnQuestions(examId), getKnExam(examId)])
+  const [questions, exam] = await Promise.all([
+    listKnQuestions(examId).catch(() => []),
+    getKnExam(examId),
+  ])
   if (!questions.length) notFound()
 
   const random = sp.mode === "random"
