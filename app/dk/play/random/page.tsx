@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import {
   listDkExams,
   listDkQuestions,
@@ -7,6 +8,10 @@ import { MobileFrame } from "@/components/layout/MobileFrame"
 import { PlayController } from "@/components/play/PlayController"
 import { shuffledCopy } from "@/lib/server-random"
 import type { Question, ExamSummary, QuestionStat } from "@/lib/types"
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: true },
+}
 
 const VIRTUAL_EXAM: ExamSummary = {
   exam_id: "ee2-ALL",

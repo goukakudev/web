@@ -74,7 +74,7 @@ export function renderQuestionPageHtml({
   return `<!doctype html>
 <html lang="ja">
 <head>
-${renderHead({ title, description, canonicalUrl, noindex: false })}
+${renderHead({ title, description, canonicalUrl, noindex: true })}
 ${jsonLd(webPageJsonLd({ name: title, description, url: canonicalUrl }))}
 ${jsonLd(breadcrumbJsonLd(breadcrumbs))}
 ${jsonLd(
