@@ -2,21 +2,22 @@
  * 検索インデックス許可リスト (2026-07 方針転換 → 段階的緩和)。
  *
  * AdSense の「複製コンテンツ / 有用性の低いコンテンツ」判定を受け、検索
- * エンジンに見せる面をオリジナルコンテンツ中心に絞ったうえで、FE/IP の
- * 厚い設問ページから段階的に戻している。
+ * エンジンに見せる面をオリジナルコンテンツ中心に絞ったうえで、FE/IP/SG の
+ * 厚い設問と宅建の試験回ハブから段階的に戻している。
  *
- *   - 注力試験 (FE / IP) のハブ・講座記事・FAQ・設問一覧
- *   - SG / AP のハブ・ガイド・FAQ (オリジナル記事がある範囲)
- *   - 宅建のハブ・ガイド・FAQ (iOS アプリ導線として維持)
+ *   - 注力試験 (FE / IP / SG) のハブ・講座記事・FAQ・設問一覧
+ *   - AP のハブ・ガイド・FAQ (オリジナル記事がある範囲)
+ *   - 宅建のハブ・ガイド・FAQ・年度一覧・試験回・quiz 基底 URL
  *   - 用語集 (個別ページの品質判定は glossary-quality 側)
- *   - FE/IP 設問個別ページ (prefix 許可。最終判定は question-quality)
- *   - FE/IP 試験回ハブ (/ip/exam/*, /fe/exam/*) — 設問への内部リンク受け皿
+ *   - FE/IP/SG 設問個別ページ (prefix 許可。最終判定は question-quality)
+ *   - FE/IP/SG 試験回ハブ
  *   - サイト全体の静的ページ
  *
  * 過去問の設問ページは本文が公開過去問で他サイトと同一になり得るため、
  * 解説が十分なものだけ index (lib/seo/question-quality.ts)。
  * SC / 電気 / 看護 はセクションごと noindex とし、演習ツール・アプリ導線
- * としてはそのまま残す。play URL・tag/year 集約は引き続き noindex。
+ * としてはそのまま残す。play URL・tag/year・宅建 ?q=N は引き続き noindex
+ * (宅建 quiz は canonical を基底 URL に集約済み)。
  *
  * このリストに無いパスは makeMetadata 経由で自動的に noindex になり、
  * sitemap (lib/seo/sitemaps.ts) にも載らない。インデックスさせたいページを
@@ -36,6 +37,16 @@ export interface IndexableStaticPage {
   priority: number
 }
 
+/** 品質ゲート付きで設問ページを index する subject (SEO 設問 HTML 経路)。 */
+export const INDEXABLE_QUESTION_SUBJECTS = ["ip", "fe", "sg"] as const
+export type IndexableQuestionSubject = (typeof INDEXABLE_QUESTION_SUBJECTS)[number]
+
+export function isIndexableQuestionSubject(
+  subject: string,
+): subject is IndexableQuestionSubject {
+  return (INDEXABLE_QUESTION_SUBJECTS as readonly string[]).includes(subject)
+}
+
 export const INDEXABLE_STATIC_PAGES: IndexableStaticPage[] = [
   { path: "/", changeFrequency: "weekly", priority: 1 },
   { path: "/ip", changeFrequency: "weekly", priority: 0.95 },
@@ -45,6 +56,8 @@ export const INDEXABLE_STATIC_PAGES: IndexableStaticPage[] = [
   { path: "/takken", changeFrequency: "weekly", priority: 0.7 },
   { path: "/ip/questions", changeFrequency: "weekly", priority: 0.85 },
   { path: "/fe/questions", changeFrequency: "weekly", priority: 0.8 },
+  { path: "/sg/questions", changeFrequency: "weekly", priority: 0.78 },
+  { path: "/takken/exams", changeFrequency: "weekly", priority: 0.68 },
   { path: "/ip/guide", changeFrequency: "monthly", priority: 0.85 },
   { path: "/ip/mock", changeFrequency: "monthly", priority: 0.78 },
   { path: "/ip/terms", changeFrequency: "monthly", priority: 0.78 },
@@ -80,13 +93,17 @@ const INDEXABLE_EXACT = new Set(INDEXABLE_STATIC_PAGES.map((page) => page.path))
  * 設問個別ページは path としては候補だが、薄い解説は question-quality と
  * question-page-response 側で noindex に落とす。sitemap にも品質通過分のみ載せる。
  * 試験回ハブは question_count > 0 のものだけ sitemap に載せる。
+ * 宅建 quiz は /takken/exams/{id}/quiz 基底のみ (クエリは normalize で落とす)。
  */
 const INDEXABLE_PREFIXES = [
   "/glossary/",
   "/ip/questions/",
   "/fe/questions/",
+  "/sg/questions/",
   "/ip/exam/",
   "/fe/exam/",
+  "/sg/exam/",
+  "/takken/exams/",
 ]
 
 export function isIndexablePath(path: string): boolean {

@@ -3,30 +3,33 @@ import {
   listIpExams,
   listIpQuestions,
   listQuestions,
+  listSgExams,
+  listSgQuestions,
 } from "@/lib/api-client"
 import { listAllTerms, termToSlug } from "@/lib/seo/glossary"
 import { isIndexableGlossaryEntry } from "@/lib/seo/glossary-quality"
 import {
   INDEXABLE_STATIC_PAGES,
   isIndexablePath,
+  isIndexableQuestionSubject,
+  type IndexableQuestionSubject,
 } from "@/lib/seo/indexing-policy"
 import { isIndexableQuestion } from "@/lib/seo/question-quality"
-import {
-  questionCanonicalPath,
-  type SeoQuestionSubject,
-} from "@/lib/seo/question-url"
+import { questionCanonicalPath } from "@/lib/seo/question-url"
+import { TakkenAPI } from "@/lib/takken/api"
 import type { ExamSummary, Question } from "@/lib/types"
 
 export const SITEMAP_BASE = "https://goukaku.dev"
 
-// 2026-07 方針転換の段階的緩和: static (+ FE/IP 試験回ハブ) + glossary +
-// FE/IP の品質通過設問。AP/SC/電気/看護/宅建/SG 設問はまだ載せない。
+// 2026-07 方針転換の段階的緩和: static (+ FE/IP/SG 試験回・宅建 exam/quiz) +
+// glossary + FE/IP/SG の品質通過設問。AP/SC/電気/看護 設問はまだ載せない。
 // 方針の全体像は lib/seo/indexing-policy.ts / question-quality.ts を参照。
 export const SITEMAP_NAMES = [
   "static",
   "glossary",
   "ip-questions",
   "fe-questions",
+  "sg-questions",
 ] as const
 
 export type SitemapName = (typeof SITEMAP_NAMES)[number]
@@ -45,9 +48,26 @@ export interface SitemapEntry {
   priority?: number
 }
 
+/** sitemap 用にクエリ・ハッシュを落とし、trailing slash を正規化する。 */
+export function canonicalizeSitemapUrl(url: string): string | null {
+  if (!url.startsWith(SITEMAP_BASE)) return null
+  try {
+    const parsed = new URL(url)
+    if (parsed.origin !== SITEMAP_BASE) return null
+    const path =
+      parsed.pathname === "" || parsed.pathname === "/"
+        ? "/"
+        : parsed.pathname.replace(/\/+$/, "")
+    return `${SITEMAP_BASE}${path === "/" ? "" : path}` || SITEMAP_BASE
+  } catch {
+    return null
+  }
+}
+
 export function isIndexableSitemapUrl(url: string): boolean {
-  if (!url.startsWith(SITEMAP_BASE)) return false
-  const path = url.slice(SITEMAP_BASE.length) || "/"
+  const canonical = canonicalizeSitemapUrl(url)
+  if (!canonical) return false
+  const path = canonical.slice(SITEMAP_BASE.length) || "/"
   return isIndexablePath(path)
 }
 
@@ -68,12 +88,16 @@ ${body}
 export function urlsetXml(entries: SitemapEntry[]): string {
   const seen = new Set<string>()
   const rows = entries
-    .filter((entry) => isIndexableSitemapUrl(entry.url))
-    .filter((entry) => {
-      if (seen.has(entry.url)) return false
-      seen.add(entry.url)
-      return true
+    .map((entry) => {
+      const canonical = canonicalizeSitemapUrl(entry.url)
+      if (!canonical || !isIndexablePath(canonical.slice(SITEMAP_BASE.length) || "/")) {
+        return null
+      }
+      if (seen.has(canonical)) return null
+      seen.add(canonical)
+      return { ...entry, url: canonical }
     })
+    .filter((entry): entry is SitemapEntry => entry !== null)
     .map((entry) => {
       const lastmod = entry.lastModified
         ? toIsoDate(entry.lastModified)
@@ -103,6 +127,8 @@ export async function sitemapEntries(name: SitemapName): Promise<SitemapEntry[]>
       return questionEntries("ip")
     case "fe-questions":
       return questionEntries("fe")
+    case "sg-questions":
+      return questionEntries("sg")
   }
 }
 
@@ -116,34 +142,68 @@ async function staticEntries(): Promise<SitemapEntry[]> {
     changeFrequency: page.changeFrequency,
     priority: page.priority,
   }))
-  const examHubs = await feIpExamHubEntries()
-  return [...pages, ...examHubs]
+  const [examHubs, takken] = await Promise.all([
+    seoExamHubEntries(),
+    takkenExamEntries(),
+  ])
+  return [...pages, ...examHubs, ...takken]
 }
 
-/** FE/IP の試験回ハブ。設問が 1 問以上ある回だけ載せる (空ハブの index を避ける)。 */
-async function feIpExamHubEntries(): Promise<SitemapEntry[]> {
-  const [ipExams, feExams] = await Promise.all([
-    listIpExams().catch(() => [] as ExamSummary[]),
-    listSubjectExams("fe").catch(() => [] as ExamSummary[]),
-  ])
+/** FE/IP/SG の試験回ハブ。設問が 1 問以上ある回だけ載せる。 */
+async function seoExamHubEntries(): Promise<SitemapEntry[]> {
+  const subjects: Array<{
+    subject: IndexableQuestionSubject
+    priority: number
+  }> = [
+    { subject: "ip", priority: 0.8 },
+    { subject: "fe", priority: 0.72 },
+    { subject: "sg", priority: 0.7 },
+  ]
+  const lists = await Promise.all(
+    subjects.map(({ subject }) =>
+      listSubjectExams(subject).catch(() => [] as ExamSummary[]),
+    ),
+  )
   const out: SitemapEntry[] = []
-  for (const exam of ipExams) {
-    if (exam.question_count <= 0) continue
-    out.push({
-      url: `${SITEMAP_BASE}/ip/exam/${exam.exam_id}`,
-      changeFrequency: "monthly",
-      priority: 0.8,
-    })
-  }
-  for (const exam of feExams) {
-    if (exam.question_count <= 0) continue
-    out.push({
-      url: `${SITEMAP_BASE}/fe/exam/${exam.exam_id}`,
-      changeFrequency: "monthly",
-      priority: 0.72,
-    })
-  }
+  subjects.forEach(({ subject, priority }, i) => {
+    for (const exam of lists[i]) {
+      if (exam.question_count <= 0) continue
+      out.push({
+        url: `${SITEMAP_BASE}/${subject}/exam/${exam.exam_id}`,
+        changeFrequency: "monthly",
+        priority,
+      })
+    }
+  })
   return out
+}
+
+/**
+ * 宅建: 試験回ハブ + quiz 基底 URL のみ。
+ * ?q=N は出さない (GSC 近重複滞留の再発防止)。questions が取れる回だけ載せる。
+ */
+async function takkenExamEntries(): Promise<SitemapEntry[]> {
+  const exams = await TakkenAPI.listExams().catch(() => [])
+  const results = await Promise.all(
+    exams.map((exam) =>
+      TakkenAPI.listExamQuestions(exam.exam_id).catch(() => null),
+    ),
+  )
+  return exams.flatMap((exam, index) => {
+    if (!results[index]?.questions.length) return []
+    return [
+      {
+        url: `${SITEMAP_BASE}/takken/exams/${exam.exam_id}`,
+        changeFrequency: "monthly" as const,
+        priority: 0.62,
+      },
+      {
+        url: `${SITEMAP_BASE}/takken/exams/${exam.exam_id}/quiz`,
+        changeFrequency: "monthly" as const,
+        priority: 0.66,
+      },
+    ]
+  })
 }
 
 function glossaryEntries(): SitemapEntry[] {
@@ -156,35 +216,41 @@ function glossaryEntries(): SitemapEntry[] {
     }))
 }
 
-async function questionEntries(subject: SeoQuestionSubject): Promise<SitemapEntry[]> {
-  // SG は SEO_QUESTION_SUBJECTS にあるが、段階的緩和では FE/IP のみ sitemap 化。
-  if (subject !== "ip" && subject !== "fe") return []
+async function questionEntries(
+  subject: IndexableQuestionSubject,
+): Promise<SitemapEntry[]> {
+  if (!isIndexableQuestionSubject(subject)) return []
 
   const exams = await listSubjectExams(subject)
   const questionLists = await Promise.all(
     exams.map((exam) => listSubjectQuestions(subject, exam.exam_id).catch(() => [])),
   )
+  const priority = subject === "ip" ? 0.75 : subject === "fe" ? 0.7 : 0.68
   return exams.flatMap((exam, index) =>
     questionLists[index]
       .filter(isIndexableQuestion)
       .map((question) => ({
         url: `${SITEMAP_BASE}${questionCanonicalPath(subject, exam, question)}`,
         changeFrequency: "monthly" as const,
-        priority: subject === "ip" ? 0.75 : 0.7,
+        priority,
       })),
   )
 }
 
-async function listSubjectExams(subject: "ip" | "fe"): Promise<ExamSummary[]> {
+async function listSubjectExams(
+  subject: IndexableQuestionSubject,
+): Promise<ExamSummary[]> {
   if (subject === "ip") return listIpExams()
+  if (subject === "sg") return listSgExams()
   return (await listExams()).filter((exam) => exam.exam_id.startsWith("fe-"))
 }
 
 async function listSubjectQuestions(
-  subject: "ip" | "fe",
+  subject: IndexableQuestionSubject,
   examId: string,
 ): Promise<Question[]> {
   if (subject === "ip") return listIpQuestions(examId)
+  if (subject === "sg") return listSgQuestions(examId)
   return listQuestions(examId)
 }
 

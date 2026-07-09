@@ -6,6 +6,7 @@ import {
   renderQuestionNotFoundHtml,
   renderQuestionPageHtml,
 } from "@/lib/seo/question-page-html"
+import { isIndexableQuestionSubject } from "@/lib/seo/indexing-policy"
 import { isIndexableQuestion } from "@/lib/seo/question-quality"
 import {
   SEO_QUESTION_SUBJECTS,
@@ -44,9 +45,9 @@ export async function questionPageResponse(
     })
   }
 
-  // FE/IP のみ品質ゲート通過で index。それ以外の subject は noindex 維持。
+  // FE/IP/SG は品質ゲート通過で index。それ以外の subject は noindex 維持。
   const indexable =
-    (subject === "ip" || subject === "fe") && isIndexableQuestion(data.question)
+    isIndexableQuestionSubject(subject) && isIndexableQuestion(data.question)
   return new Response(renderQuestionPageHtml(toRenderInput(subject, data)), {
     headers: htmlHeaders(indexable),
   })
