@@ -13,7 +13,8 @@ export const metadata: Metadata = makeMetadata({
 
 export default async function IpQuestionsPage() {
   const exams = await listIpExams()
-  const visibleExams = exams.slice(0, 8)
+  // 直近回の設問プレビューは 12 回分。全回は allExams でハブリンクを張る。
+  const visibleExams = exams.slice(0, 12)
   const questionLists = await Promise.all(
     visibleExams.map((exam) => listIpQuestions(exam.exam_id)),
   )
@@ -25,6 +26,7 @@ export default async function IpQuestionsPage() {
           exam,
           questions: questionLists[index],
         }))}
+        allExams={exams}
         totalQuestions={exams.reduce((sum, exam) => sum + exam.question_count, 0)}
       />
     </MobileFrame>

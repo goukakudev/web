@@ -10,6 +10,7 @@
  *   - 宅建のハブ・ガイド・FAQ (iOS アプリ導線として維持)
  *   - 用語集 (個別ページの品質判定は glossary-quality 側)
  *   - FE/IP 設問個別ページ (prefix 許可。最終判定は question-quality)
+ *   - FE/IP 試験回ハブ (/ip/exam/*, /fe/exam/*) — 設問への内部リンク受け皿
  *   - サイト全体の静的ページ
  *
  * 過去問の設問ページは本文が公開過去問で他サイトと同一になり得るため、
@@ -78,11 +79,14 @@ const INDEXABLE_EXACT = new Set(INDEXABLE_STATIC_PAGES.map((page) => page.path))
  * 動的ページでインデックスを許可する prefix。
  * 設問個別ページは path としては候補だが、薄い解説は question-quality と
  * question-page-response 側で noindex に落とす。sitemap にも品質通過分のみ載せる。
+ * 試験回ハブは question_count > 0 のものだけ sitemap に載せる。
  */
 const INDEXABLE_PREFIXES = [
   "/glossary/",
   "/ip/questions/",
   "/fe/questions/",
+  "/ip/exam/",
+  "/fe/exam/",
 ]
 
 export function isIndexablePath(path: string): boolean {

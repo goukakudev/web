@@ -13,7 +13,8 @@ export const metadata: Metadata = makeMetadata({
 
 export default async function FeQuestionsPage() {
   const exams = await listFeExams()
-  const visibleExams = exams.slice(0, 8)
+  // 直近回の設問プレビューは全回分 (FE は回数が少ない)。ハブ一覧は allExams。
+  const visibleExams = exams.slice(0, 16)
   const questionLists = await Promise.all(
     visibleExams.map((exam) => listQuestions(exam.exam_id)),
   )
@@ -25,6 +26,7 @@ export default async function FeQuestionsPage() {
           exam,
           questions: questionLists[index],
         }))}
+        allExams={exams}
         totalQuestions={exams.reduce((sum, exam) => sum + exam.question_count, 0)}
       />
     </MobileFrame>

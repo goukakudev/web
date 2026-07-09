@@ -19,8 +19,8 @@ import type { ExamSummary, Question } from "@/lib/types"
 
 export const SITEMAP_BASE = "https://goukaku.dev"
 
-// 2026-07 方針転換の段階的緩和: static + glossary に加え、FE/IP の品質通過
-// 設問だけを sitemap に戻す。AP/SC/電気/看護/宅建/SG 設問はまだ載せない。
+// 2026-07 方針転換の段階的緩和: static (+ FE/IP 試験回ハブ) + glossary +
+// FE/IP の品質通過設問。AP/SC/電気/看護/宅建/SG 設問はまだ載せない。
 // 方針の全体像は lib/seo/indexing-policy.ts / question-quality.ts を参照。
 export const SITEMAP_NAMES = [
   "static",
@@ -110,12 +110,40 @@ export async function sitemapEntries(name: SitemapName): Promise<SitemapEntry[]>
 // 生成時刻を <lastmod> として出すと「全 URL が毎日更新」という虚偽シグナルになり、
 // Google は不正確な lastmod を学習して無視する (公式ドキュメント明記)。正確な
 // 更新日時を持てるようになるまでは省略する方がクロールシグナルとして健全。
-function staticEntries(): SitemapEntry[] {
-  return INDEXABLE_STATIC_PAGES.map((page) => ({
+async function staticEntries(): Promise<SitemapEntry[]> {
+  const pages = INDEXABLE_STATIC_PAGES.map((page) => ({
     url: `${SITEMAP_BASE}${page.path}`,
     changeFrequency: page.changeFrequency,
     priority: page.priority,
   }))
+  const examHubs = await feIpExamHubEntries()
+  return [...pages, ...examHubs]
+}
+
+/** FE/IP の試験回ハブ。設問が 1 問以上ある回だけ載せる (空ハブの index を避ける)。 */
+async function feIpExamHubEntries(): Promise<SitemapEntry[]> {
+  const [ipExams, feExams] = await Promise.all([
+    listIpExams().catch(() => [] as ExamSummary[]),
+    listSubjectExams("fe").catch(() => [] as ExamSummary[]),
+  ])
+  const out: SitemapEntry[] = []
+  for (const exam of ipExams) {
+    if (exam.question_count <= 0) continue
+    out.push({
+      url: `${SITEMAP_BASE}/ip/exam/${exam.exam_id}`,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    })
+  }
+  for (const exam of feExams) {
+    if (exam.question_count <= 0) continue
+    out.push({
+      url: `${SITEMAP_BASE}/fe/exam/${exam.exam_id}`,
+      changeFrequency: "monthly",
+      priority: 0.72,
+    })
+  }
+  return out
 }
 
 function glossaryEntries(): SitemapEntry[] {

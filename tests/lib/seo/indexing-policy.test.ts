@@ -37,6 +37,11 @@ describe("isIndexablePath", () => {
     expect(isIndexablePath("/fe/questions/2023h-q1-cpu")).toBe(true)
   })
 
+  it("allows FE/IP exam hub paths", () => {
+    expect(isIndexablePath("/ip/exam/ip-2025r07")).toBe(true)
+    expect(isIndexablePath("/fe/exam/fe-2023h")).toBe(true)
+  })
+
   it("rejects play URLs and non-FE/IP question pages", () => {
     for (const path of [
       "/sg/questions/2025-r07-a-q1-zero-trust",
@@ -66,15 +71,15 @@ describe("isIndexablePath", () => {
     }
   })
 
-  it("rejects exam, category, and personal pages", () => {
+  it("rejects category and personal pages; non-FE/IP exam hubs stay closed", () => {
     for (const path of [
-      "/ip/exam/ip-2025r07",
-      "/fe/exam/fe-2023h",
       "/ip/category/technology",
       "/takken/exams",
       "/takken/exams/tk-r5",
       "/takken/categories",
       "/sg/questions",
+      "/sg/exam/sg-2025r07-a",
+      "/ap/exam/ap-2025r07h-a",
     ]) {
       expect(isIndexablePath(path), path).toBe(false)
     }
@@ -108,11 +113,20 @@ describe("makeMetadata indexing-policy integration", () => {
     expect(md.robots).toBeUndefined()
   })
 
-  it("adds noindex robots for paths outside the allowlist", () => {
+  it("does not add robots for FE/IP exam hub paths", () => {
     const md = makeMetadata({
       title: "T",
       description: "D",
       path: "/fe/exam/fe-2023h",
+    })
+    expect(md.robots).toBeUndefined()
+  })
+
+  it("adds noindex robots for paths outside the allowlist", () => {
+    const md = makeMetadata({
+      title: "T",
+      description: "D",
+      path: "/ip/category/technology",
     })
     expect(md.robots).toEqual({ index: false, follow: true })
   })
@@ -131,7 +145,7 @@ describe("makeMetadata indexing-policy integration", () => {
     const md = makeMetadata({
       title: "T",
       description: "D",
-      path: "/ip/exam/ip-2025r07",
+      path: "/sg/exam/sg-2025r07-a",
       noindex: false,
     })
     expect(md.robots).toBeUndefined()

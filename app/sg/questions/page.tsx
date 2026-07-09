@@ -25,6 +25,7 @@ export default async function SgQuestionsPage() {
           exam,
           questions: questionLists[index],
         }))}
+        allExams={exams}
         totalQuestions={exams.reduce((sum, exam) => sum + exam.question_count, 0)}
       />
     </MobileFrame>

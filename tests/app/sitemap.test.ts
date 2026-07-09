@@ -106,7 +106,7 @@ describe("split sitemaps", () => {
     expect(xml).not.toContain("takken-questions")
   })
 
-  it("static sitemap contains curated hubs including SG/AP and question indexes", async () => {
+  it("static sitemap contains curated hubs, question indexes, and FE/IP exam hubs", async () => {
     const urls = (await sitemapEntries("static")).map((entry) => entry.url)
     expect(urls).toContain("https://goukaku.dev/")
     expect(urls).toContain("https://goukaku.dev/ip")
@@ -119,38 +119,43 @@ describe("split sitemaps", () => {
     expect(urls).toContain("https://goukaku.dev/ip/guide")
     expect(urls).toContain("https://goukaku.dev/sg/guide")
     expect(urls).toContain("https://goukaku.dev/glossary")
+    expect(urls).toContain("https://goukaku.dev/ip/exam/ip-2025r07")
+    expect(urls).toContain("https://goukaku.dev/fe/exam/fe-2023h")
 
     // まだ閉じているセクションと薄い集約は載せない。
     expect(urls).not.toContain("https://goukaku.dev/sc")
     expect(urls).not.toContain("https://goukaku.dev/denki")
     expect(urls).not.toContain("https://goukaku.dev/kango")
-    expect(urls.some((url) => url.includes("/exam/"))).toBe(false)
     expect(urls.some((url) => url.includes("/category/"))).toBe(false)
     expect(urls.some((url) => url.includes("/play/"))).toBe(false)
+    expect(urls.some((url) => url.includes("/sg/exam/"))).toBe(false)
+    expect(urls.some((url) => url.includes("/ap/exam/"))).toBe(false)
   })
 
-  it("urlset renderer allows FE/IP question paths and rejects play/folded URLs", () => {
+  it("urlset renderer allows FE/IP question and exam paths; rejects play/folded URLs", () => {
     const xml = urlsetXml([
       { url: "https://goukaku.dev/ip/guide" },
       { url: "https://goukaku.dev/ip/guide" },
       { url: "https://goukaku.dev/ip/questions/2025-r07-q1-gisou-ukeoi" },
       { url: "https://goukaku.dev/fe/questions/2023h-q1-cpu" },
+      { url: "https://goukaku.dev/fe/exam/fe-2023h" },
+      { url: "https://goukaku.dev/ip/exam/ip-2025r07" },
       { url: "https://goukaku.dev/ip/play/ip-2025r07/q/1" },
       { url: "https://goukaku.dev/ap/play/ap-2025r07-a/q/1" },
       { url: "https://goukaku.dev/denki/play/ee2-20260524/q/1" },
       { url: "https://goukaku.dev/takken/exams/tk-r5/quiz" },
       { url: "https://goukaku.dev/takken/exams/tk-r5/quiz?q=2" },
-      { url: "https://goukaku.dev/fe/exam/fe-2023h" },
       { url: "https://goukaku.dev/sc" },
       { url: "https://goukaku.dev/takken/search" },
     ])
-    expect(xml.match(/<url>/g)).toHaveLength(3)
+    expect(xml.match(/<url>/g)).toHaveLength(5)
     expect(xml).toContain("https://goukaku.dev/ip/guide")
     expect(xml).toContain("/ip/questions/")
     expect(xml).toContain("/fe/questions/")
+    expect(xml).toContain("/fe/exam/fe-2023h")
+    expect(xml).toContain("/ip/exam/ip-2025r07")
     expect(xml).not.toContain("/play/")
     expect(xml).not.toContain("/quiz")
-    expect(xml).not.toContain("/exam/")
     expect(xml).not.toContain("https://goukaku.dev/sc")
   })
 

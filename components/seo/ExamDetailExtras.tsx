@@ -158,6 +158,17 @@ export function ExamDetailExtras({
         <ul className="grid grid-cols-2 gap-1.5 text-[12px]">
           <li>
             <Link
+              href={`${parentHref}/questions`}
+              className={relatedCls}
+            >
+              <span className="font-bold">📝 解説一覧</span>
+              <span className="block text-[11px] opacity-55 mt-0.5">
+                全試験回の問題解説ハブ
+              </span>
+            </Link>
+          </li>
+          <li>
+            <Link
               href={`${parentHref}/guide`}
               className={relatedCls}
             >
