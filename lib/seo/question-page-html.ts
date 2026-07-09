@@ -23,6 +23,7 @@ import {
   SEO_QUESTION_SUBJECTS,
   type SeoQuestionSubject,
 } from "@/lib/seo/question-url"
+import { isIndexableQuestion } from "@/lib/seo/question-quality"
 import { stripMd } from "@/lib/text-utils"
 
 interface RenderQuestionPageHtmlInput {
@@ -71,10 +72,15 @@ export function renderQuestionPageHtml({
     { name: `問${question.q_number}`, url: canonicalUrl },
   ]
 
+  // 段階的緩和: FE/IP のみ品質通過で index。SG はまだ演習面として noindex。
+  // sitemap も FE/IP の品質通過分のみ (lib/seo/sitemaps.ts)。
+  const noindex =
+    (subject !== "ip" && subject !== "fe") || !isIndexableQuestion(question)
+
   return `<!doctype html>
 <html lang="ja">
 <head>
-${renderHead({ title, description, canonicalUrl, noindex: true })}
+${renderHead({ title, description, canonicalUrl, noindex })}
 ${jsonLd(webPageJsonLd({ name: title, description, url: canonicalUrl }))}
 ${jsonLd(breadcrumbJsonLd(breadcrumbs))}
 ${jsonLd(

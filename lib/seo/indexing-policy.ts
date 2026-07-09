@@ -1,17 +1,21 @@
 /**
- * 検索インデックス許可リスト (2026-07 方針転換)。
+ * 検索インデックス許可リスト (2026-07 方針転換 → 段階的緩和)。
  *
  * AdSense の「複製コンテンツ / 有用性の低いコンテンツ」判定を受け、検索
- * エンジンに見せる面をオリジナルコンテンツだけに絞る:
+ * エンジンに見せる面をオリジナルコンテンツ中心に絞ったうえで、FE/IP の
+ * 厚い設問ページから段階的に戻している。
  *
- *   - 注力試験 (FE / IP) のハブ・講座記事・FAQ
+ *   - 注力試験 (FE / IP) のハブ・講座記事・FAQ・設問一覧
+ *   - SG / AP のハブ・ガイド・FAQ (オリジナル記事がある範囲)
  *   - 宅建のハブ・ガイド・FAQ (iOS アプリ導線として維持)
  *   - 用語集 (個別ページの品質判定は glossary-quality 側)
+ *   - FE/IP 設問個別ページ (prefix 許可。最終判定は question-quality)
  *   - サイト全体の静的ページ
  *
- * 過去問の設問ページは本文が公開過去問で他サイトと同一になるため全試験で
- * noindex。SG / AP / SC / 電気 / 看護 はセクションごと noindex とし、演習
- * ツール・アプリ導線としてはそのまま残す。
+ * 過去問の設問ページは本文が公開過去問で他サイトと同一になり得るため、
+ * 解説が十分なものだけ index (lib/seo/question-quality.ts)。
+ * SC / 電気 / 看護 はセクションごと noindex とし、演習ツール・アプリ導線
+ * としてはそのまま残す。play URL・tag/year 集約は引き続き noindex。
  *
  * このリストに無いパスは makeMetadata 経由で自動的に noindex になり、
  * sitemap (lib/seo/sitemaps.ts) にも載らない。インデックスさせたいページを
@@ -35,7 +39,11 @@ export const INDEXABLE_STATIC_PAGES: IndexableStaticPage[] = [
   { path: "/", changeFrequency: "weekly", priority: 1 },
   { path: "/ip", changeFrequency: "weekly", priority: 0.95 },
   { path: "/fe", changeFrequency: "weekly", priority: 0.9 },
+  { path: "/sg", changeFrequency: "weekly", priority: 0.75 },
+  { path: "/ap", changeFrequency: "weekly", priority: 0.7 },
   { path: "/takken", changeFrequency: "weekly", priority: 0.7 },
+  { path: "/ip/questions", changeFrequency: "weekly", priority: 0.85 },
+  { path: "/fe/questions", changeFrequency: "weekly", priority: 0.8 },
   { path: "/ip/guide", changeFrequency: "monthly", priority: 0.85 },
   { path: "/ip/mock", changeFrequency: "monthly", priority: 0.78 },
   { path: "/ip/terms", changeFrequency: "monthly", priority: 0.78 },
@@ -47,6 +55,10 @@ export const INDEXABLE_STATIC_PAGES: IndexableStaticPage[] = [
   { path: "/ip/faq", changeFrequency: "monthly", priority: 0.65 },
   { path: "/fe/guide", changeFrequency: "monthly", priority: 0.72 },
   { path: "/fe/faq", changeFrequency: "monthly", priority: 0.65 },
+  { path: "/sg/guide", changeFrequency: "monthly", priority: 0.65 },
+  { path: "/sg/faq", changeFrequency: "monthly", priority: 0.55 },
+  { path: "/ap/guide", changeFrequency: "monthly", priority: 0.55 },
+  { path: "/ap/faq", changeFrequency: "monthly", priority: 0.5 },
   { path: "/takken/guide", changeFrequency: "monthly", priority: 0.6 },
   { path: "/takken/faq", changeFrequency: "monthly", priority: 0.55 },
   { path: "/glossary", changeFrequency: "weekly", priority: 0.65 },
@@ -62,8 +74,16 @@ export const INDEXABLE_STATIC_PAGES: IndexableStaticPage[] = [
 
 const INDEXABLE_EXACT = new Set(INDEXABLE_STATIC_PAGES.map((page) => page.path))
 
-/** 動的ページでインデックスを許可する prefix (用語集の個別ページのみ)。 */
-const INDEXABLE_PREFIXES = ["/glossary/"]
+/**
+ * 動的ページでインデックスを許可する prefix。
+ * 設問個別ページは path としては候補だが、薄い解説は question-quality と
+ * question-page-response 側で noindex に落とす。sitemap にも品質通過分のみ載せる。
+ */
+const INDEXABLE_PREFIXES = [
+  "/glossary/",
+  "/ip/questions/",
+  "/fe/questions/",
+]
 
 export function isIndexablePath(path: string): boolean {
   const clean = normalizePath(path)

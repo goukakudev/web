@@ -8,10 +8,16 @@ describe("isIndexablePath", () => {
       "/",
       "/ip",
       "/fe",
+      "/sg",
+      "/ap",
       "/takken",
       "/ip/guide",
       "/ip/30-days",
+      "/ip/questions",
+      "/fe/questions",
       "/fe/faq",
+      "/sg/guide",
+      "/ap/faq",
       "/takken/guide",
       "/glossary",
       "/pro",
@@ -26,10 +32,13 @@ describe("isIndexablePath", () => {
     expect(isIndexablePath("/glossary/%E5%81%BD%E8%A3%85%E8%AB%8B%E8%B2%A0")).toBe(true)
   })
 
-  it("rejects question pages for every exam", () => {
+  it("allows FE/IP individual question paths (quality gate is separate)", () => {
+    expect(isIndexablePath("/ip/questions/2025-r07-q1-gisou-ukeoi")).toBe(true)
+    expect(isIndexablePath("/fe/questions/2023h-q1-cpu")).toBe(true)
+  })
+
+  it("rejects play URLs and non-FE/IP question pages", () => {
     for (const path of [
-      "/ip/questions/2025-r07-q1-gisou-ukeoi",
-      "/fe/questions/2023h-q1-cpu",
       "/sg/questions/2025-r07-a-q1-zero-trust",
       "/ip/play/ip-2025r07/q/1",
       "/fe/play/fe-2023h/q/2",
@@ -43,32 +52,29 @@ describe("isIndexablePath", () => {
     }
   })
 
-  it("rejects folded exam sections entirely", () => {
+  it("rejects folded exam sections that stay closed", () => {
     for (const path of [
-      "/sg",
-      "/ap",
       "/sc",
       "/denki",
       "/dk",
       "/kango",
-      "/sg/guide",
-      "/ap/faq",
+      "/sc/guide",
       "/kango/guide",
+      "/denki/faq",
     ]) {
       expect(isIndexablePath(path), path).toBe(false)
     }
   })
 
-  it("rejects exam, category, and question-list pages of kept sections", () => {
+  it("rejects exam, category, and personal pages", () => {
     for (const path of [
-      "/ip/questions",
-      "/fe/questions",
       "/ip/exam/ip-2025r07",
       "/fe/exam/fe-2023h",
       "/ip/category/technology",
       "/takken/exams",
       "/takken/exams/tk-r5",
       "/takken/categories",
+      "/sg/questions",
     ]) {
       expect(isIndexablePath(path), path).toBe(false)
     }
@@ -90,6 +96,15 @@ describe("isIndexablePath", () => {
 describe("makeMetadata indexing-policy integration", () => {
   it("does not add robots for allowlisted paths", () => {
     const md = makeMetadata({ title: "T", description: "D", path: "/ip/guide" })
+    expect(md.robots).toBeUndefined()
+  })
+
+  it("does not add robots for FE/IP question paths", () => {
+    const md = makeMetadata({
+      title: "T",
+      description: "D",
+      path: "/ip/questions/2025-r07-q1-gisou-ukeoi",
+    })
     expect(md.robots).toBeUndefined()
   })
 

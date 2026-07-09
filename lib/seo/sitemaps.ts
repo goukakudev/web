@@ -1,17 +1,33 @@
+import {
+  listExams,
+  listIpExams,
+  listIpQuestions,
+  listQuestions,
+} from "@/lib/api-client"
 import { listAllTerms, termToSlug } from "@/lib/seo/glossary"
 import { isIndexableGlossaryEntry } from "@/lib/seo/glossary-quality"
 import {
   INDEXABLE_STATIC_PAGES,
   isIndexablePath,
 } from "@/lib/seo/indexing-policy"
+import { isIndexableQuestion } from "@/lib/seo/question-quality"
+import {
+  questionCanonicalPath,
+  type SeoQuestionSubject,
+} from "@/lib/seo/question-url"
+import type { ExamSummary, Question } from "@/lib/types"
 
 export const SITEMAP_BASE = "https://goukaku.dev"
 
-// 2026-07 方針転換: 過去問設問サイトマップ (ip/fe/sg/ap/sc/denki/kango/takken
-// の *-questions) を全廃した。設問ページは本文が公開過去問で他サイトと同一に
-// なるため noindex とし、sitemap には indexing-policy の許可リスト (静的ページ)
-// と用語集だけを載せる。方針の全体像は lib/seo/indexing-policy.ts を参照。
-export const SITEMAP_NAMES = ["static", "glossary"] as const
+// 2026-07 方針転換の段階的緩和: static + glossary に加え、FE/IP の品質通過
+// 設問だけを sitemap に戻す。AP/SC/電気/看護/宅建/SG 設問はまだ載せない。
+// 方針の全体像は lib/seo/indexing-policy.ts / question-quality.ts を参照。
+export const SITEMAP_NAMES = [
+  "static",
+  "glossary",
+  "ip-questions",
+  "fe-questions",
+] as const
 
 export type SitemapName = (typeof SITEMAP_NAMES)[number]
 
@@ -83,6 +99,10 @@ export async function sitemapEntries(name: SitemapName): Promise<SitemapEntry[]>
       return staticEntries()
     case "glossary":
       return glossaryEntries()
+    case "ip-questions":
+      return questionEntries("ip")
+    case "fe-questions":
+      return questionEntries("fe")
   }
 }
 
@@ -106,6 +126,38 @@ function glossaryEntries(): SitemapEntry[] {
       changeFrequency: "monthly",
       priority: 0.45,
     }))
+}
+
+async function questionEntries(subject: SeoQuestionSubject): Promise<SitemapEntry[]> {
+  // SG は SEO_QUESTION_SUBJECTS にあるが、段階的緩和では FE/IP のみ sitemap 化。
+  if (subject !== "ip" && subject !== "fe") return []
+
+  const exams = await listSubjectExams(subject)
+  const questionLists = await Promise.all(
+    exams.map((exam) => listSubjectQuestions(subject, exam.exam_id).catch(() => [])),
+  )
+  return exams.flatMap((exam, index) =>
+    questionLists[index]
+      .filter(isIndexableQuestion)
+      .map((question) => ({
+        url: `${SITEMAP_BASE}${questionCanonicalPath(subject, exam, question)}`,
+        changeFrequency: "monthly" as const,
+        priority: subject === "ip" ? 0.75 : 0.7,
+      })),
+  )
+}
+
+async function listSubjectExams(subject: "ip" | "fe"): Promise<ExamSummary[]> {
+  if (subject === "ip") return listIpExams()
+  return (await listExams()).filter((exam) => exam.exam_id.startsWith("fe-"))
+}
+
+async function listSubjectQuestions(
+  subject: "ip" | "fe",
+  examId: string,
+): Promise<Question[]> {
+  if (subject === "ip") return listIpQuestions(examId)
+  return listQuestions(examId)
 }
 
 function toIsoDate(value: Date | string): string {

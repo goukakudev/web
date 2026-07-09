@@ -6,18 +6,19 @@ import {
   renderQuestionNotFoundHtml,
   renderQuestionPageHtml,
 } from "@/lib/seo/question-page-html"
+import { isIndexableQuestion } from "@/lib/seo/question-quality"
 import {
   SEO_QUESTION_SUBJECTS,
   type SeoQuestionSubject,
 } from "@/lib/seo/question-url"
 
-// 設問本文は公開過去問で他サイトと同一のため、全設問ページを検索
-// インデックスから外す (2026-07 方針転換、lib/seo/indexing-policy.ts 参照)。
-// HTML 内の meta robots に加えヘッダでも宣言する。
-const HTML_HEADERS = {
-  "Content-Type": "text/html; charset=utf-8",
-  "Cache-Control": "public, max-age=0, s-maxage=86400",
-  "X-Robots-Tag": "noindex, follow",
+function htmlHeaders(indexable: boolean): HeadersInit {
+  return {
+    "Content-Type": "text/html; charset=utf-8",
+    "Cache-Control": "public, max-age=0, s-maxage=86400",
+    // HTML meta robots と揃え、薄い解説はヘッダでも noindex。
+    "X-Robots-Tag": indexable ? "index, follow" : "noindex, follow",
+  }
 }
 
 export async function questionPageResponse(
@@ -28,7 +29,7 @@ export async function questionPageResponse(
   if (!data) {
     return new Response(renderQuestionNotFoundHtml(), {
       status: 404,
-      headers: HTML_HEADERS,
+      headers: htmlHeaders(false),
     })
   }
 
@@ -43,8 +44,11 @@ export async function questionPageResponse(
     })
   }
 
+  // FE/IP のみ品質ゲート通過で index。それ以外の subject は noindex 維持。
+  const indexable =
+    (subject === "ip" || subject === "fe") && isIndexableQuestion(data.question)
   return new Response(renderQuestionPageHtml(toRenderInput(subject, data)), {
-    headers: HTML_HEADERS,
+    headers: htmlHeaders(indexable),
   })
 }
 
