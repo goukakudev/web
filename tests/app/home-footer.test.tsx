@@ -24,12 +24,17 @@ describe("home footer", () => {
     mockUsePathname.mockReturnValue("/")
     render(<SiteFooter />)
 
-    for (const name of ["About", "プライバシーポリシー", "利用規約", "サポート", "お問い合わせ"]) {
+    for (const name of ["About", "プライバシーポリシー", "利用規約", "サポート", "お問い合わせ", "Foxode.com"]) {
       const link = screen.getByRole("link", { name })
       expect(link.className).toContain("rounded-full")
       expect(link.className).toContain("px-3")
       expect(link.className).not.toContain("underline")
     }
+
+    expect(screen.getByRole("link", { name: "Foxode.com" })).toHaveAttribute(
+      "href",
+      "https://foxode.com/",
+    )
   })
 
   it("colors only the current footer link", () => {

@@ -76,6 +76,9 @@ export function SiteFooter() {
             </Link>
           );
         })}
+        <a href="https://foxode.com/" className={footerLinkClass}>
+          Foxode.com
+        </a>
       </nav>
       <p>© 合格.dev</p>
     </footer>
