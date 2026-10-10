@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { MobileFrame } from "@/components/layout/MobileFrame"
+import { SiteFooter } from "@/components/layout/SiteFooter"
+import styles from "./home.module.css"
 import { latestPassRate, type ExamKey } from "@/lib/pass-rates"
 import { makeMetadata } from "@/lib/seo/metadata"
 import { itemListJsonLd, SITE_URL } from "@/lib/seo/structured-data"
@@ -142,221 +143,157 @@ const BADGE_BASE =
   "inline-flex items-center justify-center h-10 rounded-md select-none"
 const BADGE_DISABLED = "opacity-40 grayscale cursor-not-allowed"
 
+const COVERAGE: Record<string, string> = {
+  ip: "29回分・2,700問 / ストラテジ・マネジメント・テクノロジ",
+  fe: "2013〜2025年・800問以上 / 90分模試",
+  sg: "2016〜2025年の科目A公開過去問 / 90分模試",
+  ap: "2016〜2025年・午前18回分1,440問 / 150分模試",
+  sc: "レベル4（高度試験）・午前II公開過去問 / 40分模試",
+  dk: "2009〜2026年・39回分1,950問 / 120分模試",
+  takken: "2004〜2025年・24試験約1,200問 / 4分野",
+  kango: "第115回ほか / 看護師・保健師・助産師",
+}
+
+const STUDY_GROUPS = [
+  { id: "it-exams", number: "01", label: "IT・情報系", note: "デジタルの知識を、確かな強みに。", slugs: ["ip", "fe", "sg", "ap", "sc"] },
+  { id: "professional-exams", number: "02", label: "仕事・暮らしの資格", note: "専門知識を、次の仕事につなげる。", slugs: ["dk", "takken"] },
+  { id: "medical-exams", number: "03", label: "医療・看護系", note: "誰かを支える、その一歩のために。", slugs: ["kango"] },
+]
+
 export default function CategoriesPage() {
   return (
-    <MobileFrame>
+    <div className={styles.page}>
       <JsonLd
         data={itemListJsonLd(
           CATEGORIES.filter((c) => c.status === "available").map((c) => ({
             name: c.label,
-            url: `${SITE_URL}${c.href}`,
+            url: SITE_URL + c.href,
           })),
         )}
       />
-      <header className="pt-6 pb-8">
-        <div
-          className="text-[28px] text-goukaku-pink-script leading-none"
-          style={{ fontFamily: "var(--font-script)" }}
-        >
-          goukaku.dev
+      <a href="#main" className={styles.skipLink}>本文へ移動</a>
+      <header className={styles.header}>
+        <div className={styles.headerInner}>
+          <Link href="/" className={styles.wordmark} aria-label="合格.dev ホーム">Goukaku<span>.dev</span></Link>
+          <nav className={styles.navigation} aria-label="メインメニュー">
+            <a href="#exams">資格を選ぶ</a>
+            <a href="#how-it-works">学び方</a>
+            <a href="#faq">よくある質問</a>
+            <a href="#exams" className={styles.headerCta}>学習をはじめる <span aria-hidden="true">↗</span></a>
+          </nav>
         </div>
-        <div className="mt-3 inline-flex rounded-full border border-goukaku-divider bg-goukaku-surface px-3 py-1 text-[11px] font-bold text-goukaku-ink/65">
-          IPA国家試験・国家資格の過去問演習
-        </div>
-        <h1
-          className="mt-5 text-[30px] font-black leading-[1.22] tracking-[-0.04em]"
-          aria-label="IPA国家試験・各種資格の過去問演習サイト 合格.dev"
-        >
-          <span className="block">IPA国家試験・各種資格の</span>
-          <span className="block">過去問演習サイト 合格.dev</span>
-        </h1>
-        <p className="mt-4 text-[21px] font-black leading-[1.38] text-goukaku-ink/85">
-          <span className="block">独学でも、合格できる。</span>
-          <span className="block">合格から、人生を変えられる。</span>
-        </p>
-        <p className="text-[13px] opacity-70 mt-4 leading-relaxed">
-          goukaku.dev は、IPA国家試験を中心に過去問・解説・用語リンク・模試を提供する学習サイトです。公式サイトではありません。
-        </p>
       </header>
-
-      <section className="grid grid-cols-1 gap-5">
-        {CATEGORIES.map((c) => {
-          const examKey = slugToExamKey(c.slug)
-          const latest = examKey ? latestPassRate(examKey) : null
-          const titleId = `exam-card-title-${c.slug}`
-          const Inner = (
-            <div
-              className={`p-5 rounded-2xl border border-goukaku-divider bg-goukaku-surface flex items-center gap-4 ${
-                c.status === "coming-soon" ? "opacity-65" : ""
-              }`}
-            >
-              <div className="shrink-0" aria-hidden>
-                <CategoryIcon name={c.icon} />
+      <main id="main">
+        <section className={styles.hero} aria-labelledby="hero-title">
+          <div className={styles.heroCopy}>
+            <p className={styles.eyebrow}><span aria-hidden="true">✳</span> SMALL STEPS. REAL POSSIBILITIES.</p>
+            <p className={styles.heroCategory}>IPA国家試験・国家資格の過去問演習</p>
+            <h1 id="hero-title" aria-label="IPA国家試験・各種資格の過去問演習サイト 合格.dev"><span>独学でも、<br />合格できる。</span></h1>
+            <p className={styles.mission}>合格から、人生を変えられる。</p>
+            <p className={styles.heroLead}>一問解いて、理由がわかる。<br />その積み重ねが、明日の自信になる。<br />あなたの挑戦を、過去問と解説で支えます。</p>
+            <a href="#exams" className={styles.primaryButton}>資格を選んで、はじめる <span aria-hidden="true">↗</span></a>
+            <p className={styles.heroNote}>無料で学習 <span aria-hidden="true">/</span> 会員登録不要 <span aria-hidden="true">/</span> スマホでも、PCでも</p>
+          </div>
+          <div className={styles.studyVisual}>
+            <div className={styles.visualOrbit} aria-hidden="true" />
+            <div className={styles.visualLabel}><span aria-hidden="true">✦</span> その「わかった」が、力になる。</div>
+            <div className={styles.sampleCard}>
+              <div className={styles.sampleTop}><span>LEARNING PREVIEW</span><span>01 / 01</span></div>
+              <p className={styles.sampleTag}>ITの基礎を、一問から。</p>
+              <p className={styles.sampleQuestion}>2進数の「101」を<br />10進数で表すと？</p>
+              <div className={styles.sampleChoices} aria-label="例題の選択肢と正解">
+                <span><small>A</small>3</span><span className={styles.correctChoice}><small>B</small>5<i aria-hidden="true">✓</i><span className="sr-only">正解</span></span>
+                <span><small>C</small>6</span><span><small>D</small>8</span>
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-baseline gap-2 flex-wrap">
-                  <span id={titleId} className="text-[16px] font-extrabold truncate">{c.label}</span>
-                  {c.status === "coming-soon" && (
-                    <span className="text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full border border-goukaku-divider opacity-70">
-                      準備中
-                    </span>
-                  )}
-                </div>
-                <div className="text-[11px] opacity-60 mt-0.5">{c.sub}</div>
-                <div className="text-[12px] opacity-75 mt-2 leading-relaxed">
-                  {c.description}
-                </div>
-                {latest && (
-                  <div className="mt-2 inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-goukaku-cool/20 text-[11px] font-bold tabular-nums">
-                    <PassRateIcon />
-                    <span>{latest.displayYear} 合格率 {(latest.passRate * 100).toFixed(1)}%</span>
-                  </div>
-                )}
-              </div>
-              <div className="text-[14px] font-bold opacity-60">→</div>
+              <div className={styles.sampleExplanation}><span>答えの、その先へ。</span><p>1 × 4 ＋ 0 × 2 ＋ 1 × 1 ＝ 5<br />仕組みがわかると、次の問題も解ける。</p></div>
+              <p className={styles.sampleCaption}>学習画面のイメージ（例題）</p>
             </div>
-          )
+            <div className={styles.stepNote}><span className={styles.stepIcon} aria-hidden="true">↗</span><div><small>ONE QUESTION AT A TIME</small><p>できる自分へ、一歩ずつ。</p></div></div>
+          </div>
+          <div className={styles.heroBottom}><span>LEARN. UNDERSTAND. MOVE FORWARD.</span><a href="#exams"><span aria-hidden="true">↓</span> FIND YOUR NEXT CHALLENGE</a></div>
+        </section>
 
-          return (
-            <div key={c.href}>
-              {c.status === "available" ? (
-                <div className="relative">
-                  {Inner}
-                  <Link
-                    href={c.href}
-                    aria-labelledby={titleId}
-                    className="absolute inset-0 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-goukaku-pink-script focus-visible:ring-offset-2 focus-visible:ring-offset-goukaku-bg"
-                  >
-                    <span className="sr-only">{c.label}</span>
-                  </Link>
-                </div>
-              ) : (
-                Inner
-              )}
-              <div className="mt-2 flex flex-wrap items-center gap-2">
-                <StoreBadge
-                  testId={`store-ios-${c.slug}`}
-                  src={APP_STORE_BADGE_SRC}
-                  alt={`${c.label} を App Store でダウンロード`}
-                  href={c.iosUrl}
-                  unavailableLabel="App Store 準備中"
-                />
-              </div>
-            </div>
-          )
-        })}
-      </section>
+        <section className={styles.introStrip} aria-label="学習サービスについて"><div>
+          <p><strong>8</strong><span>つの試験から、<br />あなたの目標を。</span></p>
+          <p><span className={styles.stripMark} aria-hidden="true">01—</span><span>過去問に取り組む</span></p>
+          <p><span className={styles.stripMark} aria-hidden="true">02—</span><span>解説で理解する</span></p>
+          <p><span className={styles.stripMark} aria-hidden="true">03—</span><span>自信をつける</span></p>
+        </div></section>
 
-      <section className="mt-12 space-y-6 text-[13px] leading-relaxed opacity-90">
-        <div>
-          <h2 className="text-[16px] font-extrabold mb-2">合格.dev とは</h2>
-          <p>
-            合格.dev（ごうかく / goukaku.dev）は、国家資格・検定試験の過去問を、解説とともに無料で演習できる学習プラットフォームです。
-            会員登録なし・広告控えめ・スマホ操作に最適化された UI で、通勤通学のスキマ時間からの学習を後押しします。
-            現在は <Link href="/fe" className="underline">基本情報技術者試験 (FE)</Link>、
-            <Link href="/ip" className="underline">ITパスポート試験 (IP)</Link>、
-            <Link href="/ap" className="underline">応用情報技術者試験 (AP)</Link>、
-            <Link href="/sg" className="underline">情報セキュリティマネジメント試験 (SG)</Link>、
-            <Link href="/sc" className="underline">情報処理安全確保支援士試験 (SC)</Link>、
-            <Link href="/denki" className="underline">第二種電気工事士試験</Link>、
-            <Link href="/takken" className="underline">宅地建物取引士試験 (宅建)</Link>、
-            <Link href="/kango" className="underline">看護師国家試験</Link>
-            の 8 試験に対応しており、順次他の資格にも拡張予定です。
-          </p>
-        </div>
-        <div>
-          <h2 className="text-[16px] font-extrabold mb-2">3 つの特徴</h2>
-          <ul className="space-y-2 list-disc pl-5">
-            <li>
-              <h3 className="m-0 inline text-[13px] font-bold">独自編集の解説</h3>:
-              各設問に「全体解説」と「選択肢別解説」の二段構えで、なぜ正解か・他がなぜ違うかを言語化。引っかけパターンへの対応力を養えます。
-            </li>
-            <li>
-              <h3 className="m-0 inline text-[13px] font-bold">3 つの学習モード</h3>:
-              順番に解く / ランダムに解く / 本番形式の模試 (時間計測・採点付き) を試験ごとに切り替え可能。苦手分野の補強から仕上げまで一貫対応。
-            </li>
-            <li>
-              <h3 className="m-0 inline text-[13px] font-bold">図表は再構築・ベクター化</h3>:
-              元 PDF の図表は SVG で再描画し、Retina ディスプレイでも文字が滲みません。
-              宅建では <Link href="/takken" className="underline">関連条文・判例タップでポップアップ表示</Link>。
-            </li>
-          </ul>
-        </div>
-        <div>
-          <h2 className="text-[16px] font-extrabold mb-2">対応試験一覧</h2>
-          <ul className="space-y-1.5 text-[12px]">
-            <li>
-              <h3 className="m-0 inline text-[12px] font-normal"><Link href="/fe" className="underline">基本情報技術者試験</Link></h3>
-              {" — "}
-              平成 25 年 (2013) 〜 令和 7 年 (2025) ・ 全 800 問以上 ・ 模試 90 分
-            </li>
-            <li>
-              <h3 className="m-0 inline text-[12px] font-normal"><Link href="/ip" className="underline">ITパスポート試験</Link></h3>
-              {" — "}
-              29 回分 ・ 全 2,700 問 ・ ストラテジ / マネジメント / テクノロジの 3 分野
-            </li>
-            <li>
-              <h3 className="m-0 inline text-[12px] font-normal"><Link href="/ap" className="underline">応用情報技術者試験</Link></h3>
-              {" — "}
-              平成 28 年 (2016) 〜 令和 7 年 (2025) ・ 午前 18 回分 ・ 全 1,440 問 ・ 模試 150 分
-            </li>
-            <li>
-              <h3 className="m-0 inline text-[12px] font-normal"><Link href="/sg" className="underline">情報セキュリティマネジメント試験</Link></h3>
-              {" — "}
-              平成 28 年 (2016) 〜 令和 7 年 (2025) ・ 科目A 公開過去問 ・ 模試 90 分
-            </li>
-            <li>
-              <h3 className="m-0 inline text-[12px] font-normal"><Link href="/sc" className="underline">情報処理安全確保支援士試験</Link></h3>
-              {" — "}
-              レベル 4 (高度試験) ・ 国家資格『登録セキスペ』 ・ 午前 II 公開過去問を収録 ・ 模試 40 分
-            </li>
-            <li>
-              <h3 className="m-0 inline text-[12px] font-normal"><Link href="/denki" className="underline">第二種電気工事士試験</Link></h3>
-              {" — "}
-              平成 21 年 (2009) 〜 令和 8 年 (2026) ・ 学科試験 39 回分 ・ 全 1,950 問 ・ 模試 120 分
-            </li>
-            <li>
-              <h3 className="m-0 inline text-[12px] font-normal"><Link href="/takken" className="underline">宅地建物取引士試験</Link></h3>
-              {" — "}
-              H16 (2004) 〜 R7 (2025) ・ 全 24 試験 ・ 約 1,200 問 ・ 4 分野
-            </li>
-            <li>
-              <h3 className="m-0 inline text-[12px] font-normal"><Link href="/kango" className="underline">看護師国家試験</Link></h3>
-              {" — "}
-              第 115 回ほか ・ 看護師 / 保健師 / 助産師 ・ 選択肢別解説付き
-            </li>
-          </ul>
-        </div>
-        <div>
-          <h2 className="text-[16px] font-extrabold mb-2">よくある質問</h2>
-          <dl className="space-y-3 text-[12px]">
-            <div>
-              <dt className="font-bold">完全無料ですか？</dt>
-              <dd className="opacity-80 mt-0.5">はい。会員登録もありません。広告は最小限に抑えて運営しています。</dd>
-            </div>
-            <div>
-              <dt className="font-bold">解説の信頼性は？</dt>
-              <dd className="opacity-80 mt-0.5">問題文は各実施団体の公開過去問に基づき、解説は本サイト独自の要約です。公式見解ではないため、最終的な解釈は公式資料でご確認ください。</dd>
-            </div>
-            <div>
-              <dt className="font-bold">スマホでも使えますか？</dt>
-              <dd className="opacity-80 mt-0.5">主にスマホ縦画面向けに UI 設計しています。PC でも快適に動作します。</dd>
-            </div>
-          </dl>
-        </div>
-      </section>
-      <footer className="mt-12 text-[11px] opacity-50 leading-relaxed">
-        <p>
-          掲載している試験問題は、各実施団体が公開する過去問題を利用しています。解説文は本サイト独自の要約であり、公式見解を示すものではありません。
-        </p>
-      </footer>
-    </MobileFrame>
+        <section id="exams" className={styles.examSection} aria-labelledby="exams-title">
+          <div className={styles.sectionHeading}><div><p className={styles.eyebrow}>01 / FIND YOUR EXAM</p><h2 id="exams-title">あなたの「なりたい」から、<br />学びを選ぼう。</h2></div><p>ブラウザーで、今すぐ一問。<br />iOSアプリでも、いつもの学びを。</p></div>
+          <nav className={styles.groupNavigation} aria-label="試験の分野">
+            {STUDY_GROUPS.map((group) => <a href={"#" + group.id} key={group.id}>{group.label}<span>{group.slugs.length}</span><i aria-hidden="true">↓</i></a>)}
+          </nav>
+          {STUDY_GROUPS.map((group) => (
+            <section id={group.id} className={styles.examGroup} key={group.id} aria-labelledby={group.id + "-title"}>
+              <div className={styles.groupHeading}><h3 id={group.id + "-title"}><span>{group.number}</span>{group.label}</h3><p>{group.note}</p></div>
+              <div className={styles.examGrid}>
+                {CATEGORIES.filter((c) => group.slugs.includes(c.slug)).map((c) => <ExamCard key={c.slug} category={c} />)}
+              </div>
+            </section>
+          ))}
+          <p className={styles.catalogNote}>合格率は各試験の公表統計に基づく参考情報です。サービス利用者の合格率を示すものではありません。</p>
+        </section>
+
+        <section id="how-it-works" className={styles.methodSection} aria-labelledby="method-title"><div className={styles.sectionInner}>
+          <div className={styles.sectionHeading}><div><p className={styles.eyebrow}>02 / YOUR WAY TO LEARN</p><h2 id="method-title">覚えるだけで、<br />終わらせない。</h2></div><p>今の自分に合う学び方で。<br />苦手の見直しから、本番前の仕上げまで。</p></div>
+          <div className={styles.methodGrid}>
+            <article><span className={styles.methodNumber}>01</span><div className={styles.methodDiagram} aria-hidden="true"><i>1</i><i>2</i><i>3</i><span>→</span></div><p className={styles.eyebrow}>STEP BY STEP</p><h3>順番に、じっくり。</h3><p>年度ごとの過去問を、一問ずつ。問題と解説を読みながら、知識の土台をつくります。</p></article>
+            <article><span className={styles.methodNumber}>02</span><div className={styles.methodDiagram} aria-hidden="true"><i>7</i><i>3</i><i>9</i><span>↗</span></div><p className={styles.eyebrow}>MIX IT UP</p><h3>ランダムに、確かめる。</h3><p>順番に頼らず、理解を確かめる。さまざまな問題に触れて、知識の抜けを見つけます。</p></article>
+            <article><span className={styles.methodNumber}>03</span><div className={styles.timerDiagram} aria-hidden="true"><svg viewBox="0 0 80 80"><circle cx="40" cy="43" r="26" /><path d="M40 26v17l12 8M32 7h16M40 7v9M60 18l5-5" /></svg></div><p className={styles.eyebrow}>READY FOR THE DAY</p><h3>模試で、本番に備える。</h3><p>時間を意識しながら、力試し。時間計測と採点で、最後まで解き切る感覚をつかみます。</p></article>
+          </div>
+          <p className={styles.modeNote}>利用できる学習モードは試験によって異なります。各試験ページで確認できます。</p>
+        </div></section>
+
+        <section className={styles.understandingSection} aria-labelledby="understanding-title"><div className={styles.understandingLayout}>
+          <div className={styles.understandingCopy}><p className={styles.eyebrow}>03 / BEYOND THE ANSWER</p><h2 id="understanding-title">正解の理由まで、<br />あなたの知識に。</h2><p>答えを選べた、その先にある「なぜ」。<br />小さな疑問を、一つずつ理解へつなげます。</p><Link href="/about" className={styles.textLink}>合格.devについて <span aria-hidden="true">↗</span></Link></div>
+          <div className={styles.featureList}>
+            <article><span>01</span><div><h3>独自編集の解説</h3><p>全体解説と選択肢別解説で、なぜ正解か、ほかがなぜ違うかを言葉に。引っかけパターンへの対応力を養います。</p></div></article>
+            <article><span>02</span><div><h3>用語から、理解を深める</h3><p>知らない言葉は用語の説明へ。宅建では、関連条文や判例をタップして本文を確認できます。</p></div></article>
+            <article><span>03</span><div><h3>図表も、読みやすく</h3><p>過去問の図表を再構築・ベクター化。スマートフォンでも細かな文字や図を追いながら学べます。</p></div></article>
+          </div>
+        </div></section>
+
+        <section id="faq" className={styles.faqSection} aria-labelledby="faq-title"><div className={styles.faqLayout}>
+          <div><p className={styles.eyebrow}>04 / GOOD TO KNOW</p><h2 id="faq-title">はじめる前の、<br />小さな疑問に。</h2><Link href="/support" className={styles.textLink}>サポートを見る <span aria-hidden="true">↗</span></Link></div>
+          <div className={styles.faqList}>
+            <details><summary><span>01</span>完全無料ですか？<i aria-hidden="true">＋</i></summary><p>はい。会員登録もありません。広告は最小限に抑えて運営しています。</p></details>
+            <details><summary><span>02</span>解説の信頼性は？<i aria-hidden="true">＋</i></summary><p>問題文は各実施団体の公開過去問に基づき、解説は本サイト独自の要約です。公式見解ではないため、最終的な解釈は公式資料でご確認ください。</p></details>
+            <details><summary><span>03</span>スマホでも使えますか？<i aria-hidden="true">＋</i></summary><p>スマートフォン・PCのブラウザーから利用できます。各試験のiOSアプリは、試験一覧のApp Storeボタンから開けます。</p></details>
+          </div>
+        </div></section>
+
+        <section className={styles.closingSection} aria-labelledby="closing-title"><div><p className={styles.eyebrow}>YOUR NEXT CHAPTER STARTS HERE.</p><h2 id="closing-title">未来の自分に、<br />今日の一問を。</h2><a className={styles.primaryButton} href="#exams">学びたい資格を選ぶ <span aria-hidden="true">↗</span></a><p>無料・会員登録不要ではじめられます。</p></div><span className={styles.closingStar} aria-hidden="true">✳</span></section>
+        <section className={styles.siteNote} aria-label="サービスと掲載問題について"><p>合格.dev（ごうかく / goukaku.dev）は、IPA国家試験を中心に過去問・解説・用語リンク・模試を提供する学習サイトです。公式サイトではありません。</p><p>掲載している試験問題は、各実施団体が公開する過去問題を利用しています。解説文は本サイト独自の要約であり、公式見解を示すものではありません。</p></section>
+      </main>
+      <SiteFooter variant="landing" />
+    </div>
+  )
+}
+
+function ExamCard({ category: c }: { category: Category }) {
+  const examKey = slugToExamKey(c.slug)
+  const latest = examKey ? latestPassRate(examKey) : null
+  const titleId = "exam-card-title-" + c.slug
+  return (
+    <article className={styles.examCard} data-subject={c.slug}>
+      <div className={styles.examCardMain}>
+        <div className={styles.examCardTop}><CategoryIcon name={c.icon} /><span>{c.slug === "takken" ? "TAKKEN" : c.slug === "kango" ? "NURSING" : c.slug === "dk" ? "DENKI" : c.slug.toUpperCase()}</span><i aria-hidden="true">↗</i></div>
+        <h3 id={titleId}>{c.label}</h3><p className={styles.examEnglish}>{c.sub}</p>
+        <p className={styles.examDescription}>{c.description}</p>
+        <p className={styles.coverage}>{COVERAGE[c.slug]}</p>
+        {latest && <p className={styles.passRate}><PassRateIcon /><span>{latest.displayYear} 試験合格率 {(latest.passRate * 100).toFixed(1)}%</span></p>}
+        {c.status === "available" ? <Link href={c.href} aria-labelledby={titleId} className={styles.examLink}><span className="sr-only">{c.label}</span></Link> : <span className={styles.unavailable}>準備中</span>}
+      </div>
+      <div className={styles.examCardBottom}><span>iOSアプリでも学べます</span><StoreBadge testId={"store-ios-" + c.slug} src={APP_STORE_BADGE_SRC} alt={c.label + " を App Store でダウンロード"} href={c.iosUrl} unavailableLabel="App Store 準備中" /></div>
+    </article>
   )
 }
 
 function CategoryIcon({ name }: { name: CategoryIconName }) {
   return (
-    <span className="inline-grid size-12 place-items-center rounded-2xl border border-goukaku-divider bg-goukaku-ink/5 text-goukaku-ink">
+    <span className={styles.categoryIcon}>
       <svg
         data-home-icon={name}
         viewBox="0 0 48 48"

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "./ThemeToggle";
+import styles from "./SiteFooter.module.css";
 
 const footerLinkClass =
   "inline-flex min-h-8 items-center rounded-full border border-goukaku-divider px-3 py-1.5 text-goukaku-ink/60 transition hover:bg-goukaku-surface hover:text-goukaku-ink/80";
@@ -36,8 +37,71 @@ const footerLinks = [
   { href: "/contact", label: "お問い合わせ" },
 ];
 
-export function SiteFooter() {
+type SiteFooterProps = {
+  variant?: "compact" | "landing";
+};
+
+export function SiteFooter({ variant = "compact" }: SiteFooterProps) {
   const pathname = usePathname() ?? "/";
+
+  if (variant === "landing") {
+    return (
+      <footer className={styles.landing}>
+        <div className={styles.shell}>
+          <div className={styles.main}>
+            <div className={styles.identity}>
+              <Link href="/" className={styles.wordmark}>
+                Goukaku.dev
+              </Link>
+              <p className={styles.description}>
+                国家試験・資格試験の過去問演習
+              </p>
+              <div className={styles.theme}>
+                <span className={styles.label}>表示モード</span>
+                <ThemeToggle />
+              </div>
+            </div>
+            <div className={styles.menu}>
+              <p className={styles.label}>学習メニュー</p>
+              <nav aria-label="セクション" className={styles.sections}>
+                {sectionLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    aria-current={link.match(pathname) ? "page" : undefined}
+                    className={styles.sectionLink}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </nav>
+            </div>
+          </div>
+          <nav aria-label="サイト情報" className={styles.information}>
+            {footerLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                aria-current={pathname === link.href ? "page" : undefined}
+                className={styles.informationLink}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+          <div className={styles.bottom}>
+            <p>© Goukaku.dev</p>
+            <p>
+              運営{" "}
+              <a href="https://foxode.com/" className={styles.operator}>
+                Foxode（フォックスオード）
+              </a>
+            </p>
+          </div>
+        </div>
+      </footer>
+    );
+  }
 
   return (
     <footer className="mt-10 mb-6 text-center text-[11px] text-goukaku-ink/55">
