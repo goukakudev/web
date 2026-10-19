@@ -88,7 +88,13 @@ export default function PrivacyPage() {
             ブックマーク: ユーザーがブックマークした問題 ID の一覧。
           </li>
           <li>
-            問題報告のローカル保存: 「問題を報告」フォームに入力した本文 (送信成否にかかわらず履歴として端末内に保持)。
+            問題報告のローカル保存: 「問題を報告」フォームに入力した本文 (送信成否にかかわらず履歴として端末内に保持。IPA 5試験向けの「合格.dev」は送信が終わるまでの間だけ保持)。
+          </li>
+          <li>
+            演習の途中経過: 途中まで解いた演習の問題と解答 (「続きから」再開するため)。
+          </li>
+          <li>
+            送信待ちのキュー: 通信できないときに、あとから送信するための解答ログ・問題報告。
           </li>
           <li>
             問題データのオフラインキャッシュ (端末ローカルファイル)。
@@ -151,21 +157,24 @@ export default function PrivacyPage() {
             <strong>使用状況データ - 製品操作</strong>: Good / Bad 評価、解答結果、模試モードのセッション結果。用途: 分析、アプリの機能。
           </li>
           <li>
-            <strong>診断 - パフォーマンスデータ・その他の診断データ</strong>: アクセスログ (IP アドレス、User-Agent 等)。用途: アプリの機能。
+            <strong>診断 - パフォーマンスデータ・その他の診断データ</strong>: アクセスログ (IP アドレス、User-Agent 等)。用途: アプリの機能。IPA 5試験向けの「合格.dev」では「その他の診断データ」のみを表示しています。
           </li>
         </ul>
       </Section>
 
       <Section title="8. Cookie について">
         <p>
-          当サイトはトラッキング目的の Cookie を発行していません。学習履歴等のクライアント側保存はすべて localStorage / UserDefaults / SwiftData で行います (§3・§4)。
+          当サイトはトラッキング目的の Cookie を発行していません。学習履歴等のクライアント側保存はすべて localStorage / UserDefaults / SwiftData / 端末内のファイルで行います (§3・§4)。
         </p>
       </Section>
 
       <Section title="9. 利用している第三者サービス">
         <ul className="list-disc pl-5 space-y-1">
           <li>
-            <strong>AWS EC2</strong> — Web サイトのホスティング、API 中継、サーバーログの保存。アクセスログ (IP アドレス、User-Agent 等) が運営・保守目的で処理されます。
+            <strong>Cloudflare Workers / Containers</strong> — Web サイトと API (<code>goukaku.dev</code> / <code>api.goukaku.dev</code>) のホスティング。アクセスログ (IP アドレス、User-Agent 等) が運営・保守目的で処理されます。
+          </li>
+          <li>
+            <strong>Cloudflare D1</strong> — 解答ログ・Good / Bad 評価・問題報告などのサーバー側データの保存。
           </li>
           <li>
             <strong>Cloudflare R2 / CDN</strong> — 図表画像の配信。エッジでのキャッシュ統計やアクセスログが処理されます。
@@ -252,7 +261,7 @@ export default function PrivacyPage() {
       <Section title="15. 改訂履歴">
         <ul className="list-disc pl-5 space-y-1">
           <li>
-            2026-10-19: IPA の5試験をまとめた iOS アプリ「合格.dev」の公開準備に伴い、適用範囲 (§1)、端末内の保存方法 (§4・§6)、App Store の表示 (§7)、学習記録のリセットによるサーバー側データの削除 (§4・§11) を追記。
+            2026-10-19: IPA の5試験をまとめた iOS アプリ「合格.dev」の公開準備に伴い、適用範囲 (§1)、端末内の保存方法 (§4・§6)、App Store の表示 (§7)、学習記録のリセットによるサーバー側データの削除 (§4・§11) を追記。運用基盤の移行 (Web は Cloudflare Containers、API とデータは Cloudflare Workers / D1) に合わせて第三者サービス (§9) を更新。
           </li>
           <li>
             2026-06-24: Web サイトの運用基盤を EC2 に移行したことに伴い、旧ホスティングおよび旧解析サービスに関する記載を削除し、サーバー側イベントログの記載に更新。
