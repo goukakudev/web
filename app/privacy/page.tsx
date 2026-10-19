@@ -6,11 +6,11 @@ import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 export const metadata: Metadata = {
   title: "プライバシーポリシー",
   description:
-    "合格.dev (Web / iOS アプリ群: 合格.dev / 宅建合格.dev / 第二種電工 過去問 など) のプライバシーポリシー。localStorage / UserDefaults に保存する情報、サーバーへ送信される情報 (匿名 device_id / Good・Bad 評価 / 問題報告本文)、第三者サービス (Cloudflare R2 など) について明記します。",
+    "合格.dev (Web / iOS アプリ群: 合格.dev (IPA 5試験) / 宅建合格.dev / 第二種電工 過去問 など) のプライバシーポリシー。localStorage / UserDefaults / 端末内のファイルに保存する情報、サーバーへ送信される情報 (匿名 device_id / Good・Bad 評価 / 問題報告本文)、第三者サービス (Cloudflare R2 など) について明記します。",
   alternates: { canonical: "/privacy" },
 };
 
-const REVISED = "2026-06-24";
+const REVISED = "2026-10-19";
 const CONTACT_EMAIL = "contact@goukaku.dev";
 
 export default function PrivacyPage() {
@@ -25,7 +25,7 @@ export default function PrivacyPage() {
 
       <Section title="1. 適用範囲">
         <p>
-          本ポリシーは、合格.dev (以下「当サイト」) および当サイトが提供する iOS アプリ群 (基本情報技術者試験向けの「合格.dev」、宅地建物取引士試験向けの「宅建合格.dev」、第二種電気工事士試験向けの「第二種電工 過去問」を含み、以下これらを総称して「本アプリ」といいます) を利用するにあたって、利用者の情報をどのように取り扱うかを明記するものです。当サイトが今後追加する関連 Web サービス・iOS アプリにも、特段の断りがない限り本ポリシーが適用されます。
+          本ポリシーは、合格.dev (以下「当サイト」) および当サイトが提供する iOS アプリ群 (IPA の情報処理技術者試験 5試験 (ITパスポート・情報セキュリティマネジメント・基本情報技術者・応用情報技術者・情報処理安全確保支援士) 向けの「合格.dev」(試験別の旧アプリを含む)、宅地建物取引士試験向けの「宅建合格.dev」、第二種電気工事士試験向けの「第二種電工 過去問」を含み、以下これらを総称して「本アプリ」といいます) を利用するにあたって、利用者の情報をどのように取り扱うかを明記するものです。当サイトが今後追加する関連 Web サービス・iOS アプリにも、特段の断りがない限り本ポリシーが適用されます。
         </p>
       </Section>
 
@@ -69,7 +69,7 @@ export default function PrivacyPage() {
 
       <Section title="4. iOS アプリが端末内に保存する情報">
         <p>
-          iOS アプリ版は学習体験の継続性のため、iOS の <code>UserDefaults</code> および SwiftData に以下の情報を保存します。以下の情報は端末内のみで利用し、Apple のサーバーには送信しません。当サイトのサーバーへの送信は §5 に記載した機能を利用したときに限ります。
+          iOS アプリ版は学習体験の継続性のため、iOS の <code>UserDefaults</code>、SwiftData、または端末内のファイルに以下の情報を保存します。以下の情報は端末内のみで利用し、Apple のサーバーには送信しません。当サイトのサーバーへの送信は §5 に記載した機能を利用したときに限ります。
         </p>
         <ul className="list-disc pl-5 space-y-1 mt-2">
           <li>
@@ -95,7 +95,7 @@ export default function PrivacyPage() {
           </li>
         </ul>
         <p className="mt-2">
-          これらの情報は、アプリ内の「学習履歴をすべて削除」操作、あるいはアプリ自体の削除によって完全に削除できます。
+          これらの情報は、アプリ内の「学習履歴をすべて削除」(IPA 5試験向けの「合格.dev」では「学習記録をリセット」) 操作、あるいはアプリ自体の削除によって完全に削除できます。IPA 5試験向けの「合格.dev」で「学習記録をリセット」を行うと、サーバーに送信済みの解答ログ・問題報告の削除もあわせて依頼し、<code>device_id</code> を新しく作り直します。
         </p>
       </Section>
 
@@ -131,14 +131,14 @@ export default function PrivacyPage() {
             アクセスログ (IP アドレス / User-Agent): 運用目的で原則 <strong>90 日間</strong> 保管します。
           </li>
           <li>
-            端末内に保存される情報 (localStorage / UserDefaults / SwiftData): 利用者自身が削除するまで端末内に残ります。当サイト側で削除することはできません。
+            端末内に保存される情報 (localStorage / UserDefaults / SwiftData / 端末内のファイル): 利用者自身が削除するまで端末内に残ります。当サイト側で削除することはできません。
           </li>
         </ul>
       </Section>
 
       <Section title="7. Apple App Store「App Privacy」表示との対応">
         <p>
-          本アプリの App Store「データの種類」表示は以下のとおりです。すべて<strong>利用者の身元には紐付けず</strong>、<strong>追跡には使用しません</strong>。
+          本アプリの App Store「データの種類」表示は以下のとおりです。いずれも氏名・メールアドレス等とは結び付けず、<strong>追跡には使用しません</strong>。なお、IPA 5試験向けの「合格.dev」では、記録をランダムな <code>device_id</code> と結び付けて保存するため、App Store では「ユーザに関連付けられたデータ」として表示しています。
         </p>
         <ul className="list-disc pl-5 space-y-1 mt-2">
           <li>
@@ -185,10 +185,10 @@ export default function PrivacyPage() {
         </p>
         <ul className="list-disc pl-5 space-y-1 mt-2">
           <li>
-            端末内に保存された情報は、ブラウザの「サイトデータを削除」操作、iOS アプリ内の「学習履歴をすべて削除」操作、またはアプリ自体の削除によって、いつでも完全に削除できます。
+            端末内に保存された情報は、ブラウザの「サイトデータを削除」操作、iOS アプリ内の「学習履歴をすべて削除」「学習記録をリセット」操作、またはアプリ自体の削除によって、いつでも完全に削除できます。
           </li>
           <li>
-            サーバー側に送信された情報 (解答ログ / Good・Bad 評価 / 問題報告) について、開示・訂正・削除を希望する場合は、§14 のお問い合わせ窓口までご連絡ください。本人確認のため、対象の <code>device_id</code> をお知らせいただきます。当該 <code>device_id</code> に紐付くサーバー側データを合理的な範囲で削除します。
+            サーバー側に送信された情報 (解答ログ / Good・Bad 評価 / 問題報告) について、開示・訂正・削除を希望する場合は、§14 のお問い合わせ窓口までご連絡ください。本人確認のため、対象の <code>device_id</code> をお知らせいただきます。当該 <code>device_id</code> に紐付くサーバー側データを合理的な範囲で削除します。IPA 5試験向けの「合格.dev」では、アプリ内の「学習記録をリセット」でもサーバー側の解答ログ・問題報告を削除できます。
           </li>
         </ul>
       </Section>
@@ -251,6 +251,9 @@ export default function PrivacyPage() {
 
       <Section title="15. 改訂履歴">
         <ul className="list-disc pl-5 space-y-1">
+          <li>
+            2026-10-19: IPA の5試験をまとめた iOS アプリ「合格.dev」の公開準備に伴い、適用範囲 (§1)、端末内の保存方法 (§4・§6)、App Store の表示 (§7)、学習記録のリセットによるサーバー側データの削除 (§4・§11) を追記。
+          </li>
           <li>
             2026-06-24: Web サイトの運用基盤を EC2 に移行したことに伴い、旧ホスティングおよび旧解析サービスに関する記載を削除し、サーバー側イベントログの記載に更新。
           </li>
