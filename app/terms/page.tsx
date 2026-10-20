@@ -6,11 +6,11 @@ import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 export const metadata: Metadata = {
   title: "利用規約",
   description:
-    "合格.dev (Web / iOS アプリ) の利用規約。サービス内容、知的財産権、禁止事項、免責事項について明記します。",
+    "合格.dev (Web / iOS・Android アプリ) の利用規約。サービス内容、知的財産権、禁止事項、免責事項について明記します。",
   alternates: { canonical: "/terms" },
 };
 
-const REVISED = "2026-06-01";
+const REVISED = "2026-10-20";
 
 export default function TermsPage() {
   return (
@@ -24,7 +24,7 @@ export default function TermsPage() {
 
       <Section title="第1条 (適用)">
         <p>
-          本規約は、合格.dev (以下「当サイト」) および同名の iOS アプリ「合格.dev」(以下「本アプリ」) (両者を以下「本サービス」と総称) の利用に関する条件を、利用者と運営者との間で定めるものです。本サービスを利用した時点で、本規約に同意したものとみなします。
+          本規約は、合格.dev (以下「当サイト」) および同名の iOS・Android アプリ「合格.dev」(以下「本アプリ」) (両者を以下「本サービス」と総称) の利用に関する条件を、利用者と運営者との間で定めるものです。本サービスを利用した時点で、本規約に同意したものとみなします。
         </p>
       </Section>
 

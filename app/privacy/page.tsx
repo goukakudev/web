@@ -6,11 +6,11 @@ import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 export const metadata: Metadata = {
   title: "プライバシーポリシー",
   description:
-    "合格.dev (Web / iOS アプリ群: 合格.dev (IPA 5試験) / 宅建合格.dev / 第二種電工 過去問 など) のプライバシーポリシー。localStorage / UserDefaults / 端末内のファイルに保存する情報、サーバーへ送信される情報 (匿名 device_id / Good・Bad 評価 / 問題報告本文)、第三者サービス (Cloudflare R2 など) について明記します。",
+    "合格.dev (Web / iOS・Android アプリ群: 合格.dev (IPA 5試験) / 宅建合格.dev / 第二種電工 過去問 など) のプライバシーポリシー。localStorage / UserDefaults / SharedPreferences / 端末内のファイルに保存する情報、サーバーへ送信される情報 (匿名 device_id / Good・Bad 評価 / 問題報告本文)、第三者サービス (Cloudflare R2 など) について明記します。",
   alternates: { canonical: "/privacy" },
 };
 
-const REVISED = "2026-10-19";
+const REVISED = "2026-10-20";
 const CONTACT_EMAIL = "contact@goukaku.dev";
 
 export default function PrivacyPage() {
@@ -25,7 +25,7 @@ export default function PrivacyPage() {
 
       <Section title="1. 適用範囲">
         <p>
-          本ポリシーは、合格.dev (以下「当サイト」) および当サイトが提供する iOS アプリ群 (IPA の情報処理技術者試験 5試験 (ITパスポート・情報セキュリティマネジメント・基本情報技術者・応用情報技術者・情報処理安全確保支援士) 向けの「合格.dev」(試験別の旧アプリを含む)、宅地建物取引士試験向けの「宅建合格.dev」、第二種電気工事士試験向けの「第二種電工 過去問」を含み、以下これらを総称して「本アプリ」といいます) を利用するにあたって、利用者の情報をどのように取り扱うかを明記するものです。当サイトが今後追加する関連 Web サービス・iOS アプリにも、特段の断りがない限り本ポリシーが適用されます。
+          本ポリシーは、合格.dev (以下「当サイト」) および当サイトが提供する iOS・Android アプリ群 (IPA の情報処理技術者試験 5試験 (ITパスポート・情報セキュリティマネジメント・基本情報技術者・応用情報技術者・情報処理安全確保支援士) 向けの「合格.dev」(iOS 版・Android 版。試験別の旧 iOS アプリを含む)、宅地建物取引士試験向けの「宅建合格.dev」(iOS)、第二種電気工事士試験向けの「第二種電工 過去問」(iOS) を含み、以下これらを総称して「本アプリ」といいます) を利用するにあたって、利用者の情報をどのように取り扱うかを明記するものです。当サイトが今後追加する関連 Web サービス・アプリにも、特段の断りがない限り本ポリシーが適用されます。
         </p>
       </Section>
 
@@ -34,7 +34,7 @@ export default function PrivacyPage() {
           <li>氏名、住所、電話番号などの個人情報は一切取得しません。</li>
           <li>会員登録・サインアップ機能はありません。</li>
           <li>パスワードや認証情報の保存はありません。</li>
-          <li>広告識別子 (IDFA) や、利用者を複数アプリ・サイトにまたがって追跡するためのトラッキング機能は使用しません。</li>
+          <li>広告識別子 (iOS の IDFA、Android の広告 ID) や、利用者を複数アプリ・サイトにまたがって追跡するためのトラッキング機能は使用しません。</li>
         </ul>
       </Section>
 
@@ -67,13 +67,13 @@ export default function PrivacyPage() {
         </p>
       </Section>
 
-      <Section title="4. iOS アプリが端末内に保存する情報">
+      <Section title="4. アプリが端末内に保存する情報">
         <p>
-          iOS アプリ版は学習体験の継続性のため、iOS の <code>UserDefaults</code>、SwiftData、または端末内のファイルに以下の情報を保存します。以下の情報は端末内のみで利用し、Apple のサーバーには送信しません。当サイトのサーバーへの送信は §5 に記載した機能を利用したときに限ります。
+          アプリ版は学習体験の継続性のため、端末内 (iOS 版は <code>UserDefaults</code>、SwiftData、または端末内のファイル。Android 版は <code>SharedPreferences</code> と端末内のファイル) に以下の情報を保存します。以下の情報は端末内のみで利用し、アプリから Apple・Google のサーバーへ送信することはありません (端末のバックアップ機能 (iCloud バックアップ、Google のバックアップ) を有効にしている場合は、OS の機能によってバックアップに含まれます)。当サイトのサーバーへの送信は §5 に記載した機能を利用したときに限ります。
         </p>
         <ul className="list-disc pl-5 space-y-1 mt-2">
           <li>
-            <code>device_id</code> / <code>tk_device_id</code>: アプリ初回起動時にランダム生成される識別子 (UUID)。学習履歴を端末単位で集計するためのみに使用します。広告識別子 (IDFA) は一切使用しません。
+            <code>device_id</code> / <code>tk_device_id</code>: アプリ初回起動時にランダム生成される識別子 (UUID)。学習履歴を端末単位で集計するためのみに使用します。広告識別子 (IDFA・広告 ID) は一切使用しません。
           </li>
           <li>
             解答履歴: 解答した問題 ID、選択肢、正誤、解答時刻。
@@ -114,7 +114,7 @@ export default function PrivacyPage() {
             <strong>問題データの取得</strong>: 試験問題や解説の取得時、サーバーは IP アドレス・User-Agent などの一般的なアクセスログを記録します。これらは運用 (不正アクセス対策、性能改善) 目的でのみ使用します。
           </li>
           <li>
-            <strong>解答ログ送信</strong> (Web 版および対応する iOS 版で有効な機能): 匿名の <code>device_id</code>、問題 ID、試験 ID、選択した選択肢、正誤、解答時刻 (ISO8601)、任意のセッション ID。出題傾向の集計・難易度分析・サービス改善のために利用します。
+            <strong>解答ログ送信</strong> (Web 版および対応するアプリで有効な機能): 匿名の <code>device_id</code>、問題 ID、試験 ID、選択した選択肢、正誤、解答時刻 (ISO8601)、任意のセッション ID。出題傾向の集計・難易度分析・サービス改善のために利用します。
           </li>
           <li>
             <strong>Good / Bad 評価</strong>: 利用者が解説の「Good」「Bad」ボタンを押した場合、匿名の <code>device_id</code>、問題 ID、試験 ID、評価値 (<code>good</code> / <code>bad</code> / 取消)、操作時刻を送信します。同一端末からの最新の評価のみを集計に反映し、過去の評価は履歴として保持します。
@@ -137,12 +137,12 @@ export default function PrivacyPage() {
             アクセスログ (IP アドレス / User-Agent): 運用目的で原則 <strong>90 日間</strong> 保管します。
           </li>
           <li>
-            端末内に保存される情報 (localStorage / UserDefaults / SwiftData / 端末内のファイル): 利用者自身が削除するまで端末内に残ります。当サイト側で削除することはできません。
+            端末内に保存される情報 (localStorage / UserDefaults / SwiftData / SharedPreferences / 端末内のファイル): 利用者自身が削除するまで端末内に残ります。当サイト側で削除することはできません。
           </li>
         </ul>
       </Section>
 
-      <Section title="7. Apple App Store「App Privacy」表示との対応">
+      <Section title="7. App Store「App Privacy」・Google Play「データ セーフティ」表示との対応">
         <p>
           本アプリの App Store「データの種類」表示は以下のとおりです。いずれも氏名・メールアドレス等とは結び付けず、<strong>追跡には使用しません</strong>。なお、IPA 5試験向けの「合格.dev」では、記録をランダムな <code>device_id</code> と結び付けて保存するため、App Store では「ユーザに関連付けられたデータ」として表示しています。
         </p>
@@ -160,11 +160,28 @@ export default function PrivacyPage() {
             <strong>診断 - パフォーマンスデータ・その他の診断データ</strong>: アクセスログ (IP アドレス、User-Agent 等)。用途: アプリの機能。IPA 5試験向けの「合格.dev」では「その他の診断データ」のみを表示しています。
           </li>
         </ul>
+        <p className="mt-2">
+          IPA 5試験向けの「合格.dev」の Android 版では、Google Play の「データ セーフティ」に以下のとおり表示します。いずれも第三者とは共有せず、送信は暗号化 (HTTPS) しています。アプリ内の「学習記録をリセット」で、サーバー側データの削除を依頼できます。
+        </p>
+        <ul className="list-disc pl-5 space-y-1 mt-2">
+          <li>
+            <strong>アプリのアクティビティ - アプリ内の操作</strong>: 解答結果 (問題 ID、選択肢、正誤、解答時刻)。用途: アプリの機能、分析。
+          </li>
+          <li>
+            <strong>アプリのアクティビティ - その他のユーザー作成コンテンツ</strong>: 問題報告フォームに入力された本文 (任意)。用途: アプリの機能。
+          </li>
+          <li>
+            <strong>デバイスまたはその他の ID</strong>: 匿名の <code>device_id</code> (UUID。広告 ID ではありません)。用途: アプリの機能、分析。
+          </li>
+          <li>
+            <strong>アプリの情報とパフォーマンス - その他のアプリのパフォーマンス データ</strong>: アクセスログ (IP アドレス、User-Agent 等)。用途: アプリの機能。
+          </li>
+        </ul>
       </Section>
 
       <Section title="8. Cookie について">
         <p>
-          当サイトはトラッキング目的の Cookie を発行していません。学習履歴等のクライアント側保存はすべて localStorage / UserDefaults / SwiftData / 端末内のファイルで行います (§3・§4)。
+          当サイトはトラッキング目的の Cookie を発行していません。学習履歴等のクライアント側保存はすべて localStorage / UserDefaults / SwiftData / SharedPreferences / 端末内のファイルで行います (§3・§4)。
         </p>
       </Section>
 
@@ -194,7 +211,7 @@ export default function PrivacyPage() {
         </p>
         <ul className="list-disc pl-5 space-y-1 mt-2">
           <li>
-            端末内に保存された情報は、ブラウザの「サイトデータを削除」操作、iOS アプリ内の「学習履歴をすべて削除」「学習記録をリセット」操作、またはアプリ自体の削除によって、いつでも完全に削除できます。
+            端末内に保存された情報は、ブラウザの「サイトデータを削除」操作、アプリ内の「学習履歴をすべて削除」「学習記録をリセット」操作、またはアプリ自体の削除によって、いつでも完全に削除できます。
           </li>
           <li>
             サーバー側に送信された情報 (解答ログ / Good・Bad 評価 / 問題報告) について、開示・訂正・削除を希望する場合は、§14 のお問い合わせ窓口までご連絡ください。本人確認のため、対象の <code>device_id</code> をお知らせいただきます。当該 <code>device_id</code> に紐付くサーバー側データを合理的な範囲で削除します。IPA 5試験向けの「合格.dev」では、アプリ内の「学習記録をリセット」でもサーバー側の解答ログ・問題報告を削除できます。
@@ -260,6 +277,9 @@ export default function PrivacyPage() {
 
       <Section title="15. 改訂履歴">
         <ul className="list-disc pl-5 space-y-1">
+          <li>
+            2026-10-20: IPA の5試験をまとめた「合格.dev」の Android 版の公開準備に伴い、適用範囲 (§1)、Android 版の端末内の保存方法と端末のバックアップ (§2・§4・§6・§8)、Google Play の「データ セーフティ」の表示 (§7) を追記。
+          </li>
           <li>
             2026-10-19: IPA の5試験をまとめた iOS アプリ「合格.dev」の公開準備に伴い、適用範囲 (§1)、端末内の保存方法 (§4・§6)、App Store の表示 (§7)、学習記録のリセットによるサーバー側データの削除 (§4・§11) を追記。運用基盤の移行 (Web は Cloudflare Containers、API とデータは Cloudflare Workers / D1) に合わせて第三者サービス (§9) を更新。コンテンツの約99%を AI で作成している旨を明記 (§12)。
           </li>
